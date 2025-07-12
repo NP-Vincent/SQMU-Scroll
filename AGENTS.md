@@ -45,3 +45,9 @@ This document outlines how to maintain, extend, and automate code for the SQMU p
 - Notes: `notes/`
 
 *Always keep file and directory structure consistent with this guide.*
+
+## Naming Conventions
+
+- The primary contract is `SQMU1155.sol` with ABI stored in `abi/SQMU1155.json`.
+- JavaScript modules and HTML widgets should share a base name when exposing the same functionality (e.g. `html/mint.html` with `js/mint.js`).
+- Keep file names lowercase except for Solidity contracts which use CamelCase.

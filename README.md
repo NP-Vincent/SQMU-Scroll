@@ -11,6 +11,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `notes/` – Technical and architectural notes
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
+- `package.json` – Node dependencies for UI code
 
 ## Quick Start
 
