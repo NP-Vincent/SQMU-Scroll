@@ -1,0 +1,15 @@
+{
+  "name": "sqmu-erc1155",
+  "version": "0.1.0",
+  "description": "SQMU ERC-1155 platform",
+  "scripts": {
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@metamask/sdk": "^1.2.0",
+    "ethers": "^6.6.0"
+  },
+  "devDependencies": {
+    "@openzeppelin/test-helpers": "^0.5.17"
+  }
+}
