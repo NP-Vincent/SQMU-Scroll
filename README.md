@@ -40,7 +40,3 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - All contract changes must be reflected in the ABI and UI
 - Keep `README.md` and `AGENTS.md` current with every change
 - Document new features and code structure in `notes/`
-
-## License
-
-[MIT](LICENSE)
