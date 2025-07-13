@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>SQMU Widget</title>
+  <!-- Load ethers.js and MetaMask SDK from public CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+  <script src="https://unpkg.com/@metamask/sdk/dist/browser/index.js"></script>
+  <!-- Widget logic -->
   <script src="../js/main.js" defer></script>
 </head>
 <body>
   <h1>SQMU ERC-1155 Widget</h1>
   <button id="connect">Connect Wallet</button>
   <script>
-    // Basic script placeholder
+    // This widget loads ../js/main.js which expects the ABI at ../abi/SQMU1155.json
+    // Replace contractAddress in main.js with your deployed contract.
   </script>
 </body>
 </html>

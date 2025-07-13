@@ -1,6 +1,7 @@
 # AGENTS.md – Instructions for Developers and AI Agents
 
-This document outlines how to maintain, extend, and automate code for the SQMU platform.  
+This document outlines how to maintain, extend, and automate code for the SQMU platform.
+All front-end code is designed for direct HTML/JS embedding within WordPress.com and must load dependencies from public CDNs.
 **Follow these guidelines for all updates—whether human or AI-assisted (Codex).**
 
 ## Core Workflow
@@ -14,9 +15,15 @@ This document outlines how to maintain, extend, and automate code for the SQMU p
    - After each contract change and deployment, export the updated ABI to `abi/SQMU1155.json`.
 
 3. **UI/Front-End**
-   - For every contract method, provide a corresponding HTML/JS interface in `html/` and `js/`.
-   - All wallet connections must use MetaMask SDK (`@metamask/sdk`).
-   - Always reference the current ABI and contract address.
+  - For every contract method, provide a corresponding HTML/JS interface in `html/` and `js/`.
+  - All wallet connections must use MetaMask SDK.
+  - Always reference the current ABI and contract address.
+  - Load MetaMask SDK and ethers.js via the following CDN scripts:
+    ```html
+    <script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
+    <script src="https://unpkg.com/@metamask/sdk/dist/browser/index.js"></script>
+    ```
+  - Do **not** rely on npm, yarn, or local `node_modules` when producing widget code.
 
 4. **MetaMask SDK Usage**
    - Use MetaMask SDK in all wallet connection code.
@@ -24,7 +31,8 @@ This document outlines how to maintain, extend, and automate code for the SQMU p
 
 5. **Documentation**
    - Update `README.md` with any change affecting users or devs.
-   - Record architectural decisions and patterns in `notes/`.
+   - Record architectural decisions and patterns in `notes/architecture.md`.
+   - Ensure instructions for CDN usage and WordPress compatibility remain current.
 
 6. **Sync and Versioning**
    - When deploying new contract versions, update the ABI and document version in the widget or UI files.
@@ -51,3 +59,18 @@ This document outlines how to maintain, extend, and automate code for the SQMU p
 - The primary contract is `SQMU1155.sol` with ABI stored in `abi/SQMU1155.json`.
 - JavaScript modules and HTML widgets should share a base name when exposing the same functionality (e.g. `html/mint.html` with `js/mint.js`).
 - Keep file names lowercase except for Solidity contracts which use CamelCase.
+
+## External References
+
+- [OpenZeppelin](https://github.com/OpenZeppelin)
+- [MetaMask](https://github.com/MetaMask)
+- [Web3Auth](https://github.com/Web3Auth)
+- [Scroll Tech](https://github.com/scroll-tech)
+- [Scroll Developer Docs](https://docs.scroll.io/en/developers/)
+- [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/)
+- [Rollupscan](https://scroll.io/rollupscan)
+- [Scrollscan](https://scrollscan.com/)
+- [MetaMask SDK Quickstart](https://docs.metamask.io/sdk/connect/javascript/)
+- [MetaMask Scroll Quickstart](https://docs.metamask.io/services/reference/scroll/quickstart/)
+- [MetaMask JSON-RPC Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/)
+- [MetaMask Debug Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/debug/)
