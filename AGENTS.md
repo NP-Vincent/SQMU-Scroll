@@ -30,9 +30,10 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
    - Support Scroll network by default.
 
 5. **Documentation**
-   - Update `README.md` with any change affecting users or devs.
-   - Record architectural decisions and patterns in `notes/architecture.md`.
-   - Ensure instructions for CDN usage and WordPress compatibility remain current.
+    - Update `README.md` with any change affecting users or devs.
+    - Record architectural decisions and patterns in `notes/architecture.md`.
+    - Ensure instructions for CDN usage and WordPress compatibility remain current.
+    - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` up to date with contract changes.
 
 6. **Sync and Versioning**
    - When deploying new contract versions, update the ABI and document version in the widget or UI files.
