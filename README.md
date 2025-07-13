@@ -16,8 +16,8 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 ## Quick Start
 
-1. **Clone the repo**  
-   `git clone https://github.com/[your-org]/sqmu-erc1155.git`
+1. **Clone the repo**
+   `git clone https://github.com/NP-Vincent/SQMU-Scroll.git`
 
 2. **Contract Deployment**
    - Edit or extend the smart contract in `contracts/SQMU.sol`
