@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 /// @title SQMU ERC-1155 Ownership Token
 /// @notice Basic ERC-1155 token for SQMU fractional real estate ownership.
 /// @dev Upgradeable contract using UUPS pattern.
-contract SQMU1155 is Initializable, ERC1155SupplyUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
+contract SQMU is Initializable, ERC1155SupplyUpgradeable, OwnableUpgradeable, UUPSUpgradeable {
     string public name;
     string public symbol;
 
