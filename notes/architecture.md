@@ -2,6 +2,8 @@
 
 This file summarizes key architectural decisions for the SQMU platform.
 
+Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md`.
+
 ## Smart Contracts
 
 - `SQMU1155.sol` implements an upgradeable ERC-1155 token using OpenZeppelin libraries and the UUPS proxy pattern.

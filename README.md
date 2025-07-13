@@ -11,6 +11,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `notes/` – Technical and architectural notes
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
+- `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements
 - `package.json` – Optional local tooling (CDN scripts are used instead of npm packages)
 
 ## Quick Start
@@ -45,6 +46,7 @@ All front-end widgets load these libraries directly from public CDNs. Example:
 - All contract changes must be reflected in the ABI and UI
 - Keep `README.md` and `AGENTS.md` current with every change
 - Document new features and code structure in `notes/`
+- Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
 
 ## External References
 
