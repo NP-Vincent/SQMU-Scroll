@@ -7,12 +7,12 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 ## Core Workflow
 
 1. **Contract Development**
-   - Update `contracts/SQMU1155.sol` for all ownership logic.
+   - Update `contracts/SQMU.sol` for all ownership logic.
    - Use OpenZeppelin and UUPS for upgradability.
    - Document every new or changed method and event.
 
 2. **ABI Management**
-   - After each contract change and deployment, export the updated ABI to `abi/SQMU1155.json`.
+   - After each contract change and deployment, export the updated ABI to `abi/SQMU.json`.
 
 3. **UI/Front-End**
   - For every contract method, provide a corresponding HTML/JS interface in `html/` and `js/`.
@@ -41,9 +41,9 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 
 ## Example Codex Prompts
 
-- “Update contracts/SQMU1155.sol with a pausing feature.”
+- “Update contracts/SQMU.sol with a pausing feature.”
 - “Generate html/transfer.html and js/transfer.js to call transferWithFee using MetaMask SDK and ethers.js.”
-- “Ensure ABI in abi/SQMU1155.json matches latest contract.”
+- “Ensure ABI in abi/SQMU.json matches latest contract.”
 
 ## File Organization
 
@@ -57,7 +57,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 
 ## Naming Conventions
 
-- The primary contract is `SQMU1155.sol` with ABI stored in `abi/SQMU1155.json`.
+- The primary contract is `SQMU.sol` with ABI stored in `abi/SQMU.json`.
 - JavaScript modules and HTML widgets should share a base name when exposing the same functionality (e.g. `html/mint.html` with `js/mint.js`).
 - Keep file names lowercase except for Solidity contracts which use CamelCase.
 
