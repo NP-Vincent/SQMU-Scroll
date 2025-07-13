@@ -9,6 +9,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
+- `notes/deployment_log.md` – Canonical record of deployments and contract addresses
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
 - `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements
@@ -23,6 +24,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Edit or extend the smart contract in `contracts/SQMU.sol`
    - Deploy using Remix or Hardhat, on the Scroll network
    - Export the ABI and update `abi/SQMU.json`
+   - Record the new proxy and implementation in `notes/deployment_log.md`
 3. **Front-End Development**
    - Use files in `html/` and `js/` for UI/interaction
    - All wallet logic uses MetaMask SDK and ethers.js loaded from public CDNs
@@ -46,6 +48,7 @@ All front-end widgets load these libraries directly from public CDNs. Example:
 - All contract changes must be reflected in the ABI and UI
 - Keep `README.md` and `AGENTS.md` current with every change
 - Document new features and code structure in `notes/`
+- Record each deployment in `notes/deployment_log.md`
 - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
 
 ## External References
