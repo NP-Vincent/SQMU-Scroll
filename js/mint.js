@@ -1,4 +1,4 @@
-// main.js - embeddable widget logic
+// mint.js - embeddable widget logic
 // This script expects ethers.js and MetaMask SDK to be loaded via CDN.
 
 const MMSDK = new MetaMaskSDK.MetaMaskSDK();
