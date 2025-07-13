@@ -1,7 +1,7 @@
 {
-  "name": "sqmu-erc1155",
+  "name": "sqmu",
   "version": "0.1.0",
-  "description": "SQMU ERC-1155 platform",
+  "description": "SQMU platform",
   "scripts": {
     "test": "echo \"No tests yet\""
   },
