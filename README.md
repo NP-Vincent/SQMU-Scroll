@@ -20,9 +20,9 @@ This repository manages the entire stack for the SQMU fractional real estate own
    `git clone https://github.com/[your-org]/sqmu-erc1155.git`
 
 2. **Contract Deployment**
-   - Edit or extend the smart contract in `contracts/SQMU1155.sol`
+   - Edit or extend the smart contract in `contracts/SQMU.sol`
    - Deploy using Remix or Hardhat, on the Scroll network
-   - Export the ABI and update `abi/SQMU1155.json`
+   - Export the ABI and update `abi/SQMU.json`
 3. **Front-End Development**
    - Use files in `html/` and `js/` for UI/interaction
    - All wallet logic uses MetaMask SDK and ethers.js loaded from public CDNs

@@ -6,7 +6,7 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 
 ## Smart Contracts
 
-- `SQMU1155.sol` implements an upgradeable ERC-1155 token using OpenZeppelin libraries and the UUPS proxy pattern.
+- `SQMU.sol` implements an upgradeable ERC-1155 token using OpenZeppelin libraries and the UUPS proxy pattern.
 - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.
 
 ## Front-End Widgets

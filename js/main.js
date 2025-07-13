@@ -14,7 +14,7 @@ async function connect() {
   signer = await provider.getSigner();
 
   // Fetch the contract ABI and create a contract instance
-  const res = await fetch('../abi/SQMU1155.json');
+  const res = await fetch('../abi/SQMU.json');
   const abiJson = await res.json();
   const contractAddress = '0xYourContractAddress'; // TODO: replace with deployed address
   contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
