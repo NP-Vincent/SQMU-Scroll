@@ -7,6 +7,9 @@ let provider;
 let signer;
 let contract;
 
+// Deployed proxy address. Update this value when redeploying the contract.
+const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
+
 // Connect the user's wallet via MetaMask SDK
 async function connect() {
   await ethereum.request({ method: 'eth_requestAccounts' });
@@ -16,7 +19,6 @@ async function connect() {
   // Fetch the contract ABI and create a contract instance
   const res = await fetch('../abi/SQMU.json');
   const abiJson = await res.json();
-  const contractAddress = '0xYourContractAddress'; // TODO: replace with deployed address
   contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
 }
 
