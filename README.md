@@ -47,7 +47,9 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 
 3. **Update Front-End**
    - Record the proxy address in `notes/deployment_log.md`.
-   - Update widgets in `html/` and modules in `js/` with the new address or have them read from the log.
+   - Update widgets in `html/` and modules in `js/` with this address. When
+     embedding a widget directly in WordPress, copy the JS code and ensure the
+     `contractAddress` constant reflects the deployed proxy.
 
 4. **Perform UUPS Upgrades**
    - Modify `contracts/SQMU.sol` as needed and recompile.
