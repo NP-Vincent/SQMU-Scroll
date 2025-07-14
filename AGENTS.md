@@ -24,6 +24,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
     <script src="https://unpkg.com/@metamask/sdk/dist/browser/index.js"></script>
     ```
   - Do **not** rely on npm, yarn, or local `node_modules` when producing widget code.
+  - Maintain `html/WPEmbed.html` as a single-file version of the mint widget for WordPress copy/paste. Update it whenever `html/mint.html` or `js/mint.js` changes.
 
 4. **MetaMask SDK Usage**
    - Use MetaMask SDK in all wallet connection code.

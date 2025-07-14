@@ -6,6 +6,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
+- `html/WPEmbed.html` – Single-file version of the mint widget for direct WordPress embedding
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
@@ -30,6 +31,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Use files in `html/` and `js/` for UI/interaction
    - All wallet logic uses MetaMask SDK and ethers.js loaded from public CDNs
    - Copy HTML widgets directly into WordPress.com custom HTML blocks
+   - `html/WPEmbed.html` provides the mint widget as a single file with inline JavaScript to avoid relative path issues
 
 ## Deployment Guide
 
@@ -48,8 +50,8 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 3. **Update Front-End**
    - Record the proxy address in `notes/deployment_log.md`.
    - Update widgets in `html/` and modules in `js/` with this address. When
-     embedding a widget directly in WordPress, copy the JS code and ensure the
-     `contractAddress` constant reflects the deployed proxy.
+     embedding a widget directly in WordPress, use `html/WPEmbed.html` or copy
+     the JS code so the `contractAddress` constant reflects the deployed proxy.
 
 4. **Perform UUPS Upgrades**
    - Modify `contracts/SQMU.sol` as needed and recompile.
