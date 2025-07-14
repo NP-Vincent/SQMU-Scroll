@@ -32,6 +32,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - All wallet logic uses MetaMask SDK and ethers.js loaded from public CDNs
    - Copy HTML widgets directly into WordPress.com custom HTML blocks
    - `html/WPEmbed.html` provides the mint widget as a single file with inline JavaScript to avoid relative path issues
+   - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
 
 ## Deployment Guide
 
