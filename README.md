@@ -82,10 +82,23 @@ Contract owners can mint new ERC-1155 tokens directly from the provided widget.
 
 1. Open `html/mint.html` locally or embed `html/WPEmbed.html` into WordPress.
 2. Click **Connect Wallet** to initialize MetaMask and the contract.
-3. Enter the token ID and amount you wish to mint, then click **Mint**.
+3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
 
 Only the wallet that owns the contract can successfully call `mint`.
+
+## Checking Balances and Transfers
+
+Two additional widgets are provided for common ERC-1155 actions.
+
+1. **Balance Widget** (`html/balance.html`) lets you connect your wallet and
+   query the balance for any token ID. Optionally specify an address to check;
+   leaving the field blank uses the connected wallet.
+2. **Transfer Widget** (`html/transfer.html`) enables wallet-to-wallet
+   transfers by calling `safeTransferFrom`. Enter the token ID, amount,
+   recipient, and optional data (defaults to `0x`).
+
+Status messages for both widgets appear in their respective `*-status` divs.
 
 ## Developer Guidelines
 

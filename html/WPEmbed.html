@@ -13,6 +13,7 @@
   <button id="connect">Connect Wallet</button>
   <label>Token ID <input id="token-id" type="text"></label>
   <label>Amount <input id="token-amount" type="number" value="1"></label>
+  <label>URI <input id="token-uri" type="text" value="0x"></label>
   <button id="mint">Mint</button>
   <div id="mint-status"></div>
   <script>
@@ -65,10 +66,11 @@
       }
 
       // Mint tokens using owner account
-      async function mintToken() {
-        const statusDiv = document.getElementById('mint-status');
-        const tokenId = document.getElementById('token-id').value;
-        const amount = document.getElementById('token-amount').value;
+        async function mintToken() {
+          const statusDiv = document.getElementById('mint-status');
+          const tokenId = document.getElementById('token-id').value;
+          const amount = document.getElementById('token-amount').value;
+          const uriData = document.getElementById('token-uri').value || '0x';
 
         if (!contract) {
           statusDiv.innerHTML = '<span style="color:red;">Connect wallet first.</span>';
@@ -77,7 +79,7 @@
 
         try {
           const account = await signer.getAddress();
-          const tx = await contract.mint(account, tokenId, amount, '0x');
+          const tx = await contract.mint(account, tokenId, amount, uriData);
           statusDiv.innerText = 'Minting...';
           await tx.wait();
           statusDiv.innerHTML = `<span style="color:green;">Minted token ${tokenId} x ${amount}</span>`;
