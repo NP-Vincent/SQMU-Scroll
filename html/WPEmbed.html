@@ -27,6 +27,7 @@
   <script>
     // Standalone mint widget with embedded ABI for WordPress use.
     // Connection status updates appear in the #mint-status div.
+    // Modular widgets load connectWallet() from wallet.js instead.
     const MMSDK = new MetaMaskSDK.MetaMaskSDK({
       dappMetadata: { name: 'SQMU Mint Widget', url: window.location.href },
       infuraAPIKey: '822e08935dea4fb48f668ff353ac863a',
