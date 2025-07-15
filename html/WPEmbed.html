@@ -16,6 +16,13 @@
   <label>URI <input id="token-uri" type="text" value="0x"></label>
   <button id="mint">Mint</button>
   <div id="mint-status"></div>
+  <label>Address <input id="wallet-address" type="text" placeholder="optional"></label>
+  <button id="check-balance">Check Balance</button>
+  <div id="balance-status"></div>
+  <label>Recipient <input id="recipient" type="text"></label>
+  <label>Data <input id="transfer-data" type="text" value="0x"></label>
+  <button id="transfer">Transfer</button>
+  <div id="transfer-status"></div>
   <script>
     // Standalone mint widget with embedded ABI for WordPress use.
     // Connection status updates appear in the #mint-status div.
@@ -56,18 +63,20 @@
           // Create a contract instance using the embedded ABI
           contract = new ethers.Contract(contractAddress, sqmuAbi.abi, signer);
 
-          statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
+        statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
 
-          // Enable minting once connected
-          document.getElementById('mint').addEventListener('click', mintToken);
+        // Enable actions once the contract is ready
+        document.getElementById('mint').addEventListener('click', mintToken);
+        document.getElementById('check-balance').addEventListener('click', checkBalance);
+        document.getElementById('transfer').addEventListener('click', transferToken);
         } catch (err) {
           statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
         }
       }
 
       // Mint tokens using owner account
-        async function mintToken() {
-          const statusDiv = document.getElementById('mint-status');
+  async function mintToken() {
+    const statusDiv = document.getElementById('mint-status');
           const tokenId = document.getElementById('token-id').value;
           const amount = document.getElementById('token-amount').value;
           const uriData = document.getElementById('token-uri').value || '0x';
@@ -85,8 +94,54 @@
           statusDiv.innerHTML = `<span style="color:green;">Minted token ${tokenId} x ${amount}</span>`;
         } catch (err) {
           statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
-        }
+    }
+  }
+
+  // Check an address balance for a token ID
+  async function checkBalance() {
+    const statusDiv = document.getElementById('balance-status');
+    const tokenId = document.getElementById('token-id').value;
+    let addr = document.getElementById('wallet-address').value;
+
+    if (!contract) {
+      statusDiv.innerHTML = '<span style="color:red;">Connect wallet first.</span>';
+      return;
+    }
+
+    try {
+      if (!addr) {
+        addr = await signer.getAddress();
       }
+      const bal = await contract.balanceOf(addr, tokenId);
+      statusDiv.innerHTML = `<span style="color:green;">Balance: ${bal.toString()}</span>`;
+    } catch (err) {
+      statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+    }
+  }
+
+  // Transfer tokens to another address
+  async function transferToken() {
+    const statusDiv = document.getElementById('transfer-status');
+    const tokenId = document.getElementById('token-id').value;
+    const amount = document.getElementById('token-amount').value;
+    const to = document.getElementById('recipient').value;
+    const data = document.getElementById('transfer-data').value || '0x';
+
+    if (!contract) {
+      statusDiv.innerHTML = '<span style="color:red;">Connect wallet first.</span>';
+      return;
+    }
+
+    try {
+      const from = await signer.getAddress();
+      const tx = await contract.safeTransferFrom(from, to, tokenId, amount, data);
+      statusDiv.innerText = 'Transferring...';
+      await tx.wait();
+      statusDiv.innerHTML = '<span style="color:green;">Transfer complete</span>';
+    } catch (err) {
+      statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+    }
+  }
 
     // Bind connect button
     document.getElementById('connect').addEventListener('click', connect);
