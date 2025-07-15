@@ -100,6 +100,14 @@ Two additional widgets are provided for common ERC-1155 actions.
 
 Status messages for both widgets appear in their respective `*-status` divs.
 
+## Checkout Widget
+
+`html/checkout.html` provides a basic payment flow. Supply query parameters such
+as `sqmu`, `usd`, `token`, `chain` and `saleAddr` in the URL to configure the
+purchase. After connecting with MetaMask, click **Pay** to send the converted
+amount of the selected token to the treasury wallet. Future versions will
+distribute SQMU tokens after payment.
+
 ## Developer Guidelines
 
 - All contract changes must be reflected in the ABI and UI
