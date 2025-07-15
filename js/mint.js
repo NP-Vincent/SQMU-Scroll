@@ -5,9 +5,8 @@ const MMSDK = new MetaMaskSDK.MetaMaskSDK({
   dappMetadata: { name: 'SQMU Mint Widget', url: window.location.href },
   infuraAPIKey: '822e08935dea4fb48f668ff353ac863a',
 });
-const ethereum = MMSDK.getProvider();
-const provider = new ethers.providers.Web3Provider(ethereum);
-const signer = provider.getSigner();
+let provider;
+let signer;
 let contract;
 
 // Deployed proxy address. Update this value when redeploying the contract.
@@ -17,22 +16,34 @@ const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
 const SCROLL_CHAIN_ID = '0x82750';
 
 async function connect() {
-  await provider.send('eth_requestAccounts', []);
+  const ethereum = MMSDK.getProvider();
+  const statusDiv = document.getElementById('mint-status');
+  statusDiv.innerText = 'Connecting to MetaMask...';
 
-  let chainId = await provider.send('eth_chainId', []);
-  if (chainId !== SCROLL_CHAIN_ID) {
-    try {
-      await provider.send('wallet_switchEthereumChain', [{ chainId: SCROLL_CHAIN_ID }]);
-      chainId = await provider.send('eth_chainId', []);
-    } catch (err) {
-      console.error('Failed to switch to Scroll network', err);
-      return;
+  try {
+    await ethereum.request({ method: 'eth_requestAccounts', params: [] });
+
+    let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
+    if (chainId !== SCROLL_CHAIN_ID) {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: SCROLL_CHAIN_ID }],
+      });
+      chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     }
-  }
 
-  const res = await fetch('../abi/SQMU.json');
-  const abiJson = await res.json();
-  contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
+    provider = new ethers.providers.Web3Provider(ethereum);
+    signer = provider.getSigner();
+
+    const res = await fetch('../abi/SQMU.json');
+    const abiJson = await res.json();
+    contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
+
+    statusDiv.innerHTML =
+      '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
+  } catch (err) {
+    statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+  }
 }
 
 // Bind connect button
