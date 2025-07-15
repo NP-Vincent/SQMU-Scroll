@@ -76,6 +76,8 @@ All front-end widgets load these libraries directly from public CDNs. Example:
 <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
+**Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
+
 ## Minting Tokens via the Widget
 
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
