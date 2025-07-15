@@ -10,6 +10,11 @@ let signer;
 
 const treasuryAddress = '0x1111111111111111111111111111111111111111';
 
+const PAYMENT_OPTIONS = [
+  { network: 'scroll', text: 'Scroll (ETH)' },
+  { network: 'ethereum', text: 'Ethereum Mainnet (ETH)' },
+];
+
 function parseQuery() {
   const p = new URLSearchParams(window.location.search);
   return {
@@ -27,6 +32,19 @@ const chainIds = {
   scroll: '0x82750',
   ethereum: '0x1',
 };
+
+function populateNetworkOptions() {
+  const select = document.getElementById('network-select');
+  PAYMENT_OPTIONS.forEach(({ network, text }) => {
+    const opt = document.createElement('option');
+    opt.value = network;
+    opt.textContent = text;
+    if (network === query.chain) {
+      opt.selected = true;
+    }
+    select.appendChild(opt);
+  });
+}
 
 async function connect() {
   const ethereum = MMSDK.getProvider();
@@ -46,7 +64,10 @@ async function connect() {
     }
     await ethereum.request({ method: 'eth_requestAccounts', params: [] });
 
-    const targetChainId = chainIds[query.chain] || chainIds.scroll;
+    const selectedNetwork =
+      document.getElementById('network-select').value || query.chain;
+    query.chain = selectedNetwork;
+    const targetChainId = chainIds[selectedNetwork] || chainIds.scroll;
     let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     if (chainId !== targetChainId) {
       await ethereum.request({
@@ -75,6 +96,10 @@ async function pay() {
   }
 
   try {
+    const network = document.getElementById('network-select').value || query.chain;
+    const email = document.getElementById('email-input').value;
+    const agentCode = document.getElementById('agent-code-input').value;
+    query.chain = network;
     statusDiv.innerText = 'Fetching price...';
     if (query.token !== 'eth') {
       throw new Error('Only ETH payments supported in this demo');
@@ -90,10 +115,24 @@ async function pay() {
       value: ethers.utils.parseEther(ethAmount.toString()),
     });
     await tx.wait();
+    await sendReceipt(email, agentCode, network, tx.hash);
     statusDiv.innerHTML = '<span style="color:green;">Payment complete</span>';
     // TODO: distribute SQMU tokens to purchaser using sale contract
   } catch (err) {
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+  }
+}
+
+async function sendReceipt(email, agentCode, network, txHash) {
+  if (!email) return;
+  try {
+    await fetch('https://example.com/api/receipt', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, agentCode, network, txHash }),
+    });
+  } catch (err) {
+    console.error('sendReceipt failed', err);
   }
 }
 
@@ -115,3 +154,4 @@ async function disconnect() {
 
 document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
+populateNetworkOptions();

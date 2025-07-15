@@ -104,11 +104,13 @@ Status messages for both widgets appear in their respective `*-status` divs.
 
 ## Checkout Widget
 
-`html/checkout.html` provides a basic payment flow. Supply query parameters such
-as `sqmu`, `usd`, `token`, `chain` and `saleAddr` in the URL to configure the
-purchase. After connecting with MetaMask, click **Pay** to send the converted
-amount of the selected token to the treasury wallet. Future versions will
-distribute SQMU tokens after payment.
+`html/checkout.html` now collects payment details directly in the page. The
+network selector is populated from a `PAYMENT_OPTIONS` list and you must enter
+an email address to receive a receipt. Optionally provide an agent referral
+code. Query parameters such as `sqmu`, `usd`, and `token` remain supported for
+defaults. Connect your wallet, choose the network, fill in the email (and agent
+code if applicable) then click **Pay**. A receipt is sent to the supplied email
+after the transaction confirms.
 
 ## Developer Guidelines
 
