@@ -76,6 +76,17 @@ All front-end widgets load these libraries directly from public CDNs. Example:
 <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
+## Minting Tokens via the Widget
+
+Contract owners can mint new ERC-1155 tokens directly from the provided widget.
+
+1. Open `html/mint.html` locally or embed `html/WPEmbed.html` into WordPress.
+2. Click **Connect Wallet** to initialize MetaMask and the contract.
+3. Enter the token ID and amount you wish to mint, then click **Mint**.
+4. Success or error information will appear in the `#mint-status` area.
+
+Only the wallet that owns the contract can successfully call `mint`.
+
 ## Developer Guidelines
 
 - All contract changes must be reflected in the ABI and UI

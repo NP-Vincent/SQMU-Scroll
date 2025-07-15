@@ -37,10 +37,35 @@ async function connect() {
 
     const res = await fetch('../abi/SQMU.json');
     const abiJson = await res.json();
-    contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
+  contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
 
-    statusDiv.innerHTML =
-      '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
+  statusDiv.innerHTML =
+    '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
+
+  // Enable minting once the contract is ready
+  document.getElementById('mint').addEventListener('click', mintToken);
+} catch (err) {
+  statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+}
+}
+
+// Mint tokens using owner account
+async function mintToken() {
+  const statusDiv = document.getElementById('mint-status');
+  const tokenId = document.getElementById('token-id').value;
+  const amount = document.getElementById('token-amount').value;
+
+  if (!contract) {
+    statusDiv.innerHTML = '<span style="color:red;">Connect wallet first.</span>';
+    return;
+  }
+
+  try {
+    const account = await signer.getAddress();
+    const tx = await contract.mint(account, tokenId, amount, '0x');
+    statusDiv.innerText = 'Minting...';
+    await tx.wait();
+    statusDiv.innerHTML = `<span style="color:green;">Minted token ${tokenId} x ${amount}</span>`;
   } catch (err) {
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
   }

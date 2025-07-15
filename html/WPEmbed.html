@@ -11,6 +11,9 @@
 <body>
   <h1>SQMU Mint Widget</h1>
   <button id="connect">Connect Wallet</button>
+  <label>Token ID <input id="token-id" type="text"></label>
+  <label>Amount <input id="token-amount" type="number" value="1"></label>
+  <button id="mint">Mint</button>
   <div id="mint-status"></div>
   <script>
     // Standalone mint widget with embedded ABI for WordPress use.
@@ -53,6 +56,31 @@
           contract = new ethers.Contract(contractAddress, sqmuAbi.abi, signer);
 
           statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
+
+          // Enable minting once connected
+          document.getElementById('mint').addEventListener('click', mintToken);
+        } catch (err) {
+          statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+        }
+      }
+
+      // Mint tokens using owner account
+      async function mintToken() {
+        const statusDiv = document.getElementById('mint-status');
+        const tokenId = document.getElementById('token-id').value;
+        const amount = document.getElementById('token-amount').value;
+
+        if (!contract) {
+          statusDiv.innerHTML = '<span style="color:red;">Connect wallet first.</span>';
+          return;
+        }
+
+        try {
+          const account = await signer.getAddress();
+          const tx = await contract.mint(account, tokenId, amount, '0x');
+          statusDiv.innerText = 'Minting...';
+          await tx.wait();
+          statusDiv.innerHTML = `<span style="color:green;">Minted token ${tokenId} x ${amount}</span>`;
         } catch (err) {
           statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
         }
