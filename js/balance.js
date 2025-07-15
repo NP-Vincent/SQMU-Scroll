@@ -18,6 +18,16 @@ async function connect() {
   statusDiv.innerText = 'Connecting to MetaMask...';
 
   try {
+    const permissions = await ethereum.request({
+      method: 'wallet_requestPermissions',
+      params: [{ eth_accounts: {} }],
+    });
+    const accountsPermission = permissions.find(
+      (p) => p.parentCapability === 'eth_accounts'
+    );
+    if (!accountsPermission) {
+      throw new Error('eth_accounts permission not granted');
+    }
     await ethereum.request({ method: 'eth_requestAccounts', params: [] });
     let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     if (chainId !== SCROLL_CHAIN_ID) {
@@ -37,6 +47,7 @@ async function connect() {
 
     statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
     document.getElementById('check-balance').addEventListener('click', checkBalance);
+    document.getElementById('disconnect').addEventListener('click', disconnect);
   } catch (err) {
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
   }
@@ -63,4 +74,22 @@ async function checkBalance() {
   }
 }
 
+async function disconnect() {
+  const ethereum = MMSDK.getProvider();
+  const statusDiv = document.getElementById('balance-status');
+  try {
+    await ethereum.request({
+      method: 'wallet_revokePermissions',
+      params: [{ eth_accounts: {} }],
+    });
+    provider = undefined;
+    signer = undefined;
+    contract = undefined;
+    statusDiv.innerHTML = '<span style="color:orange;">Disconnected</span>';
+  } catch (err) {
+    statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+  }
+}
+
 document.getElementById('connect').addEventListener('click', connect);
+document.getElementById('disconnect').addEventListener('click', disconnect);
