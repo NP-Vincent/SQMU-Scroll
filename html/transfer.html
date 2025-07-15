@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SQMU Transfer Widget</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script src="../js/transfer.js" defer></script>
+</head>
+<body>
+  <h1>SQMU Transfer Widget</h1>
+  <button id="connect">Connect Wallet</button>
+  <label>Token ID <input id="token-id" type="text"></label>
+  <label>Amount <input id="token-amount" type="number" value="1"></label>
+  <label>Recipient <input id="recipient" type="text"></label>
+  <label>Data <input id="transfer-data" type="text" value="0x"></label>
+  <button id="transfer">Transfer</button>
+  <div id="transfer-status"></div>
+  <script>
+    // This widget loads ../js/transfer.js. Status updates appear in the #transfer-status div.
+  </script>
+</body>
+</html>
