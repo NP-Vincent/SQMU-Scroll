@@ -19,8 +19,8 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 Example CDN includes:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/ethers/dist/ethers.min.js"></script>
-<script src="https://unpkg.com/@metamask/sdk/dist/browser/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
 ## Rationale
