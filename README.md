@@ -112,6 +112,13 @@ defaults. Connect your wallet, choose the network, fill in the email (and agent
 code if applicable) then click **Pay**. A receipt is sent to the supplied email
 after the transaction confirms.
 
+For a simplified authentication example, see `html/checkout_login.html`. It
+demonstrates logging in with either **MetaMask** (using Infura project
+`822e08935dea4fb48f668ff353ac863a`) or **Web3Auth** with client ID
+`BAMYkJxLW4gIvsaIN2kOXDxyyz1gLyjnbqbF0hVKuc0RaCwyx2uhG9bBbbN_zVYfrfU5NH9K-QMG53GslEmCw4E`.
+Both options initialize directly in the browser so the snippet can be embedded
+in WordPress pages.
+
 ## Developer Guidelines
 
 - All contract changes must be reflected in the ABI and UI
