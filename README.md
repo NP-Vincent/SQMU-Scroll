@@ -8,6 +8,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `html/WPEmbed.html` – Single-file version of the mint widget for direct WordPress embedding
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
+- `php/` – WordPress plugin exposing the `[sqmu_mint_widget]` shortcode
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
 - `notes/deployment_log.md` – Canonical record of deployments and contract addresses
@@ -118,6 +119,17 @@ demonstrates logging in with either **MetaMask** (using Infura project
 `BAMYkJxLW4gIvsaIN2kOXDxyyz1gLyjnbqbF0hVKuc0RaCwyx2uhG9bBbbN_zVYfrfU5NH9K-QMG53GslEmCw4E`.
 Both options initialize directly in the browser so the snippet can be embedded
 in WordPress pages.
+
+## PHP Shortcode Plugin
+
+`php/sqmu-mint-widget.php` provides a WordPress shortcode for the mint widget.
+Install the file as a plugin by copying it (and the `abi/` directory) into your
+`wp-content/plugins` folder. Activate **SQMU Mint Widget** and place
+`[sqmu_mint_widget]` on any page or post to render the interface.
+
+The plugin reads `abi/SQMU.json` to build the contract instance and expects the
+deployed proxy address `0xd0b895e975f24045e43d788d42BD938b78666EC8`. Adjust the
+`contractAddress` constant inside the PHP file if your deployment changes.
 
 ## Developer Guidelines
 
