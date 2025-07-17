@@ -68,6 +68,7 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - @metamask/sdk
 
 All front-end widgets load these libraries from GitHub Pages. After running the `js-build` workflow the compiled bundles are available at `https://<your-user>.github.io/SQMU-Scroll/`.
+The HTML widgets reference these bundles directly from the repository's GitHub Pages site.
 
 **Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
 
