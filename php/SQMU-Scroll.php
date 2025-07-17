@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: SQMU Mint Widget
- * Description: Adds a [sqmu_mint_widget] shortcode for the SQMU ERC-1155 mint/transfer widget using MetaMask.
- * Version: 0.1
+ * Plugin Name: SQMU Scroll Widgets
+ * Description: Provides WordPress shortcodes for SQMU mint and transfer functionality using MetaMask.
+ * Version: 0.2
  */
 
 if (!defined('ABSPATH')) exit;
@@ -11,7 +11,10 @@ function sqmu_mint_widget_assets() {
     // Only enqueue ethers and Metamask SDK if shortcode is present
     if (is_singular() && has_shortcode(get_post()->post_content, 'sqmu_mint_widget')) {
         wp_enqueue_script('ethers', 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js', [], null, true);
-        wp_enqueue_script('metamask-sdk', 'https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js', [], null, true);
+        wp_enqueue_script('metamask-sdk', 'https://yourusername.github.io/SQMU-Scroll/metamask-sdk.js', [], null, true);
+        wp_enqueue_script('web3auth', 'https://yourusername.github.io/SQMU-Scroll/web3auth.js', [], null, true);
+        wp_enqueue_script('safe-core', 'https://yourusername.github.io/SQMU-Scroll/safe-core-sdk.js', [], null, true);
+        wp_enqueue_script('across-sdk', 'https://yourusername.github.io/SQMU-Scroll/across-sdk.js', [], null, true);
     }
 }
 add_action('wp_enqueue_scripts', 'sqmu_mint_widget_assets');
@@ -170,3 +173,4 @@ document.addEventListener('DOMContentLoaded', function() {
     return ob_get_clean();
 }
 add_shortcode('sqmu_mint_widget', 'sqmu_mint_widget_shortcode');
+

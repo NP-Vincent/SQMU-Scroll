@@ -1,7 +1,7 @@
 # AGENTS.md – Instructions for Developers and AI Agents
 
 This document outlines how to maintain, extend, and automate code for the SQMU platform.
-All front-end code is designed for direct HTML/JS embedding within WordPress.com and must load dependencies from public CDNs.
+All front-end code is designed for direct HTML/JS embedding within WordPress.com and must load dependencies from the repository's GitHub Pages CDN.
 **Follow these guidelines for all updates—whether human or AI-assisted (Codex).**
 
 ## Core Workflow
@@ -18,13 +18,8 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
   - For every contract method, provide a corresponding HTML/JS interface in `html/` and `js/`.
   - All wallet connections must use MetaMask SDK.
   - Always reference the current ABI and contract address.
-  - Load MetaMask SDK and ethers.js via the following CDN scripts:
-    ```html
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-    <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-    ```
-  - Do **not** rely on npm, yarn, or local `node_modules` when producing widget code.
-  - Maintain `html/WPEmbed.html` as a single-file version of the mint widget for WordPress copy/paste. Update it whenever `html/mint.html` or `js/mint.js` changes.
+  - Load MetaMask SDK and ethers.js from the repository's GitHub Pages site. GitHub Actions builds the necessary bundles from npm packages and publishes them under `docs/`.
+  - Do **not** rely on node modules at runtime. Instead, compile dependencies in the `js-build` workflow so widgets can reference the static files hosted on GitHub Pages.
 
 4. **MetaMask SDK Usage**
    - Use MetaMask SDK in all wallet connection code.
@@ -65,7 +60,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 ## WordPress Plugin Maintenance
 
 - The plugin resides in `php/` and exposes the `[sqmu_mint_widget]` shortcode.
-- Keep `sqmu-mint-widget.php` synchronized with the latest ABI and widget logic.
+ - Keep `SQMU-Scroll.php` synchronized with the latest ABI and widget logic.
 - When adding or updating shortcodes, modify the PHP file accordingly and bump the `Version` header.
 - Test each shortcode in a local WordPress instance and document any usage changes in `README.md`.
 
@@ -74,6 +69,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 1. Commit PHP changes on the `main` branch.
 2. Push to GitHub. The `.github/workflows/wpcom.yml` workflow packages the `php/` directory as the `wpcom` artifact.
 3. Download the artifact from the workflow run and upload it to your WordPress site to update the plugin.
+4. The `.github/workflows/js-build.yml` workflow bundles npm dependencies and publishes them to GitHub Pages for the plugin to consume.
 
 ## External References
 
