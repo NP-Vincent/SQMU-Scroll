@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - php/**
   workflow_dispatch:
 jobs:
   Publish-Website:
@@ -16,6 +18,5 @@ jobs:
         with:
           name: wpcom
           path: |
-            .
-            !.git*
+            php
           retention-days: 1
