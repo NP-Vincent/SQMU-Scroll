@@ -10,11 +10,12 @@ if (!defined('ABSPATH')) exit;
 function sqmu_mint_widget_assets() {
     // Only enqueue ethers and Metamask SDK if shortcode is present
     if (is_singular() && has_shortcode(get_post()->post_content, 'sqmu_mint_widget')) {
+        $cdn_base = 'https://np-vincent.github.io/SQMU-Scroll/';
         wp_enqueue_script('ethers', 'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js', [], null, true);
-        wp_enqueue_script('metamask-sdk', 'https://yourusername.github.io/SQMU-Scroll/metamask-sdk.js', [], null, true);
-        wp_enqueue_script('web3auth', 'https://yourusername.github.io/SQMU-Scroll/web3auth.js', [], null, true);
-        wp_enqueue_script('safe-core', 'https://yourusername.github.io/SQMU-Scroll/safe-core-sdk.js', [], null, true);
-        wp_enqueue_script('across-sdk', 'https://yourusername.github.io/SQMU-Scroll/across-sdk.js', [], null, true);
+        wp_enqueue_script('metamask-sdk', $cdn_base . 'metamask-sdk.js', [], null, true);
+        wp_enqueue_script('web3auth', $cdn_base . 'web3auth.js', [], null, true);
+        wp_enqueue_script('safe-core', $cdn_base . 'safe-core-sdk.js', [], null, true);
+        wp_enqueue_script('across-sdk', $cdn_base . 'across-sdk.js', [], null, true);
     }
 }
 add_action('wp_enqueue_scripts', 'sqmu_mint_widget_assets');

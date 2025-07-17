@@ -67,7 +67,7 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - ethers.js
 - @metamask/sdk
 
-All front-end widgets load these libraries from GitHub Pages. After running the `js-build` workflow the compiled bundles are available at `https://<your-user>.github.io/SQMU-Scroll/`.
+All front-end widgets load these libraries from GitHub Pages. After running the `js-build` workflow the compiled bundles are available at `https://np-vincent.github.io/SQMU-Scroll/`.
 The HTML widgets reference these bundles directly from the repository's GitHub Pages site.
 
 **Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
@@ -75,6 +75,14 @@ The HTML widgets reference these bundles directly from the repository's GitHub P
 ## Building JavaScript Bundles
 
 Run `npm install` to fetch dependencies (or use the `js-build` workflow which executes `npm ci`). After the packages are installed, run `npm run build` to generate the bundles under `docs/`. Commit `package-lock.json` if you need reproducible builds.
+
+## GitHub Pages Setup
+
+Enable GitHub Pages for the repository (branch `main`, folder `/docs`).
+After `npm run build` places the bundles in `docs/`, they become
+available at `https://np-vincent.github.io/SQMU-Scroll/`.
+Both the WordPress plugin and the example HTML files load their
+JavaScript dependencies from this URL.
 
 ## Minting Tokens via the Widget
 
