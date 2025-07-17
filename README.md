@@ -74,7 +74,7 @@ The HTML widgets reference these bundles directly from the repository's GitHub P
 
 ## Building JavaScript Bundles
 
-Use **Node.js 20** when installing dependencies and running builds. Run `npm install` to fetch dependencies (or use the `js-build` workflow which executes `npm ci`). After the packages are installed, run `npm run build` to generate the bundles under `docs/`. Commit `package-lock.json` if you need reproducible builds.
+Use **Node.js 20** when installing dependencies and running builds. Run `npm install` to fetch dependencies (or use the `js-build` workflow which executes `npm ci`). After the packages are installed, run `npm run build` to generate the bundles under `docs/`. Commit `package-lock.json` if you need reproducible builds. The build step relies on `esbuild-plugin-polyfill-node` to provide browser polyfills for Node.js modules.
 
 ## GitHub Pages Setup
 
