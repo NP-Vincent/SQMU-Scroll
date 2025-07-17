@@ -6,9 +6,9 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
-- `html/WPEmbed.html` – Single-file version of the mint widget for direct WordPress embedding
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
 - `php/` – WordPress plugin exposing the `[sqmu_mint_widget]` shortcode
+ - `docs/` – GitHub Pages site hosting compiled JavaScript dependencies (built by the `js-build` workflow)
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
 - `notes/deployment_log.md` – Canonical record of deployments and contract addresses
@@ -30,9 +30,8 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Record the new proxy and implementation in `notes/deployment_log.md`
 3. **Front-End Development**
    - Use files in `html/` and `js/` for UI/interaction
-   - All wallet logic uses MetaMask SDK and ethers.js loaded from public CDNs
-   - Copy HTML widgets directly into WordPress.com custom HTML blocks
-  - `html/WPEmbed.html` provides the mint widget as a single standalone file with inline JavaScript and ABI to avoid relative path issues.
+   - All wallet logic uses MetaMask SDK and ethers.js loaded from the repository's GitHub Pages CDN
+   - Copy HTML widgets directly into WordPress.com custom HTML blocks.
   - Mint widgets display connection status messages in the `#mint-status` div for easier debugging.
    - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
 
@@ -52,9 +51,7 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 
 3. **Update Front-End**
    - Record the proxy address in `notes/deployment_log.md`.
-   - Update widgets in `html/` and modules in `js/` with this address. When
-     embedding a widget directly in WordPress, use `html/WPEmbed.html` or copy
-     the JS code so the `contractAddress` constant reflects the deployed proxy.
+   - Update widgets in `html/` and modules in `js/` with this address so the `contractAddress` constant reflects the deployed proxy.
 
 4. **Perform UUPS Upgrades**
    - Modify `contracts/SQMU.sol` as needed and recompile.
@@ -70,12 +67,7 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - ethers.js
 - @metamask/sdk
 
-All front-end widgets load these libraries directly from public CDNs. Example:
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
-```
+All front-end widgets load these libraries from GitHub Pages. After running the `js-build` workflow the compiled bundles are available at `https://<your-user>.github.io/SQMU-Scroll/`.
 
 **Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
 
@@ -83,7 +75,7 @@ All front-end widgets load these libraries directly from public CDNs. Example:
 
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
 
-1. Open `html/mint.html` locally or embed `html/WPEmbed.html` into WordPress.
+1. Open `html/mint.html` locally or use the `[sqmu_mint_widget]` shortcode in WordPress.
 2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** when you want to revoke wallet permissions.
 3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
@@ -129,14 +121,16 @@ in WordPress pages.
 
 ## PHP Shortcode Plugin
 
-`php/sqmu-mint-widget.php` provides a WordPress shortcode for the mint widget.
+`php/SQMU-Scroll.php` provides a WordPress shortcode for the mint widget.
 Install the file as a plugin by copying it (and the `abi/` directory) into your
-`wp-content/plugins` folder. Activate **SQMU Mint Widget** and place
+`wp-content/plugins` folder. Activate **SQMU Scroll Widgets** and place
 `[sqmu_mint_widget]` on any page or post to render the interface.
 
 The plugin reads `abi/SQMU.json` to build the contract instance and expects the
-deployed proxy address `0xd0b895e975f24045e43d788d42BD938b78666EC8`. Adjust the
-`contractAddress` constant inside the PHP file if your deployment changes.
+deployed proxy address `0xd0b895e975f24045e43d788d42BD938b78666EC8`. It loads
+JavaScript dependencies from the repository's GitHub Pages site so updates can
+be delivered without reinstalling the plugin. Adjust the `contractAddress`
+constant inside the PHP file if your deployment changes.
 
 ## Developer Guidelines
 
