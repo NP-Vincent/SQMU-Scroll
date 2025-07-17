@@ -113,6 +113,13 @@ defaults. Connect your wallet, choose the network, fill in the email (and agent
 code if applicable) then click **Pay**. A receipt is sent to the supplied email
 after the transaction confirms.
 
+The `sendReceipt` function posts to a configurable `RECEIPT_ENDPOINT` defined in
+`js/checkout.js`. It defaults to `https://example.com/api/receipt` and should be
+changed to your own endpoint (or left blank to disable emails). After a
+successful payment the app should distribute SQMU tokens to the buyer. The
+current `distributeTokens` function in `checkout.js` is a placeholder where your
+sale or Distributor contract interaction should occur.
+
 For a simplified authentication example, see `html/checkout_login.html`. It
 demonstrates logging in with either **MetaMask** (using Infura project
 `822e08935dea4fb48f668ff353ac863a`) or **Web3Auth** with client ID

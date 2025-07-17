@@ -9,6 +9,9 @@ let provider;
 let signer;
 
 const treasuryAddress = '0x1111111111111111111111111111111111111111';
+// Endpoint used by sendReceipt(). Replace with your own API or leave blank to
+// disable receipt emails.
+const RECEIPT_ENDPOINT = 'https://example.com/api/receipt';
 
 const PAYMENT_OPTIONS = [
   { network: 'scroll', text: 'Scroll (ETH)' },
@@ -88,6 +91,12 @@ async function connect() {
   }
 }
 
+// Placeholder token distribution logic. Replace with actual sale contract call
+// or backend request that transfers SQMU tokens to the purchaser after payment.
+async function distributeTokens(network) {
+  console.log('Distribute SQMU tokens on', network);
+}
+
 async function pay() {
   const statusDiv = document.getElementById('checkout-status');
   if (!signer) {
@@ -115,9 +124,9 @@ async function pay() {
       value: ethers.utils.parseEther(ethAmount.toString()),
     });
     await tx.wait();
+    await distributeTokens(network);
     await sendReceipt(email, agentCode, network, tx.hash);
     statusDiv.innerHTML = '<span style="color:green;">Payment complete</span>';
-    // TODO: distribute SQMU tokens to purchaser using sale contract
   } catch (err) {
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
   }
@@ -126,7 +135,8 @@ async function pay() {
 async function sendReceipt(email, agentCode, network, txHash) {
   if (!email) return;
   try {
-    await fetch('https://example.com/api/receipt', {
+    if (!RECEIPT_ENDPOINT) return;
+    await fetch(RECEIPT_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, agentCode, network, txHash }),
