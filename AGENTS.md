@@ -20,6 +20,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
   - Always reference the current ABI and contract address.
   - Load MetaMask SDK and ethers.js from the repository's GitHub Pages site. GitHub Actions builds the necessary bundles from npm packages and publishes them under `docs/`.
   - Do **not** rely on node modules at runtime. Instead, compile dependencies in the `js-build` workflow so widgets can reference the static files hosted on GitHub Pages.
+  - When bundling `src/metamask.js`, pass `globalName: 'MetaMaskSDK'` to esbuild so the resulting `docs/metamask-sdk.js` exposes `window.MetaMaskSDK.MetaMaskSDK`.
 
 4. **MetaMask SDK Usage**
    - Use MetaMask SDK in all wallet connection code.
