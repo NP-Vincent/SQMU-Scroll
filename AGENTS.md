@@ -28,7 +28,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 5. **Documentation**
     - Update `README.md` with any change affecting users or devs.
     - Record architectural decisions and patterns in `notes/architecture.md`.
-    - Ensure instructions for CDN usage and WordPress compatibility remain current.
+    - Ensure instructions WordPress.com compatibility remain current.
     - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` up to date with contract changes.
 
 6. **Sync and Versioning**
