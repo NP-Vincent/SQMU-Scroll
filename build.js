@@ -1,4 +1,5 @@
 const esbuild = require('esbuild');
+const { polyfillNode } = require('esbuild-plugin-polyfill-node');
 
 const bundles = [
   { entry: 'src/metamask.js', outfile: 'docs/metamask-sdk.js', globalName: 'MetaMaskSDK' },
@@ -12,6 +13,8 @@ for (const b of bundles) {
     entryPoints: [b.entry],
     bundle: true,
     minify: true,
+    platform: 'browser',
+    plugins: [polyfillNode()],
     outfile: b.outfile,
     format: 'iife',
     globalName: b.globalName,
