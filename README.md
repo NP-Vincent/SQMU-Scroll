@@ -160,3 +160,7 @@ deployed proxy address `0xd0b895e975f24045e43d788d42BD938b78666EC8`. Adjust the
 - [MetaMask Scroll Quickstart](https://docs.metamask.io/services/reference/scroll/quickstart/)
 - [MetaMask JSON-RPC Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/)
 - [MetaMask Debug Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/debug/)
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

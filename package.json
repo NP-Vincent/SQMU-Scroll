@@ -2,11 +2,9 @@
   "name": "sqmu",
   "version": "0.1.0",
   "description": "SQMU platform",
+  "license": "MIT",
   "scripts": {
     "test": "echo \"No tests yet\""
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@openzeppelin/test-helpers": "^0.5.17"
-  }
+  "dependencies": {}
 }
