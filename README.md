@@ -15,7 +15,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
 - `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements
-- `package.json` – Optional local tooling (CDN scripts are used instead of npm packages)
+- `package.json` 
 
 ## Quick Start
 
@@ -24,7 +24,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 2. **Contract Deployment**
    - Edit or extend the smart contract in `contracts/SQMU.sol`
-   - The contract is based on OpenZeppelin Contracts **v5** and compiled with Solidity **0.8.27**.
+   - The contract is based on OpenZeppelin Contracts **v5** and compiled with Solidity **0.8.24**.
    - Deploy using Remix or Hardhat, on the Scroll network
    - Export the ABI and update `abi/SQMU.json`
    - Record the new proxy and implementation in `notes/deployment_log.md`
