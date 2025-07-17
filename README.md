@@ -151,6 +151,8 @@ constant inside the PHP file if your deployment changes.
 - [MetaMask](https://github.com/MetaMask)
 - [Web3Auth](https://github.com/Web3Auth)
 - [Scroll Tech](https://github.com/scroll-tech)
+- [Safe Core](https://github.com/safe-global/safe-core-sdk)
+- [Across](https://github.com/across-protocol)
 - [Scroll Developer Docs](https://docs.scroll.io/en/developers/)
 - [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/)
 - [Rollupscan](https://scroll.io/rollupscan)
@@ -159,6 +161,12 @@ constant inside the PHP file if your deployment changes.
 - [MetaMask Scroll Quickstart](https://docs.metamask.io/services/reference/scroll/quickstart/)
 - [MetaMask JSON-RPC Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/)
 - [MetaMask Debug Methods](https://docs.metamask.io/services/reference/scroll/json-rpc-methods/debug/)
+- [Across Crosschain Intents](https://docs.across.to/developer-quickstart/settle-crosschain-intents)
+- [Across ERC-7683 in Production](https://docs.across.to/developer-quickstart/erc-7683-in-production)
+- [ERC-7683 Specifications](https://www.erc7683.org/spec)
+- [Safe Core Starter Kit](https://docs.safe.global/sdk/starter-kit)
+
+
 
 ## License
 
