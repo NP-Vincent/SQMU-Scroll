@@ -3,7 +3,7 @@ name: Publish Website
 on:
   push:
     branches:
-      - main
+      - main/php/
   workflow_dispatch:
 jobs:
   Publish-Website:
