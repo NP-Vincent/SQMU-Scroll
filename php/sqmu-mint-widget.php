@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let provider, signer, contract;
 
     const sqmuAbi = <?php echo json_encode([
-        "abi" => [{
+        "abi" => [
   "name": "SQMU",
   "address": "0x3e1f22083d2148c386fbf1329508d003149c5032",
   "abi": [
@@ -835,7 +835,7 @@ document.addEventListener('DOMContentLoaded', function() {
   ],
   "filePath": "SQMU-Scroll/SQMU.sol",
   "pinnedAt": 1752506978200
-}]
+]
     ]); ?>;
     const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
     const SCROLL_CHAIN_ID = '0x82750';
