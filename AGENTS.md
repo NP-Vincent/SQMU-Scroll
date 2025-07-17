@@ -62,6 +62,19 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 - JavaScript modules and HTML widgets should share a base name when exposing the same functionality (e.g. `html/mint.html` with `js/mint.js`).
 - Keep file names lowercase except for Solidity contracts which use CamelCase.
 
+## WordPress Plugin Maintenance
+
+- The plugin resides in `php/` and exposes the `[sqmu_mint_widget]` shortcode.
+- Keep `sqmu-mint-widget.php` synchronized with the latest ABI and widget logic.
+- When adding or updating shortcodes, modify the PHP file accordingly and bump the `Version` header.
+- Test each shortcode in a local WordPress instance and document any usage changes in `README.md`.
+
+### Deployment via GitHub Actions
+
+1. Commit PHP changes on the `main` branch.
+2. Push to GitHub. The `.github/workflows/wpcom.yml` workflow packages the `php/` directory as the `wpcom` artifact.
+3. Download the artifact from the workflow run and upload it to your WordPress site to update the plugin.
+
 ## External References
 
 - [OpenZeppelin](https://github.com/OpenZeppelin)
