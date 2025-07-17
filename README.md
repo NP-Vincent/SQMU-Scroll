@@ -71,6 +71,10 @@ All front-end widgets load these libraries from GitHub Pages. After running the 
 
 **Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
 
+## Building JavaScript Bundles
+
+Run `npm install` to fetch dependencies (or use the `js-build` workflow which executes `npm ci`). After the packages are installed, run `npm run build` to generate the bundles under `docs/`. Commit `package-lock.json` if you need reproducible builds.
+
 ## Minting Tokens via the Widget
 
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
