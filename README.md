@@ -7,15 +7,13 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
-- `php/` – WordPress plugin exposing the `[sqmu_mint_widget]` shortcode
- - `docs/` – GitHub Pages site hosting compiled JavaScript dependencies (built by the `js-build` workflow)
+- `src/` – Additional JavaScript utilities used by the widgets
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
 - `notes/deployment_log.md` – Canonical record of deployments and contract addresses
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
 - `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements
-- `package.json` 
 
 ## Quick Start
 
@@ -30,7 +28,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Record the new proxy and implementation in `notes/deployment_log.md`
 3. **Front-End Development**
    - Use files in `html/` and `js/` for UI/interaction
-   - All wallet logic uses MetaMask SDK and ethers.js loaded from the repository's GitHub Pages CDN
+   - All wallet logic uses MetaMask SDK and ethers.js loaded from a CDN
    - Copy HTML widgets directly into WordPress.com custom HTML blocks.
   - Mint widgets display connection status messages in the `#mint-status` div for easier debugging.
    - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
@@ -67,28 +65,13 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - ethers.js
 - @metamask/sdk
 
-All front-end widgets load these libraries from GitHub Pages. After running the `js-build` workflow the compiled bundles are available at `https://np-vincent.github.io/SQMU-Scroll/`.
-The HTML widgets reference these bundles directly from the repository's GitHub Pages site.
-
-**Note:** The project relies on ethers.js v5. Avoid upgrading to v6 or later unless all widgets and scripts are updated to match the newer API.
-
-## Building JavaScript Bundles
-
-Use **Node.js 20** when installing dependencies and running builds. Run `npm install` to fetch dependencies (or use the `js-build` workflow which executes `npm ci`). After the packages are installed, run `npm run build` to generate the bundles under `docs/`. Commit `package-lock.json` if you need reproducible builds. The build step relies on `esbuild-plugin-polyfill-node` to provide browser polyfills for Node.js modules.
-
-## GitHub Pages Setup
-
-Enable GitHub Pages for the repository (branch `main`, folder `/docs`).
-After `npm run build` places the bundles in `docs/`, they become
-available at `https://np-vincent.github.io/SQMU-Scroll/`.
-Both the WordPress plugin and the example HTML files load their
-JavaScript dependencies from this URL.
+Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version.
 
 ## Minting Tokens via the Widget
 
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
 
-1. Open `html/mint.html` locally or use the `[sqmu_mint_widget]` shortcode in WordPress.
+1. Open `html/mint.html` locally or paste its contents into a WordPress.com Custom HTML block.
 2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** when you want to revoke wallet permissions.
 3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
@@ -108,42 +91,6 @@ Two additional widgets are provided for common ERC-1155 actions.
 
 Status messages for both widgets appear in their respective `*-status` divs.
 
-## Checkout Widget
-
-`html/checkout.html` now collects payment details directly in the page. The
-network selector is populated from a `PAYMENT_OPTIONS` list and you must enter
-an email address to receive a receipt. Optionally provide an agent referral
-code. Query parameters such as `sqmu`, `usd`, and `token` remain supported for
-defaults. Connect your wallet, choose the network, fill in the email (and agent
-code if applicable) then click **Pay**. A receipt is sent to the supplied email
-after the transaction confirms.
-
-The `sendReceipt` function posts to a configurable `RECEIPT_ENDPOINT` defined in
-`js/checkout.js`. It defaults to `https://example.com/api/receipt` and should be
-changed to your own endpoint (or left blank to disable emails). After a
-successful payment the app should distribute SQMU tokens to the buyer. The
-current `distributeTokens` function in `checkout.js` is a placeholder where your
-sale or Distributor contract interaction should occur.
-
-For a simplified authentication example, see `html/checkout_login.html`. It
-demonstrates logging in with either **MetaMask** (using Infura project
-`822e08935dea4fb48f668ff353ac863a`) or **Web3Auth** with client ID
-`BAMYkJxLW4gIvsaIN2kOXDxyyz1gLyjnbqbF0hVKuc0RaCwyx2uhG9bBbbN_zVYfrfU5NH9K-QMG53GslEmCw4E`.
-Both options initialize directly in the browser so the snippet can be embedded
-in WordPress pages.
-
-## PHP Shortcode Plugin
-
-`php/SQMU-Scroll.php` provides a WordPress shortcode for the mint widget.
-Install the file as a plugin by copying it (and the `abi/` directory) into your
-`wp-content/plugins` folder. Activate **SQMU Scroll Widgets** and place
-`[sqmu_mint_widget]` on any page or post to render the interface.
-
-The plugin reads `abi/SQMU.json` to build the contract instance and expects the
-deployed proxy address `0xd0b895e975f24045e43d788d42BD938b78666EC8`. It loads
-JavaScript dependencies from the repository's GitHub Pages site so updates can
-be delivered without reinstalling the plugin. Adjust the `contractAddress`
-constant inside the PHP file if your deployment changes.
 
 ## Developer Guidelines
 
