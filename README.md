@@ -72,7 +72,7 @@ Widgets import these scripts directly from a CDN. The project relies on ethers.j
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
 
 1. Open `html/mint.html` locally or paste its contents into a WordPress.com Custom HTML block.
-2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** when you want to revoke wallet permissions.
+2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
 3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
 
