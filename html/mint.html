@@ -7,7 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
   <!-- Widget logic -->
-  <script type="module" src="../js/mint.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/mint.js"></script>
 </head>
 <body>
   <h1>SQMU Mint Widget</h1>
@@ -19,10 +19,11 @@
   <button id="mint">Mint</button>
   <div id="mint-status"></div>
   <script>
-    // This widget loads ../js/mint.js. When embedding directly in WordPress,
-    // copy the script into the page and set the contractAddress constant
-    // inside the code. The ABI is fetched from ../abi/SQMU.json.
-    // Status updates appear in the #mint-status div.
+    // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/mint.js.
+    // When embedding directly in WordPress you can keep the script tag
+    // referencing GitHub Pages or inline the module and update the
+    // contractAddress constant. The ABI is fetched from ../abi/SQMU.json and
+    // status updates appear in the #mint-status div.
   </script>
 </body>
 </html>
