@@ -36,3 +36,4 @@ Example includes served from pinned CDNs:
 - The UUPS proxy pattern keeps contract upgrades simple while relying on audited OpenZeppelin implementations.
 - Fetching ABI JSON keeps the widget decoupled from deployment details and supports multiple versions.
 - The distributor contract fetches ERC-20 `decimals()` to scale payments for tokens with differing precision.
+- All fund-moving functions, including manual distributions, are guarded by `nonReentrant` to prevent reentrancy attacks.

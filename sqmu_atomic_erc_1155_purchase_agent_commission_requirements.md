@@ -19,7 +19,7 @@
 | UUPS Upgradability        | Contract is upgradeable using the UUPS proxy pattern.                                                             | Includes `_authorizeUpgrade(address)` restricted to owner.                                           |
 | Admin Functions           | Register property, register agent, set global commission, set property status, allow/remove global payment token. | Only owner can execute.                                                                              |
 | Utility Functions         | Get property info, agent info, check token allowlist, get price for amount, check property status.                | Read-only; enables front-end integration.                                                            |
-| Manual/Admin Backstop     | Admin can manually distribute tokens and commission for off-chain/correction cases.                               | Maintains full control and recovery options.                                                         |
+| Manual/Admin Backstop     | Admin can manually distribute tokens and commission for off-chain/correction cases.                               | Protected with `nonReentrant`; maintains full control and recovery options. |
 | Event Logging             | Sale, property/agent registration, payment token list changes, commission changes, manual distributions.          | Ensures auditability and transparency.                                                               |
 
 **Note:** All string-based codes (propertyCode, agentCode) are stored and passed as strings for future compatibility and external system integration. The contract is designed for upgradeability and maximum flexibility

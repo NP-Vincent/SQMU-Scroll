@@ -194,7 +194,7 @@ contract AtomicSQMUDistributor is
         address buyer,
         uint256 sqmuAmount,
         string calldata agentCode
-    ) external onlyOwner {
+    ) external onlyOwner nonReentrant {
         Property storage prop = properties[propertyCode];
         require(prop.tokenAddress != address(0), "Property not found");
         IERC1155Upgradeable sqmu = IERC1155Upgradeable(prop.tokenAddress);
