@@ -30,6 +30,11 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Use files in `html/` and `js/` for UI/interaction
    - All wallet logic uses MetaMask SDK and ethers.js loaded from a CDN
    - Copy HTML widgets directly into WordPress.com custom HTML blocks.
+     Ensure each `<script>` tag points to
+     `https://np-vincent.github.io/SQMU-Scroll/js/FILE.js` or inline the module
+     code so WordPress can load it correctly. The ABI is served from
+     `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json` which allows the
+     `fetch('../abi/SQMU.json')` calls in the modules to work.
   - Mint widgets display connection status messages in the `#mint-status` div for easier debugging.
    - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
 
@@ -77,6 +82,9 @@ Widgets import these scripts directly from a CDN. The project relies on ethers.j
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
 
 1. Open `html/mint.html` locally or paste its contents into a WordPress.com Custom HTML block.
+   Ensure the `<script>` tag references
+   `https://np-vincent.github.io/SQMU-Scroll/js/mint.js` (or inline the module)
+   so the widget loads correctly.
 2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
 3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
@@ -94,6 +102,11 @@ Two additional widgets are provided for common ERC-1155 actions.
    transfers by calling `safeTransferFrom`. Enter the token ID, amount,
    recipient, and optional data (defaults to `0x`).
 
+For WordPress embeds, keep the `<script>` tags pointing to
+`https://np-vincent.github.io/SQMU-Scroll/js/balance.js` and
+`https://np-vincent.github.io/SQMU-Scroll/js/transfer.js` or inline the modules
+in the page.
+
 Status messages for both widgets appear in their respective `*-status` divs.
 
 ## Unified Admin Interface
@@ -101,7 +114,9 @@ Status messages for both widgets appear in their respective `*-status` divs.
 The page `html/admin.html` provides a single interface for minting, transferring
 and checking balances. It uses the same MetaMask SDK connection helpers and
 styled buttons as the payment widget. Load this page or embed its contents in a
-WordPress.com block to manage the contract.
+WordPress.com block to manage the contract. Ensure the script tag points to
+`https://np-vincent.github.io/SQMU-Scroll/js/admin.js` so WordPress can fetch
+the module.
 
 
 ## Developer Guidelines
