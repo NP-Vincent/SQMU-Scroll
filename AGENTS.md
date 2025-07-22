@@ -1,7 +1,7 @@
 # AGENTS.md – Instructions for Developers and AI Agents
 
 This document outlines how to maintain, extend, and automate code for the SQMU platform.
-All front-end code is designed for direct HTML/JS embedding within WordPress.com and must load dependencies from the repository's GitHub Pages CDN.
+All front-end code is designed for direct HTML/JS embedding within WordPress.com. Widgets load MetaMask SDK and ethers.js via CDN.
 **Follow these guidelines for all updates—whether human or AI-assisted (Codex).**
 
 ## Core Workflow
@@ -18,9 +18,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
   - For every contract method, provide a corresponding HTML/JS interface in `html/` and `js/`.
   - All wallet connections must use MetaMask SDK.
   - Always reference the current ABI and contract address.
-  - Load MetaMask SDK and ethers.js from the repository's GitHub Pages site. GitHub Actions builds the necessary bundles from npm packages and publishes them under `docs/`.
-  - Do **not** rely on node modules at runtime. Instead, compile dependencies in the `js-build` workflow so widgets can reference the static files hosted on GitHub Pages.
-  - When bundling `src/metamask.js`, pass `globalName: 'MetaMaskSDK'` to esbuild so the resulting `docs/metamask-sdk.js` exposes `window.MetaMaskSDK.MetaMaskSDK`.
+  - Load MetaMask SDK and ethers.js from a CDN.
 
 4. **MetaMask SDK Usage**
    - Use MetaMask SDK in all wallet connection code.
@@ -58,19 +56,6 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 - JavaScript modules and HTML widgets should share a base name when exposing the same functionality (e.g. `html/mint.html` with `js/mint.js`).
 - Keep file names lowercase except for Solidity contracts which use CamelCase.
 
-## WordPress Plugin Maintenance
-
-- The plugin resides in `php/` and exposes the `[sqmu_mint_widget]` shortcode.
- - Keep `SQMU-Scroll.php` synchronized with the latest ABI and widget logic.
-- When adding or updating shortcodes, modify the PHP file accordingly and bump the `Version` header.
-- Test each shortcode in a local WordPress instance and document any usage changes in `README.md`.
-
-### Deployment via GitHub Actions
-
-1. Commit PHP changes on the `main` branch.
-2. Push to GitHub. The `.github/workflows/wpcom.yml` workflow packages the `php/` directory as the `wpcom` artifact.
-3. Download the artifact from the workflow run and upload it to your WordPress site to update the plugin.
-4. The `.github/workflows/js-build.yml` workflow bundles npm dependencies and publishes them to GitHub Pages for the plugin to consume.
 
 ## External References
 
