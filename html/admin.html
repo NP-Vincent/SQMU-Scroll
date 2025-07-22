@@ -28,7 +28,7 @@
       <label>Token ID <input id="mint-token-id" type="text"></label>
       <label>Amount <input id="mint-amount" type="number" value="1"></label>
       <label>URI <input id="mint-uri" type="text" value="0x"></label>
-      <button id="mint-btn" class="wp-block-button__link">Mint</button>
+      <button id="mint-btn" class="wp-block-button__link" disabled>Mint</button>
     </div>
 
     <div id="transfer-section">
@@ -37,14 +37,14 @@
       <label>Amount <input id="transfer-amount" type="number" value="1"></label>
       <label>Recipient <input id="transfer-recipient" type="text"></label>
       <label>Data <input id="transfer-data" type="text" value="0x"></label>
-      <button id="transfer-btn" class="wp-block-button__link">Transfer</button>
+      <button id="transfer-btn" class="wp-block-button__link" disabled>Transfer</button>
     </div>
 
     <div id="balance-section">
       <h4>Check Balance</h4>
       <label>Token ID <input id="balance-token-id" type="text"></label>
       <label>Address <input id="balance-address" type="text" placeholder="optional"></label>
-      <button id="balance-btn" class="wp-block-button__link">Check Balance</button>
+      <button id="balance-btn" class="wp-block-button__link" disabled>Check Balance</button>
     </div>
 
     <pre id="status"></pre>

@@ -4,20 +4,38 @@ let provider;
 let signer;
 let contract;
 
+function toggleContractButtons(disabled) {
+  ['mint-btn', 'transfer-btn', 'balance-btn'].forEach((id) => {
+    const btn = document.getElementById(id);
+    if (btn) btn.disabled = disabled;
+  });
+}
+
+// disable operations until contract loads
+toggleContractButtons(true);
+
 const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
 
 async function connect() {
   try {
     ({ provider, signer } = await connectWallet('status'));
-    const abiUrl = new URL('../abi/SQMU.json', import.meta.url);
-    const res = await fetch(abiUrl);
-    const abiJson = await res.json();
-    contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
     document.getElementById('disconnect').style.display = '';
-    setStatus('Connected. Contract ready!', 'green');
+    setStatus('Loading contract...');
+    toggleContractButtons(true);
+
+    try {
+      const abiUrl = new URL('../abi/SQMU.json', import.meta.url);
+      const res = await fetch(abiUrl);
+      const abiJson = await res.json();
+      contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
+      toggleContractButtons(false);
+      setStatus('Connected. Contract ready!', 'green');
+    } catch (err) {
+      contract = undefined;
+      setStatus(`Contract unavailable: ${err.message}`, 'red');
+    }
   } catch (err) {
-    // Errors may occur if the ABI path is unreachable
-    setStatus(err.message, 'red');
+    // connectWallet handles status updates on error
   }
 }
 
@@ -26,6 +44,7 @@ async function disconnect() {
   provider = undefined;
   signer = undefined;
   contract = undefined;
+  toggleContractButtons(true);
   document.getElementById('disconnect').style.display = 'none';
 }
 
