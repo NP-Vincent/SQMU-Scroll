@@ -91,6 +91,13 @@ Two additional widgets are provided for common ERC-1155 actions.
 
 Status messages for both widgets appear in their respective `*-status` divs.
 
+## Unified Admin Interface
+
+The page `html/admin.html` provides a single interface for minting, transferring
+and checking balances. It uses the same MetaMask SDK connection helpers and
+styled buttons as the payment widget. Load this page or embed its contents in a
+WordPress.com block to manage the contract.
+
 
 ## Developer Guidelines
 
