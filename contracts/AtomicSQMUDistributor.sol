@@ -53,6 +53,8 @@ contract AtomicSQMUDistributor is
     event AgentRegistered(string agentCode, string name, address wallet);
     event CommissionChanged(uint256 newCommissionBps);
     event PaymentTokenChanged(address token, bool allowed);
+    /// @notice Emitted when a property's active status is changed.
+    event PropertyStatusChanged(string propertyCode, bool active);
     event ManualDistribution(string propertyCode, address buyer, uint256 sqmuAmount, string agentCode);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
@@ -86,6 +88,7 @@ contract AtomicSQMUDistributor is
 
     function setPropertyStatus(string calldata propertyCode, bool active) external onlyOwner {
         properties[propertyCode].active = active;
+        emit PropertyStatusChanged(propertyCode, active);
     }
 
     function registerAgent(
