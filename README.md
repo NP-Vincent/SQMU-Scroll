@@ -31,11 +31,12 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - All wallet logic uses MetaMask SDK and ethers.js loaded from a CDN
    - Copy HTML widgets directly into WordPress.com custom HTML blocks.
      Ensure each `<script>` tag points to
-     `https://np-vincent.github.io/SQMU-Scroll/js/FILE.js` or inline the module
-     code so WordPress can load it correctly. The ABI is served from
-    `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json`. Each widget
-    constructs the ABI URL with `new URL('../abi/SQMU.json', import.meta.url)` so
-    it loads correctly even when the script is hosted on another site.
+      `https://np-vincent.github.io/SQMU-Scroll/js/FILE.js` or inline the module
+      code so WordPress can load it correctly. The ABI must be hosted at
+     `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json`. Each widget
+     constructs the ABI URL with `new URL('../abi/SQMU.json', import.meta.url)` so
+     it resolves relative to the script location. Host both the JavaScript files
+     and ABI on GitHub Pages for this path to work.
   - Mint widgets display connection status messages in the `#mint-status` div for easier debugging.
   - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
 
@@ -43,14 +44,14 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 You can embed any widget in WordPress.com in two ways:
 
-1. **Copy HTML and JS** – Paste the contents of the widget's `html/*.html` file and related `js/*.js` code directly into a Custom HTML block.
+1. **Copy HTML and JS** – Paste the contents of the widget's `html/*.html` file and related `js/*.js` code directly into a Custom HTML block. The JavaScript expects the ABI file to live next to the script.
 2. **Reference pre-hosted scripts** – Keep the HTML snippet and load the JavaScript from GitHub Pages. Example:
 
 ```html
 <script src="https://np-vincent.github.io/SQMU-Scroll/js/mint.js"></script>
 ```
 
-Each script fetches the contract ABI from `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json` using the same `new URL('../abi/SQMU.json', import.meta.url)` pattern, so it resolves correctly regardless of the host site.
+All scripts fetch the ABI using `new URL('../abi/SQMU.json', import.meta.url)`. Therefore the JavaScript modules and `abi/SQMU.json` must be hosted together on GitHub Pages so this path resolves correctly.
 
 ## Deployment Guide
 
