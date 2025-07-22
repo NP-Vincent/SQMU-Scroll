@@ -30,6 +30,14 @@ contract AtomicSQMUDistributor is
         bool registered;
     }
 
+    /// @dev Local variables used during purchase to avoid stack depth errors.
+    struct PurchaseVars {
+        uint8 tokenDecimals;
+        uint256 totalPrice;
+        uint256 commission;
+        address agentWallet;
+    }
+
     // Storage
     mapping(string => Property) private properties;      // propertyCode => Property
     mapping(string => Agent) private agents;             // agentCode => Agent
@@ -136,42 +144,41 @@ contract AtomicSQMUDistributor is
         require(allowedPaymentToken[paymentToken], "Token not allowed");
         require(sqmuAmount > 0, "Amount required");
 
+        PurchaseVars memory vars;
+
         // --- Price and Commission ---
-        uint8 tokenDecimals = IERC20MetadataUpgradeable(paymentToken).decimals();
-        uint256 totalPrice =
-            (prop.priceUSD * sqmuAmount / 1e18) * (10 ** tokenDecimals) / 1e18;
-        require(totalPrice > 0, "Zero price");
+        vars.tokenDecimals = IERC20MetadataUpgradeable(paymentToken).decimals();
+        vars.totalPrice =
+            (prop.priceUSD * sqmuAmount / 1e18) * (10 ** vars.tokenDecimals) / 1e18;
+        require(vars.totalPrice > 0, "Zero price");
 
         // --- Collect Payment ---
         // Buyer must approve contract for totalPrice first
         IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
         require(
-            erc20.transferFrom(msg.sender, address(this), totalPrice),
+            erc20.transferFrom(msg.sender, address(this), vars.totalPrice),
             "ERC20 transfer failed"
         );
 
         // --- Commission ---
-        uint256 commission = 0;
-        address agentWallet = address(0);
         if (
             bytes(agentCode).length > 0 &&
             agents[agentCode].registered &&
             agents[agentCode].wallet != address(0)
         ) {
-            commission = (totalPrice * globalCommissionBps) / 10000;
-            agentWallet = agents[agentCode].wallet;
-            if (commission > 0) {
+            vars.commission = (vars.totalPrice * globalCommissionBps) / 10000;
+            vars.agentWallet = agents[agentCode].wallet;
+            if (vars.commission > 0) {
                 require(
-                    erc20.transfer(agentWallet, commission),
+                    erc20.transfer(vars.agentWallet, vars.commission),
                     "Agent payout failed"
                 );
             }
         }
 
         // --- Treasury Payout ---
-        uint256 remainder = totalPrice - commission;
         require(
-            erc20.transfer(prop.treasury, remainder),
+            erc20.transfer(prop.treasury, vars.totalPrice - vars.commission),
             "Treasury payout failed"
         );
 
@@ -184,11 +191,11 @@ contract AtomicSQMUDistributor is
             propertyCode,
             msg.sender,
             paymentToken,
-            totalPrice,
+            vars.totalPrice,
             sqmuAmount,
             agentCode,
-            agentWallet,
-            commission
+            vars.agentWallet,
+            vars.commission
         );
     }
 
