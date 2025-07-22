@@ -66,7 +66,7 @@ contract AtomicSQMUDistributor is
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
 
     function initialize(uint256 commissionBps) public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         globalCommissionBps = commissionBps;
