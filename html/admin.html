@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SQMU Admin Interface</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="../js/admin.js"></script>
+  <style>
+    #layout { display:flex; flex-wrap:wrap; gap:1em; justify-content:center; align-items:flex-start; }
+    #info { flex:1 1 60%; min-width:300px; }
+    #widget { text-align:center; flex:1 1 40%; min-width:280px; }
+    #widget > * { margin:0.6em 0; }
+    label { display:block; margin:0.5em 0 0.2em; }
+    input[type=text], input[type=number] { font: inherit; padding: 0.6em; width: 100%; max-width: 320px; box-sizing: border-box; }
+    #status { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+<div id="layout">
+  <div id="widget">
+    <h3>SQMU Admin</h3>
+    <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+    <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+
+    <div id="mint-section">
+      <h4>Mint Tokens</h4>
+      <label>Token ID <input id="mint-token-id" type="text"></label>
+      <label>Amount <input id="mint-amount" type="number" value="1"></label>
+      <label>URI <input id="mint-uri" type="text" value="0x"></label>
+      <button id="mint-btn" class="wp-block-button__link">Mint</button>
+    </div>
+
+    <div id="transfer-section">
+      <h4>Transfer Tokens</h4>
+      <label>Token ID <input id="transfer-token-id" type="text"></label>
+      <label>Amount <input id="transfer-amount" type="number" value="1"></label>
+      <label>Recipient <input id="transfer-recipient" type="text"></label>
+      <label>Data <input id="transfer-data" type="text" value="0x"></label>
+      <button id="transfer-btn" class="wp-block-button__link">Transfer</button>
+    </div>
+
+    <div id="balance-section">
+      <h4>Check Balance</h4>
+      <label>Token ID <input id="balance-token-id" type="text"></label>
+      <label>Address <input id="balance-address" type="text" placeholder="optional"></label>
+      <button id="balance-btn" class="wp-block-button__link">Check Balance</button>
+    </div>
+
+    <pre id="status"></pre>
+  </div>
+
+  <div id="info">
+    <div id="admin-guide" style="max-width:640px; text-align:left; margin:0 auto;">
+      <h3>Administrator Instructions</h3>
+      <ol>
+        <li>Click <strong>Connect Wallet</strong> and approve access in MetaMask. The interface automatically switches to the Scroll network.</li>
+        <li>Use the <strong>Mint Tokens</strong> section to create new SQMU tokens. Only the contract owner can mint.</li>
+        <li>Use <strong>Transfer Tokens</strong> to move existing tokens to another address.</li>
+        <li>The <strong>Check Balance</strong> section shows balances for any address. Leave the address empty to use your connected wallet.</li>
+        <li>Click <strong>Disconnect</strong> when finished.</li>
+      </ol>
+      <p>Status messages appear below the forms.</p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

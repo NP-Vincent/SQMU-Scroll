@@ -65,7 +65,12 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 - ethers.js
 - @metamask/sdk
 
-Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version.
+Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version. Use the following pinned sources when embedding widgets:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+```
 
 ## Minting Tokens via the Widget
 
@@ -90,6 +95,13 @@ Two additional widgets are provided for common ERC-1155 actions.
    recipient, and optional data (defaults to `0x`).
 
 Status messages for both widgets appear in their respective `*-status` divs.
+
+## Unified Admin Interface
+
+The page `html/admin.html` provides a single interface for minting, transferring
+and checking balances. It uses the same MetaMask SDK connection helpers and
+styled buttons as the payment widget. Load this page or embed its contents in a
+WordPress.com block to manage the contract.
 
 
 ## Developer Guidelines
