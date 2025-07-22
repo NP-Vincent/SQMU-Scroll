@@ -37,3 +37,4 @@ Example includes served from pinned CDNs:
 - Fetching ABI JSON keeps the widget decoupled from deployment details and supports multiple versions.
 - The distributor contract fetches ERC-20 `decimals()` to scale payments for tokens with differing precision.
 - All fund-moving functions, including manual distributions, are guarded by `nonReentrant` to prevent reentrancy attacks.
+- Property status updates emit a `PropertyStatusChanged` event for on-chain tracking.
