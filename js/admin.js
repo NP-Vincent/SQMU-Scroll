@@ -16,6 +16,7 @@ async function connect() {
     document.getElementById('disconnect').style.display = '';
     setStatus('Connected. Contract ready!', 'green');
   } catch (err) {
+    // Errors may occur if the ABI path is unreachable
     setStatus(err.message, 'red');
   }
 }

@@ -25,6 +25,7 @@ async function connect() {
     const statusDiv = document.getElementById('transfer-status');
     statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
   } catch (err) {
+    // Errors may occur if the ABI path is unreachable
     const statusDiv = document.getElementById('transfer-status');
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
   }
