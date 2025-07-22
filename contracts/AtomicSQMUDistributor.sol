@@ -82,6 +82,7 @@ contract AtomicSQMUDistributor is
         uint256 priceUSD,
         bool active
     ) external onlyOwner {
+        require(treasury != address(0), "Treasury required");
         properties[propertyCode] = Property(name, tokenAddress, tokenId, treasury, priceUSD, active);
         emit PropertyRegistered(propertyCode, name, tokenAddress, tokenId, treasury, priceUSD, active);
     }
@@ -96,6 +97,7 @@ contract AtomicSQMUDistributor is
         string calldata name,
         address wallet
     ) external onlyOwner {
+        require(wallet != address(0), "Agent wallet required");
         agents[agentCode] = Agent(name, wallet, true);
         emit AgentRegistered(agentCode, name, wallet);
     }
