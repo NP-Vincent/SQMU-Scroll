@@ -35,3 +35,4 @@ Example includes served from pinned CDNs:
 - Using CDN scripts ensures that no Node.js tooling or bundling is required, keeping widgets portable across CMS platforms.
 - The UUPS proxy pattern keeps contract upgrades simple while relying on audited OpenZeppelin implementations.
 - Fetching ABI JSON keeps the widget decoupled from deployment details and supports multiple versions.
+- The distributor contract fetches ERC-20 `decimals()` to scale payments for tokens with differing precision.
