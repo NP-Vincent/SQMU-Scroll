@@ -33,8 +33,9 @@ This repository manages the entire stack for the SQMU fractional real estate own
      Ensure each `<script>` tag points to
      `https://np-vincent.github.io/SQMU-Scroll/js/FILE.js` or inline the module
      code so WordPress can load it correctly. The ABI is served from
-     `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json` which allows the
-     `fetch('../abi/SQMU.json')` calls in the modules to work.
+    `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json`. Each widget
+    constructs the ABI URL with `new URL('../abi/SQMU.json', import.meta.url)` so
+    it loads correctly even when the script is hosted on another site.
   - Mint widgets display connection status messages in the `#mint-status` div for easier debugging.
   - Always serve widgets over `https://` so MetaMask can inject `window.ethereum`
 
@@ -49,7 +50,7 @@ You can embed any widget in WordPress.com in two ways:
 <script src="https://np-vincent.github.io/SQMU-Scroll/js/mint.js"></script>
 ```
 
-Each script fetches the contract ABI from `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json`, so relative `fetch('../abi/SQMU.json')` calls in the modules resolve correctly.
+Each script fetches the contract ABI from `https://np-vincent.github.io/SQMU-Scroll/abi/SQMU.json` using the same `new URL('../abi/SQMU.json', import.meta.url)` pattern, so it resolves correctly regardless of the host site.
 
 ## Deployment Guide
 

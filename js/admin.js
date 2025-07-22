@@ -9,13 +9,14 @@ const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
 async function connect() {
   try {
     ({ provider, signer } = await connectWallet('status'));
-    const res = await fetch('../abi/SQMU.json');
+    const abiUrl = new URL('../abi/SQMU.json', import.meta.url);
+    const res = await fetch(abiUrl);
     const abiJson = await res.json();
     contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
     document.getElementById('disconnect').style.display = '';
     setStatus('Connected. Contract ready!', 'green');
   } catch (err) {
-    // connectWallet already handles displaying the error
+    setStatus(err.message, 'red');
   }
 }
 
