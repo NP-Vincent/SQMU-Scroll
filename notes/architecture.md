@@ -20,7 +20,8 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
    - `balance.html` for querying balances
    - `transfer.html` for token transfers
   - Shared wallet logic resides in `js/wallet.js` providing
-    `connectWallet()` and `disconnectWallet()` for all widgets.
+    `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
+    helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
 
 Example includes served from GitHub Pages:
 
