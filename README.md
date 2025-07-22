@@ -93,7 +93,7 @@ Use the same approach to deploy the payment distributor contract.
    - Connect MetaMask to Scroll and deploy the proxy.
 
 3. **Initialize**
-   - After deployment, call `initialize(commissionBps)` on the proxy to set the initial commission and configure ownership.
+   - After deployment, call `initialize(commissionBps)` from your admin wallet. This sets the initial commission and assigns ownership to the caller.
 
 4. **Export ABI**
    - From the Remix compilation details, copy the ABI JSON for `AtomicSQMUDistributor`.
