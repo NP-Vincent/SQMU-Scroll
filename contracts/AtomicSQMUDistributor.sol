@@ -5,6 +5,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 
@@ -131,7 +132,9 @@ contract AtomicSQMUDistributor is
         require(sqmuAmount > 0, "Amount required");
 
         // --- Price and Commission ---
-        uint256 totalPrice = prop.priceUSD * sqmuAmount / 1e18;
+        uint8 tokenDecimals = IERC20MetadataUpgradeable(paymentToken).decimals();
+        uint256 totalPrice =
+            (prop.priceUSD * sqmuAmount / 1e18) * (10 ** tokenDecimals) / 1e18;
         require(totalPrice > 0, "Zero price");
 
         // --- Collect Payment ---
