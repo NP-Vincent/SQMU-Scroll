@@ -14,16 +14,19 @@ async function connect() {
   try {
     ({ provider, signer } = await connectWallet('balance-status'));
 
-    const res = await fetch('../abi/SQMU.json');
+    const abiUrl = new URL('../abi/SQMU.json', import.meta.url);
+    const res = await fetch(abiUrl);
     const abiJson = await res.json();
     contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
 
     document.getElementById('check-balance').addEventListener('click', checkBalance);
     document.getElementById('disconnect').addEventListener('click', disconnect);
+    document.getElementById('disconnect').style.display = '';
     const statusDiv = document.getElementById('balance-status');
     statusDiv.innerHTML = '<span style="color:green;">Connected to Scroll. Contract ready!</span>';
   } catch (err) {
-    // connectWallet already displays the error message
+    const statusDiv = document.getElementById('balance-status');
+    statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
   }
 }
 
@@ -53,6 +56,7 @@ async function disconnect() {
   provider = undefined;
   signer = undefined;
   contract = undefined;
+  document.getElementById('disconnect').style.display = 'none';
 }
 
 document.getElementById('connect').addEventListener('click', connect);
