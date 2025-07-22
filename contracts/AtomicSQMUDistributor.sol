@@ -54,6 +54,11 @@ contract AtomicSQMUDistributor is
     event PaymentTokenChanged(address token, bool allowed);
     event ManualDistribution(string propertyCode, address buyer, uint256 sqmuAmount, string agentCode);
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
     // UUPS required function
     function _authorizeUpgrade(address newImpl) internal override onlyOwner {}
 
