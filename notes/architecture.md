@@ -13,7 +13,7 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 ## Front-End Widgets
 
 - Widgets in `html/` are embedded directly in WordPress.com via custom HTML blocks.
-- JavaScript in `js/` interacts with the contract using `ethers.js` and `@metamask/sdk` loaded from the repository's GitHub Pages site.
+- JavaScript in `js/` interacts with the contract using `ethers.js` and `@metamask/sdk` loaded from official CDN sources.
 - Widgets fetch the latest contract ABI from the `abi/` directory at runtime to remain lightweight and upgrade-friendly.
  - Currently available widgets are:
    - `mint.html` for token creation
@@ -23,11 +23,11 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
 
-Example includes served from GitHub Pages:
+Example includes served from pinned CDNs:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-<script src="https://<user>.github.io/SQMU-Scroll/metamask-sdk.js"></script>
+<script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
 ## Rationale
