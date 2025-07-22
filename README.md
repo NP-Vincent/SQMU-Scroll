@@ -79,6 +79,26 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 5. **Log Deployments**
    - Append each deployment or upgrade to `notes/deployment_log.md` including date, network, proxy, implementation and ABI version.
 
+## Deploying AtomicSQMUDistributor
+
+Use the same approach to deploy the payment distributor contract.
+
+1. **Compile in Remix**
+   - Open [Remix IDE](https://remix.ethereum.org/) and load `contracts/AtomicSQMUDistributor.sol`.
+   - Under **Libraries**, install **OpenZeppelin Contracts (upgradeable)** so the imports resolve.
+   - Compile the contract with Solidity `^0.8.24`.
+
+2. **Deploy a UUPS Proxy**
+   - Activate the OpenZeppelin Upgrades plugin (or use the deploy/run panel) and choose **Deploy (uups) Proxy**.
+   - Connect MetaMask to Scroll and deploy the proxy.
+
+3. **Initialize**
+   - After deployment, call `initialize(commissionBps)` on the proxy to set the initial commission and configure ownership.
+
+4. **Export ABI**
+   - From the Remix compilation details, copy the ABI JSON for `AtomicSQMUDistributor`.
+   - Save it as `abi/AtomicSQMUDistributor.json` and record the addresses in `notes/deployment_log.md`.
+
 ## Dependencies
 
 - OpenZeppelin Contracts (upgradeable)
