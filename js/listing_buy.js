@@ -5,7 +5,7 @@ let signer;
 let distributor;
 
 // Proxy address recorded in notes/deployment_log.md
-const SALE_ADDR = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
+let SALE_ADDR = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
 const RPC = 'https://rpc.scroll.io';
 
 const PROP = { chainId: 534352, decimals: 2 };
