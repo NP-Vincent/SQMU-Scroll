@@ -1,9 +1,14 @@
 // wallet.js - shared wallet helpers for SQMU widgets
 // This module relies on ethers.js and MetaMask SDK loaded via CDN.
 
+// Allow the Infura Project ID to be configured at runtime.
+// Set `window.INFURA_API_KEY` before loading this script or
+// replace the placeholder below when bundling.
+const infuraAPIKey = window.INFURA_API_KEY || 'YOUR_INFURA_API_KEY';
+
 const MMSDK = new MetaMaskSDK.MetaMaskSDK({
   dappMetadata: { name: 'SQMU Wallet', url: window.location.href },
-  infuraAPIKey: '822e08935dea4fb48f668ff353ac863a',
+  infuraAPIKey,
 });
 
 const SCROLL_CHAIN_ID = '0x82750';
