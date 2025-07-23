@@ -120,8 +120,8 @@ Contract owners can mint new ERC-1155 tokens directly from the provided widget.
    Ensure the `<script>` tag references
    `https://np-vincent.github.io/SQMU-Scroll/js/mint.js` (or inline the module)
    so the widget loads correctly.
-2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
-3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
+3. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
+4. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
 
 Only the wallet that owns the contract can successfully call `mint`.
@@ -161,17 +161,16 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 1. Open the file locally or embed it in a WordPress.com block. Keep the script
    tag pointing to `https://np-vincent.github.io/SQMU-Scroll/js/buy.js` so the
    module loads correctly.
-2. Click **Connect Wallet** to initialize MetaMask (the widget automatically
+2. Property listings can embed `html/listing_page_embed.html`. Its Continue to Pay button opens `buy.html` to finish the checkout process.
+3. Click **Connect Wallet** to initialize MetaMask (the widget automatically
    switches to the Scroll network).
-3. Enter the property code, number of SQMU tokens to buy, choose the payment
+4. Enter the property code, number of SQMU tokens to buy, choose the payment
    token and optionally provide an agent code.
-4. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance
-   for the selected token and automatically submits an `approve` transaction if
-   necessary before purchasing. Progress and errors appear in the `#buy-status`
-   div.
-5. You can pay with USDT, USDC, or USDQ on Scroll. USDQ's address is
-   `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
-
+5. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance for the selected token and automatically submits an `approve` transaction if necessary before purchasing. Progress and errors appear in the `#buy-status` div.
+6. Payments use Scroll network stablecoins:
+   - USDT `0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df`
+   - USDC `0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4`
+   - USDQ `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
 
 ## Developer Guidelines
 
