@@ -1,0 +1,58 @@
+<!-- Embed this file in a WordPress Custom HTML block to avoid entity encoding -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SQMU Purchase</title>
+  <style>
+    #widget { text-align:center; }
+    #widget > * { margin:0.6em 0; }
+    label { display:block; margin:0.5em 0 0.2em; }
+    select,
+    input[type=number],
+    input[type=text] {
+      font: inherit;
+      padding: 0.6em;
+      width: 100%;
+      max-width: 320px;
+      box-sizing: border-box;
+    }
+    .required::after { content:'*'; color:var(--wp--preset--color--primary,#d63638); margin-left:0.25em; }
+    #buy-status { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+  <div id="widget">
+    <h3>Buy SQMU</h3>
+    <button id="connect">Connect Wallet</button>
+    <button id="disconnect" style="display:none;">Disconnect</button>
+    <p id="token-info">Token to receive: <b>SQMU</b> on <b>Scroll</b></p>
+    <label for="property-code" class="required">Property Code</label>
+    <input id="property-code" type="text">
+    <p>Available: <span id="avail">...</span> SQMU</p>
+    <label for="sqmu-amount" class="required">SQMU Amount</label>
+    <input id="sqmu-amount" type="number" min="0.01" step="0.01" placeholder="100">
+    <p>USD Amount: <span id="usd-display"></span></p>
+    <div>
+      <select id="token-select">
+        <option value="0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df">USDT (Scroll)</option>
+        <option value="0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4">USDC (Scroll)</option>
+        <option value="0xdb9E8F82D6d45fFf803161F2a5f75543972B229a">USDQ (Scroll)</option>
+      </select>
+    </div>
+    <label>Agent Code (optional) <input id="agent-code" type="text"></label>
+    <pre id="buy-status"></pre>
+    <button id="buy-btn" class="wp-block-button__link" disabled>Buy</button>
+    <div id="sqmu-brief" style="max-width: 420px; margin-bottom: 1.5em;">
+      <h4>Own a Share of This Property</h4>
+      <p>Each SQMU equals one square metre of the property.</p>
+      <p>You are placing an <strong>Expression of Interest</strong> at <strong>10 USD per SQMU</strong>. This is not a final purchase.</p>
+      <p><strong>Note for mobile users:</strong> For best results, open this listing inside your wallet app (e.g. MetaMask) so the correct details carry over.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/listing_buy.js"></script>
+</body>
+</html>

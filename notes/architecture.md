@@ -15,10 +15,11 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 - Widgets in `html/` are embedded directly in WordPress.com via custom HTML blocks.
 - JavaScript in `js/` interacts with the contract using `ethers.js` and `@metamask/sdk` loaded from official CDN sources.
 - Widgets fetch the latest contract ABI from the `abi/` directory at runtime to remain lightweight and upgrade-friendly.
- - Currently available widgets are:
-   - `mint.html` for token creation
-   - `balance.html` for querying balances
-   - `transfer.html` for token transfers
+- Currently available widgets are:
+  - `mint.html` for token creation
+  - `balance.html` for querying balances
+  - `transfer.html` for token transfers
+  - `listing_buy.html` combines property lookup and purchasing in a single embed
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
