@@ -31,7 +31,7 @@ async function fetchPropertyInfo() {
       rpcProvider
     );
     const p = await dist.properties(PROP.code);
-    if (p.token !== ethers.ZeroAddress) {
+    if (p.token !== ethers.constants.AddressZero) {
       PROP.address = p.token;
       PROP.price = Number(p.price) / 1e6;
       propertyOk = true;
