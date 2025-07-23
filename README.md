@@ -178,6 +178,18 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
    - USDC `0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4`
    - USDQ `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
 
+## Viewing Property Availability
+
+The simple widget `html/available.html` displays how many SQMU tokens remain
+for a given property.
+
+1. Embed the file in a WordPress.com Custom HTML block. Keep the script tag
+   pointing to `https://np-vincent.github.io/SQMU-Scroll/js/available.js` so the
+   module loads correctly.
+2. The widget automatically extracts the property code from the listing page
+   (or the `code` query parameter) and calls `getAvailable` on the
+   `AtomicSQMUDistributor` contract to show the current supply.
+
 ## Developer Guidelines
 
 - All contract changes must be reflected in the ABI and UI
