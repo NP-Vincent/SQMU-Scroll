@@ -180,7 +180,9 @@ function init() {
   if (params.get('price')) PROP.price = parseFloat(params.get('price'));
   if (params.get('saleAddr')) SALE_ADDR = params.get('saleAddr');
 
-  document.getElementById('property-code').value = PROP.code;
+  const propInput = document.getElementById('property-code');
+  propInput.value = PROP.code;
+  propInput.readOnly = true;
   document.querySelector('h3').textContent = `Buy ${PROP.code}`;
   document.getElementById('token-info').innerHTML = `Token to receive: <b>${PROP.code}</b> on <b>Scroll</b>`;
   document.querySelector('#avail').nextSibling.textContent = ` ${PROP.code}`;
