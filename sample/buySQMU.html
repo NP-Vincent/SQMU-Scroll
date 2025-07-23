@@ -102,17 +102,12 @@
     const MAIL_URL = 'https://script.google.com/macros/s/AKfycbxVdHsuXsvhTsEXcOV4HE9mBqtWF1CQYxRBxUlMJgfHKZFt_LY7Q-bwoF0B5XatlOBS/exec';
     // === CONFIGURATION ===
     const PAYMENT_OPTIONS = [
-      { token: 'USDT', name: 'Ethereum', chainId: 1, rpc: 'https://rpc.ankr.com/eth', address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', decimals: 6 },
-      { token: 'USDC', name: 'Arbitrum', chainId: 42161, rpc: 'https://arb1.arbitrum.io/rpc', address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831', decimals: 6 },
-      { token: 'USDC', name: 'Polygon', chainId: 137, rpc: 'https://polygon-rpc.com', address: '0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359', decimals: 6 },
       { token: 'USDT', name: 'Scroll', chainId: 534352, rpc: 'https://rpc.scroll.io', address: '0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df', decimals: 6 },
-      { token: 'USDC', name: 'Scroll', chainId: 534352, rpc: 'https://rpc.scroll.io', address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4', decimals: 6 }
+      { token: 'USDC', name: 'Scroll', chainId: 534352, rpc: 'https://rpc.scroll.io', address: '0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4', decimals: 6 },
+      { token: 'USDQ', name: 'Scroll', chainId: 534352, rpc: 'https://rpc.scroll.io', address: '0xdb9E8F82D6d45fFf803161F2a5f75543972B229a', decimals: 18 }
     ];
 
     const EXPLORERS = {
-      1: 'https://etherscan.io',
-      42161: 'https://arbiscan.io',
-      137: 'https://polygonscan.com',
       534352: 'https://scrollscan.com'
     };
 
@@ -123,24 +118,6 @@
     let SALE_ADDR = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
 
     const CHAIN_INFO = {
-      1: {
-        chainName: 'Ethereum',
-        rpcUrls: ['https://rpc.ankr.com/eth'],
-        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-        blockExplorerUrls: ['https://etherscan.io']
-      },
-      137: {
-        chainName: 'Polygon',
-        rpcUrls: ['https://polygon-rpc.com'],
-        nativeCurrency: { name: 'Matic', symbol: 'MATIC', decimals: 18 },
-        blockExplorerUrls: ['https://polygonscan.com']
-      },
-      42161: {
-        chainName: 'Arbitrum One',
-        rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-        nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-        blockExplorerUrls: ['https://arbiscan.io']
-      },
       534352: {
         chainName: 'Scroll',
         rpcUrls: ['https://rpc.scroll.io'],
@@ -316,8 +293,8 @@
 
     // Check SQMU supply on sale chain treasury
     async function checkSqmuSupply(usdAmount) {
-      const saleChain = Number(window.BUY_CHAIN) || 137;
-      const rpc = (PAYMENT_OPTIONS.find(o => o.chainId === saleChain) || {}).rpc || 'https://polygon-rpc.com';
+      const saleChain = Number(window.BUY_CHAIN) || 534352;
+      const rpc = (PAYMENT_OPTIONS.find(o => o.chainId === saleChain) || {}).rpc || 'https://rpc.scroll.io';
       const readProv = new ethers.providers.JsonRpcProvider(rpc);
       const distAbi = ['function getAvailable(string) view returns(uint256)'];
       const dist = new ethers.Contract(SALE_ADDR, distAbi, readProv);
@@ -327,14 +304,14 @@
       return bal >= needed;
     }
 
-    // Call Polygon contract to distribute SQMU from treasury
+    // Call Scroll contract to distribute SQMU from treasury
     async function sendSqmu(option, usdPaid, code) {
-      const saleChain = Number(window.BUY_CHAIN) || 137;
+      const saleChain = Number(window.BUY_CHAIN) || 534352;
       const current = await provider.getNetwork();
       if (Number(current.chainId) !== saleChain) {
         const chainOpt = PAYMENT_OPTIONS.find(o => o.chainId === saleChain) || { chainId: saleChain };
         await switchNetwork(chainOpt);
-        await ensureCorrectNetwork({ chainId: saleChain, name: chainOpt.name || 'Polygon' });
+        await ensureCorrectNetwork({ chainId: saleChain, name: chainOpt.name || 'Scroll' });
       }
 
       const abi = ['function distribute(string,address,uint256,string)'];
