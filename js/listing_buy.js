@@ -66,7 +66,10 @@ async function fetchAvailable() {
     );
     const bal = await sale.getAvailable(PROP.code);
     const supply = Number(ethers.formatUnits(bal, PROP.decimals));
-    document.getElementById('avail').textContent = supply.toLocaleString();
+    document.getElementById('avail').textContent = supply.toLocaleString(undefined, {
+      minimumFractionDigits: PROP.decimals,
+      maximumFractionDigits: PROP.decimals,
+    });
     return supply;
   } catch (e) {
     document.getElementById('avail').textContent = 'N/A';
@@ -146,7 +149,9 @@ async function buyTokens() {
     return;
   }
   const propertyCode = document.getElementById('property-code').value.trim();
-  const amount = document.getElementById('sqmu-amount').value;
+  const rawAmount = document.getElementById('sqmu-amount').value;
+  const amountBN = ethers.utils.parseUnits(rawAmount, PROP.decimals);
+  const amount = amountBN.toString();
   const paymentToken = document.getElementById('token-select').value;
   const agentCode = document.getElementById('agent-code').value.trim();
 
@@ -156,7 +161,7 @@ async function buyTokens() {
     const tx = await distributor.buySQMU(propertyCode, amount, paymentToken, agentCode);
     setStatus('Submitting transaction...');
     await tx.wait();
-    setStatus(`Purchased ${amount} SQMU for ${propertyCode}`, 'green');
+    setStatus(`Purchased ${rawAmount} SQMU for ${propertyCode}`, 'green');
     await fetchAvailable();
   } catch (err) {
     setStatus(err.message, 'red');
