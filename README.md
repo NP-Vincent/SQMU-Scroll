@@ -178,6 +178,7 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
 - `AtomicSQMUDistributor.sol` now scales payments based on the ERC-20 token's decimals and simplifies the price calculation.
 - New event `PropertyStatusChanged` is emitted whenever a property is activated or deactivated.
+- New view `getAvailable(propertyCode)` returns the remaining SQMU balance held in a property's treasury.
 
 ## External References
 
