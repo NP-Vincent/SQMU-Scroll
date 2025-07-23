@@ -65,7 +65,7 @@ async function fetchAvailable() {
       rpcProvider
     );
     const bal = await sale.getAvailable(PROP.code);
-    const supply = Number(ethers.formatUnits(bal, PROP.decimals));
+    const supply = Number(ethers.utils.formatUnits(bal, PROP.decimals));
     document.getElementById('avail').textContent = supply.toLocaleString(undefined, {
       minimumFractionDigits: PROP.decimals,
       maximumFractionDigits: PROP.decimals,
