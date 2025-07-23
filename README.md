@@ -161,7 +161,7 @@ the module.
 - Document new features and code structure in `notes/`
 - Record each deployment in `notes/deployment_log.md`
 - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
-- `AtomicSQMUDistributor.sol` now scales payments based on the ERC-20 token's decimals.
+- `AtomicSQMUDistributor.sol` now scales payments based on the ERC-20 token's decimals and simplifies the price calculation.
 - New event `PropertyStatusChanged` is emitted whenever a property is activated or deactivated.
 
 ## External References

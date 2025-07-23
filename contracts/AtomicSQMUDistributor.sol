@@ -149,7 +149,7 @@ contract AtomicSQMUDistributor is
         // --- Price and Commission ---
         vars.tokenDecimals = IERC20MetadataUpgradeable(paymentToken).decimals();
         vars.totalPrice =
-            (prop.priceUSD * sqmuAmount / 1e18) * (10 ** vars.tokenDecimals) / 1e18;
+            (prop.priceUSD * sqmuAmount * (10 ** vars.tokenDecimals)) / 1e18;
         require(vars.totalPrice > 0, "Zero price");
 
         // --- Collect Payment ---
