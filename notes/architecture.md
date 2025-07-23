@@ -19,10 +19,10 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `mint.html` for token creation
   - `balance.html` for querying balances
   - `transfer.html` for token transfers
-  - `listing_buy.html` combines property lookup and purchasing in a single embed
-    and replaces the older two-page flow. The deprecated
-    `listing_page_embed.html` file has been removed in favour of this unified
-    widget alongside `buy.html`.
+  - `listing_buy.html` and its companion script `listing_buy.js` combine
+    property lookup and purchasing in a single embed and replace the older
+    two-page flow. The deprecated `listing_page_embed.html` file has been
+    removed in favour of this unified widget alongside `buy.html`.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
