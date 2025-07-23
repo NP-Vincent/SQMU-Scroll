@@ -36,10 +36,11 @@ async function fetchPropertyInfo() {
     if (p.tokenAddress !== ethers.constants.AddressZero) {
       PROP.address = p.tokenAddress;
       PROP.price = Number(p.priceUSD) / 1e18;
-      if (!p.active) {
+      const active = await dist.getPropertyStatus(PROP.code);
+      if (!active) {
         propertyOk = false;
         document.getElementById('buy-btn').disabled = true;
-        setStatus('Sales are not active for this property', 'red');
+        setStatus('Property not active for sale', 'red');
         return false;
       }
       propertyOk = true;
