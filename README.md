@@ -112,22 +112,6 @@ Widgets import these scripts directly from a CDN. The project relies on ethers.j
 <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
 ```
 
-## Configuring the Infura API Key
-
-The widgets rely on the MetaMask SDK, which requires an Infura Project ID. Set
-the key in a script tag before loading any SQMU modules:
-
-```html
-<script>
-  window.INFURA_API_KEY = 'YOUR_INFURA_PROJECT_ID';
-</script>
-```
-
-When hosting the widgets on GitHub Pages or another static site, include the
-above snippet just before the script tag that loads a widget, e.g. `mint.js` or
-`buy.js`. If you bundle the JavaScript yourself, replace the placeholder
-`YOUR_INFURA_API_KEY` in `js/wallet.js` during build time.
-
 ## Minting Tokens via the Widget
 
 Contract owners can mint new ERC-1155 tokens directly from the provided widget.
