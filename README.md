@@ -165,8 +165,10 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
    switches to the Scroll network).
 3. Enter the property code, number of SQMU tokens to buy, choose the payment
    token and optionally provide an agent code.
-4. Click **Buy** to execute `buySQMU`. Progress and errors appear in the
-   `#buy-status` div.
+4. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance
+   for the selected token and automatically submits an `approve` transaction if
+   necessary before purchasing. Progress and errors appear in the `#buy-status`
+   div.
 5. You can pay with USDT, USDC, or USDQ on Scroll. USDQ's address is
    `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
 
