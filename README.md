@@ -161,7 +161,7 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 1. Open the file locally or embed it in a WordPress.com block. Keep the script
    tag pointing to `https://np-vincent.github.io/SQMU-Scroll/js/buy.js` so the
    module loads correctly.
-2. Property listings can embed `html/listing_buy.html` directly. This widget handles property lookup, wallet connection and payment on a single page.
+2. For property pages, embed `html/listing_buy.html` directly. Copy its contents into a WordPress Custom HTML block so buyers can look up the property, connect their wallet and purchase without leaving the page.
 3. Click **Connect Wallet** to initialize MetaMask (the widget automatically
    switches to the Scroll network).
 4. Enter the property code, number of SQMU tokens to buy, choose the payment
