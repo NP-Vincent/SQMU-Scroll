@@ -164,8 +164,9 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 2. For property pages, embed `html/listing_buy.html` directly. Copy its contents into a WordPress Custom HTML block so buyers can look up the property, connect their wallet and purchase without leaving the page.
 3. Click **Connect Wallet** to initialize MetaMask (the widget automatically
    switches to the Scroll network).
-4. Enter the property code, number of SQMU tokens to buy, choose the payment
-   token and optionally provide an agent code.
+4. The property code comes directly from the listing and cannot be changed.
+   Simply enter the number of SQMU tokens to purchase, select a payment token
+   and optionally supply an agent code.
 5. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance for the selected token and automatically submits an `approve` transaction if necessary before purchasing. Progress and errors appear in the `#buy-status` div.
 6. Payments use Scroll network stablecoins:
    - USDT `0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df`
