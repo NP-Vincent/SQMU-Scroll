@@ -153,6 +153,21 @@ WordPress.com block to manage the contract. Ensure the script tag points to
 `https://np-vincent.github.io/SQMU-Scroll/js/admin.js` so WordPress can fetch
 the module.
 
+## Buying SQMU
+
+The page `html/buy.html` lets users purchase SQMU tokens through the
+`AtomicSQMUDistributor` contract.
+
+1. Open the file locally or embed it in a WordPress.com block. Keep the script
+   tag pointing to `https://np-vincent.github.io/SQMU-Scroll/js/buy.js` so the
+   module loads correctly.
+2. Click **Connect Wallet** to initialize MetaMask (the widget automatically
+   switches to the Scroll network).
+3. Enter the property code, number of SQMU tokens to buy, choose the payment
+   token and optionally provide an agent code.
+4. Click **Buy** to execute `buySQMU`. Progress and errors appear in the
+   `#buy-status` div.
+
 
 ## Developer Guidelines
 
