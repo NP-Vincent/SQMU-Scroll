@@ -67,7 +67,7 @@
 
     async function fetchPropertyInfo() {
       try {
-        const provider = new ethers.JsonRpcProvider(RPC);
+        const provider = new ethers.providers.JsonRpcProvider(RPC);
         const dist = new ethers.Contract(
           SALE_ADDR,
           ['function properties(string) view returns(address token,address treasury,uint256 price)'],
@@ -92,7 +92,7 @@
 
       async function fetchAvailable() {
         try {
-          const provider = new ethers.JsonRpcProvider(RPC);
+          const provider = new ethers.providers.JsonRpcProvider(RPC);
           const sale = new ethers.Contract(SALE_ADDR, ['function getAvailable(string) view returns(uint256)'], provider);
           const bal = await sale.getAvailable(PROP.code);
         const supply = Number(ethers.formatUnits(bal, PROP.decimals));
