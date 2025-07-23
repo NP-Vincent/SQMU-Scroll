@@ -167,6 +167,8 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 4. The property code comes directly from the listing and cannot be changed.
    Simply enter the number of SQMU tokens to purchase, select a payment token
    and optionally supply an agent code.
+   The amount field accepts fractional SQMU in 0.01 increments and the
+   widget displays available supply formatted with two decimals.
 5. After fetching property details the widget checks `getPropertyStatus` to
    confirm the property is active. If inactive it displays "Property not active
    for sale" and prevents any purchase.
