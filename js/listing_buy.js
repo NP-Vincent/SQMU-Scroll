@@ -27,13 +27,21 @@ async function fetchPropertyInfo() {
     const rpcProvider = new ethers.providers.JsonRpcProvider(RPC);
     const dist = new ethers.Contract(
       SALE_ADDR,
-      ['function properties(string) view returns(address token,address treasury,uint256 price)'],
+      [
+        'function getPropertyInfo(string) view returns((string name,address tokenAddress,uint256 tokenId,address treasury,uint256 priceUSD,bool active))'
+      ],
       rpcProvider
     );
-    const p = await dist.properties(PROP.code);
-    if (p.token !== ethers.constants.AddressZero) {
-      PROP.address = p.token;
-      PROP.price = Number(p.price) / 1e6;
+    const p = await dist.getPropertyInfo(PROP.code);
+    if (p.tokenAddress !== ethers.constants.AddressZero) {
+      PROP.address = p.tokenAddress;
+      PROP.price = Number(p.priceUSD) / 1e18;
+      if (!p.active) {
+        propertyOk = false;
+        document.getElementById('buy-btn').disabled = true;
+        setStatus('Sales are not active for this property', 'red');
+        return false;
+      }
       propertyOk = true;
       return true;
     }
@@ -42,6 +50,7 @@ async function fetchPropertyInfo() {
   }
   propertyOk = false;
   PROP.price = undefined;
+  document.getElementById('buy-btn').disabled = true;
   setStatus('SQMU data unavailable', 'red');
   return false;
 }
