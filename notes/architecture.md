@@ -20,6 +20,8 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `balance.html` for querying balances
   - `transfer.html` for token transfers
   - `listing_buy.html` combines property lookup and purchasing in a single embed
+    and replaces the earlier two-page flow that used `listing_page_embed.html`
+    together with `buy.html`.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
