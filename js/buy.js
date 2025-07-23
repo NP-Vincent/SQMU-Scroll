@@ -5,7 +5,55 @@ let signer;
 let distributor;
 
 // Proxy address recorded in notes/deployment_log.md
-const distributorAddress = '0xBff9349802Af16A6B4b21d078Eda775C0E98E65C';
+const distributorAddress = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
+
+// Minimal ERC-20 interface for allowance/approve calls
+const erc20Abi = [
+  'function decimals() view returns (uint8)',
+  'function allowance(address owner, address spender) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)'
+];
+
+/**
+ * Calculate the ERC-20 token amount required for a purchase.
+ * @param {string} propertyCode - Registered property identifier
+ * @param {string} sqmuAmount - Number of SQMU tokens being bought
+ * @param {string} paymentToken - ERC-20 address used for payment
+ * @returns {Promise<ethers.BigNumber>} Required token amount
+ */
+async function getRequiredAmount(propertyCode, sqmuAmount, paymentToken) {
+  const prop = await distributor.getPropertyInfo(propertyCode);
+  if (prop.tokenAddress === ethers.constants.AddressZero) {
+    throw new Error('Property not found');
+  }
+  const erc20 = new ethers.Contract(paymentToken, erc20Abi, provider);
+  const decimals = await erc20.decimals();
+  const priceUSD = ethers.BigNumber.from(prop.priceUSD);
+  return priceUSD
+    .mul(ethers.BigNumber.from(sqmuAmount))
+    .mul(ethers.BigNumber.from(10).pow(decimals))
+    .div(ethers.constants.WeiPerEther);
+}
+
+/**
+ * Ensure sufficient allowance for the distributor contract. If the current
+ * allowance is lower than required, an approval transaction is sent and
+ * awaited. Any errors are surfaced via #buy-status.
+ */
+async function ensureAllowance(tokenAddr, requiredAmount) {
+  const erc20 = new ethers.Contract(tokenAddr, erc20Abi, signer);
+  const owner = await signer.getAddress();
+  const current = await erc20.allowance(owner, distributorAddress);
+  if (current.gte(requiredAmount)) return;
+  try {
+    const tx = await erc20.approve(distributorAddress, requiredAmount);
+    setStatus('Approving payment token...');
+    await tx.wait();
+  } catch (err) {
+    setStatus(err.message, 'red');
+    throw err;
+  }
+}
 
 function setStatus(msg, color) {
   const el = document.getElementById('buy-status');
@@ -38,6 +86,8 @@ async function buyTokens() {
   const agentCode = document.getElementById('agent-code').value.trim();
 
   try {
+    const required = await getRequiredAmount(propertyCode, amount, paymentToken);
+    await ensureAllowance(paymentToken, required);
     const tx = await distributor.buySQMU(propertyCode, amount, paymentToken, agentCode);
     setStatus('Submitting transaction...');
     await tx.wait();
