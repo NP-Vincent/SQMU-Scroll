@@ -200,7 +200,12 @@ function init() {
   propInput.readOnly = true;
   document.querySelector('h3').textContent = `Buy ${PROP.code}`;
   document.getElementById('token-info').innerHTML = `Token to receive: <b>${PROP.code}</b> on <b>Scroll</b>`;
-  document.querySelector('#avail').nextSibling.textContent = ` ${PROP.code}`;
+  // Keep the availability display consistent with the static HTML which
+  // shows "... SQMU" after the value. Previously this line replaced the
+  // trailing text with the property code, which resulted in output like
+  // "... CODE" rather than "... SQMU". Removing that behaviour ensures the
+  // widget matches html/listing_buy.html and available.html.
+  document.querySelector('#avail').nextSibling.textContent = ' SQMU';
 
   fetchPropertyInfo().then(async (ok) => {
     if (!ok) {
