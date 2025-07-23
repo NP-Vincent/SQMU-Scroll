@@ -120,8 +120,8 @@ Contract owners can mint new ERC-1155 tokens directly from the provided widget.
    Ensure the `<script>` tag references
    `https://np-vincent.github.io/SQMU-Scroll/js/mint.js` (or inline the module)
    so the widget loads correctly.
-3. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
-4. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
+2. Click **Connect Wallet** to initialize MetaMask and the contract. Use **Disconnect** to terminate the MetaMask session and revoke wallet permissions.
+3. Enter the token ID, amount, and optional URI you wish to mint, then click **Mint**.
 4. Success or error information will appear in the `#mint-status` area.
 
 Only the wallet that owns the contract can successfully call `mint`.
