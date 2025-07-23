@@ -15,6 +15,23 @@ const erc20Abi = [
 ];
 
 /**
+ * Fetch property info and ensure the property is active for sale.
+ * @param {string} propertyCode - Registered property identifier
+ * @returns {Promise<object>} Property info object
+ */
+async function checkPropertyActive(propertyCode) {
+  const info = await distributor.getPropertyInfo(propertyCode);
+  if (info.tokenAddress === ethers.constants.AddressZero) {
+    throw new Error('Property not found');
+  }
+  const active = await distributor.getPropertyStatus(propertyCode);
+  if (!active) {
+    throw new Error('Property not active for sale');
+  }
+  return info;
+}
+
+/**
  * Calculate the ERC-20 token amount required for a purchase.
  * @param {string} propertyCode - Registered property identifier
  * @param {string} sqmuAmount - Number of SQMU tokens being bought
@@ -22,10 +39,7 @@ const erc20Abi = [
  * @returns {Promise<ethers.BigNumber>} Required token amount
  */
 async function getRequiredAmount(propertyCode, sqmuAmount, paymentToken) {
-  const prop = await distributor.getPropertyInfo(propertyCode);
-  if (prop.tokenAddress === ethers.constants.AddressZero) {
-    throw new Error('Property not found');
-  }
+  const prop = await checkPropertyActive(propertyCode);
   const erc20 = new ethers.Contract(paymentToken, erc20Abi, provider);
   const decimals = await erc20.decimals();
   const priceUSD = ethers.BigNumber.from(prop.priceUSD);

@@ -167,8 +167,11 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
 4. The property code comes directly from the listing and cannot be changed.
    Simply enter the number of SQMU tokens to purchase, select a payment token
    and optionally supply an agent code.
-5. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance for the selected token and automatically submits an `approve` transaction if necessary before purchasing. Progress and errors appear in the `#buy-status` div.
-6. Payments use Scroll network stablecoins:
+5. After fetching property details the widget checks `getPropertyStatus` to
+   confirm the property is active. If inactive it displays "Property not active
+   for sale" and prevents any purchase.
+6. Click **Buy** to execute `buySQMU`. The widget checks your ERC-20 allowance for the selected token and automatically submits an `approve` transaction if necessary before purchasing. Progress and errors appear in the `#buy-status` div.
+7. Payments use Scroll network stablecoins:
    - USDT `0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df`
    - USDC `0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4`
    - USDQ `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
