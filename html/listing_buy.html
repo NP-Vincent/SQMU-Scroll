@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SQMU Listing Checkout</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/listing_buy.js"></script>
+</head>
+<body>
+  <h3>SQMU Purchase</h3>
+  <p>Property Code: <span id="property-code"></span></p>
+  <p>Available: <span id="available-bal">...</span> SQMU</p>
+  <button id="connect">Connect Wallet</button>
+  <button id="disconnect" style="display:none;">Disconnect</button>
+  <label>SQMU Amount <input id="sqmu-amount" type="number" value="1" step="0.01"></label>
+  <label>Payment Token
+    <select id="token-select">
+      <option value="0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df">USDT (Scroll)</option>
+      <option value="0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4">USDC (Scroll)</option>
+      <option value="0xdb9E8F82D6d45fFf803161F2a5f75543972B229a">USDQ (Scroll)</option>
+    </select>
+  </label>
+  <label>Agent Code (optional) <input id="agent-code" type="text"></label>
+  <button id="buy-btn" disabled>Buy</button>
+  <div id="buy-status"></div>
+  <script>
+    // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/listing_buy.js.
+    // It combines property availability lookup and purchase into a single embed.
+  </script>
+</body>
+</html>
