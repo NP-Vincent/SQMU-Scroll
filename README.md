@@ -102,7 +102,7 @@ Use the same approach to deploy the payment distributor contract.
 ## Dependencies
 
 - OpenZeppelin Contracts (upgradeable)
-- ethers.js
+- ethers.js **v5.7.2**
 - @metamask/sdk
 
 Widgets import these scripts directly from a CDN. The project relies on ethers.js v5; update the code if you migrate to a newer version. Use the following pinned sources when embedding widgets:
