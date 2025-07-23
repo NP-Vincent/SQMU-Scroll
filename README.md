@@ -167,6 +167,8 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
    token and optionally provide an agent code.
 4. Click **Buy** to execute `buySQMU`. Progress and errors appear in the
    `#buy-status` div.
+5. You can pay with USDT, USDC, or USDQ on Scroll. USDQ's address is
+   `0xdb9E8F82D6d45fFf803161F2a5f75543972B229a`.
 
 
 ## Developer Guidelines
