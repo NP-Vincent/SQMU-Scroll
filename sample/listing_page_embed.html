@@ -144,12 +144,14 @@
       document.querySelector('h3').textContent = `Buy ${PROP.code}`;
       document.getElementById('token-info').innerHTML = `Token to receive: <b>${PROP.code}</b> on <b>Polygon</b>`;
       document.querySelector('#avail').nextSibling.textContent = ` ${PROP.code}`;
-      fetchPropertyInfo().then((ok) => {
-        payBtn.disabled = !ok;
-        if (ok) {
-          fetchAvailable();
-          setInterval(fetchAvailable, 600000);
+      fetchPropertyInfo().then(async (ok) => {
+        if (!ok) {
+          payBtn.disabled = true;
+          return;
         }
+        const supply = await fetchAvailable();
+        payBtn.disabled = !(supply > 0);
+        setInterval(fetchAvailable, 600000);
       });
       document.getElementById('sqmu-input').oninput = updateUsd;
       document.getElementById('pay-btn').onclick = () => {

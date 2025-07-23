@@ -242,6 +242,14 @@ contract AtomicSQMUDistributor is
         return prop.priceUSD * sqmuAmount / 1e18;
     }
 
+    /// @notice Remaining SQMU balance in the property's treasury
+    /// @param propertyCode Registered code for the property
+    function getAvailable(string calldata propertyCode) external view returns (uint256) {
+        Property storage prop = properties[propertyCode];
+        require(prop.tokenAddress != address(0), "Property not found");
+        return IERC1155Upgradeable(prop.tokenAddress).balanceOf(prop.treasury, prop.tokenId);
+    }
+
     function getPropertyStatus(string calldata propertyCode) external view returns (bool) {
         return properties[propertyCode].active;
     }
