@@ -126,7 +126,8 @@ async function buyTokens() {
     return;
   }
   const propertyCode = findPropertyCode();
-  const amount = document.getElementById('sqmu-amount').value;
+  const rawInput = document.getElementById('sqmu-amount').value;
+  const amount = ethers.utils.parseUnits(rawInput, DECIMALS);
   const paymentToken = document.getElementById('token-select').value;
   const agentCode = document.getElementById('agent-code').value.trim();
 
@@ -136,7 +137,7 @@ async function buyTokens() {
     const tx = await distributor.buySQMU(propertyCode, amount, paymentToken, agentCode);
     setStatus('Submitting transaction...');
     await tx.wait();
-    setStatus(`Purchased ${amount} SQMU for ${propertyCode}`, 'green');
+    setStatus(`Purchased ${Number(rawInput).toFixed(DECIMALS)} SQMU for ${propertyCode}`, 'green');
     await showAvailability();
   } catch (err) {
     setStatus(err.message, 'red');
