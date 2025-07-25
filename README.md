@@ -188,11 +188,24 @@ The simple widget `html/available.html` displays how many SQMU tokens remain
 for a given property.
 
 1. Embed the file in a WordPress.com Custom HTML block. Keep the script tag
-   pointing to `https://np-vincent.github.io/SQMU-Scroll/js/available.js` so the
-   module loads correctly.
+  pointing to `https://np-vincent.github.io/SQMU-Scroll/js/available.js` so the
+  module loads correctly.
 2. The widget automatically extracts the property code from the listing page
   (or the `code` query parameter) and calls `getAvailable` on the
   `AtomicSQMUDistributor` contract to show the current supply.
+
+## Viewing Your Portfolio
+
+The file `html/portfolio.html` lets a user connect their wallet and view all
+SQMU holdings along with the USD value for each property.
+
+1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
+   pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
+   module loads correctly.
+2. Click **Connect Wallet** to fetch your balances. Each property with a
+   non-zero balance appears in a table showing its SQMU amount and total USD
+   value.
+3. The table footer displays the combined USD value of all listed holdings.
 
 ## Distributor Admin Interface
 
