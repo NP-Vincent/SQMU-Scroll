@@ -23,8 +23,8 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
     property lookup and purchasing in a single embed and replace the older
     two-page flow. The deprecated `listing_page_embed.html` file has been
     removed in favour of this unified widget alongside `buy.html`.
-  - `portfolio.html` lists all SQMU holdings for the connected wallet and shows
-    their USD value using `portfolio.js`.
+  - `portfolio.html` lists each SQMU token ID owned by the connected wallet
+    using `portfolio.js`.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.

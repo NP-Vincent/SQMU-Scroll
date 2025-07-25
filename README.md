@@ -199,27 +199,18 @@ for a given property.
 
 ## Viewing Your Portfolio
 
-The file `html/portfolio.html` lets a user connect their wallet and view all
-SQMU holdings along with the USD value for each property.
+The file `html/portfolio.html` lets a user connect their wallet and see the
+balance of each SQMU token ID.
 
 1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
    module loads correctly.
-2. Edit `js/portfolio.js` and populate the `PROPERTIES` array with your
-   property codes. You may also include explicit `tokenId` values. When
-   omitted the script extracts the numeric ID from a code like `SQMU3`.
+2. The widget scans token IDs from `0` through `MAX_TOKEN_ID` (defined in
+   `js/portfolio.js`) and displays any non-zero balances. Adjust this constant if
+   your deployment uses higher token IDs.
 
-   ```javascript
-  const PROPERTIES = [
-    { code: 'SQMU3' },          // tokenId automatically parsed as 3
-    { code: 'SQMU5', tokenId: 5 } // explicit id also works
-  ];
-   ```
-
-3. Click **Connect Wallet** to fetch your balances. Each property with a
-   non-zero balance appears in a table showing its SQMU amount and total USD
-   value.
-4. The table footer displays the combined USD value of all listed holdings.
+3. Click **Connect Wallet** to fetch your balances. Each token ID with a
+   non-zero amount appears in a simple table.
 
 ## Distributor Admin Interface
 
