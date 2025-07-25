@@ -8,6 +8,14 @@ const MMSDK = new MetaMaskSDK.MetaMaskSDK({
 
 const SCROLL_CHAIN_ID = '0x82750';
 
+const SCROLL_PARAMS = {
+  chainId: SCROLL_CHAIN_ID,
+  chainName: 'Scroll',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: ['https://rpc.scroll.io'],
+  blockExplorerUrls: ['https://scrollscan.com'],
+};
+
 export async function connectWallet(statusId) {
   const ethereum = MMSDK.getProvider();
   const statusDiv = document.getElementById(statusId);
@@ -27,10 +35,25 @@ export async function connectWallet(statusId) {
     await ethereum.request({ method: 'eth_accounts', params: [] });
     let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     if (chainId !== SCROLL_CHAIN_ID) {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: SCROLL_CHAIN_ID }],
-      });
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: SCROLL_CHAIN_ID }],
+        });
+      } catch (switchErr) {
+        if (switchErr.code === 4902) {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [SCROLL_PARAMS],
+          });
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: SCROLL_CHAIN_ID }],
+          });
+        } else {
+          throw switchErr;
+        }
+      }
       chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     }
 
