@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SQMU Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js"></script>
+  <style>
+    table { border-collapse: collapse; margin-top: 1em; }
+    th, td { padding: 0.5em 1em; border: 1px solid #ccc; text-align: left; }
+    tfoot td { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h3>SQMU Portfolio</h3>
+  <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+  <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+  <div id="portfolio-status"></div>
+  <table id="portfolio-table">
+    <thead>
+      <tr>
+        <th>Property</th>
+        <th>Code</th>
+        <th>Balance (SQMU)</th>
+        <th>USD Value</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3">Total Value</td>
+        <td id="total-usd">$0.00</td>
+      </tr>
+    </tfoot>
+  </table>
+  <script>
+    // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js.
+    // After connecting your wallet it displays your SQMU holdings and USD value.
+  </script>
+</body>
+</html>
