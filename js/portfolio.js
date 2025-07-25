@@ -8,7 +8,7 @@ let distributor;
 
 // SQMU tokens use two decimal places
 const DECIMALS = 2;
-const MAX_TOKEN_ID = 10; // adjust if your token ids exceed this range
+const MAX_TOKEN_ID = 100; // adjust if your token ids exceed this range
 
 function formatUSD(bn) {
   // getPrice returns an integer amount in USD with no decimals
