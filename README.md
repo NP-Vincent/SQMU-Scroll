@@ -200,7 +200,7 @@ for a given property.
 ## Viewing Your Portfolio
 
 The file `html/portfolio.html` lets a user connect their wallet and see the
-balance of each SQMU token ID.
+balance of each SQMU token ID along with the current USD price for that token.
 
 1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
@@ -210,7 +210,10 @@ balance of each SQMU token ID.
    your deployment uses higher token IDs.
 
 3. Click **Connect Wallet** to fetch your balances. Each token ID with a
-   non-zero amount appears in a simple table.
+   non-zero amount appears in a simple table showing your balance and the
+   token's price.
+4. Prices are retrieved from the `AtomicSQMUDistributor` contract using
+   property codes like `SQMU1` and formatted as `USD 10,000.00`.
 
 ## Distributor Admin Interface
 
