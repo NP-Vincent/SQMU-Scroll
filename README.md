@@ -202,10 +202,20 @@ SQMU holdings along with the USD value for each property.
 1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
    module loads correctly.
-2. Click **Connect Wallet** to fetch your balances. Each property with a
+2. Edit `js/portfolio.js` and populate the `PROPERTIES` array with your
+   property codes and token IDs:
+
+   ```javascript
+   const PROPERTIES = [
+     { code: '123', tokenId: 1 },
+     { code: '456', tokenId: 2 }
+   ];
+   ```
+
+3. Click **Connect Wallet** to fetch your balances. Each property with a
    non-zero balance appears in a table showing its SQMU amount and total USD
    value.
-3. The table footer displays the combined USD value of all listed holdings.
+4. The table footer displays the combined USD value of all listed holdings.
 
 ## Distributor Admin Interface
 
