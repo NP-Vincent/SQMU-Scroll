@@ -233,6 +233,10 @@ balance of each SQMU property along with the USD value of that balance.
    property codes like `SQMU1`. The contract calculates the USD price for the
    exact SQMU amount held, so the widget displays the value of your holdings in
    real time.
+5. The page also lets you list SQMU for sale through the `SQMUTrade` contract.
+   If your wallet has not approved the trade contract, the widget will first
+   call `setApprovalForAll` so it can escrow your tokens before creating the
+   listing.
 
 ## Distributor Admin Interface
 
