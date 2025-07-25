@@ -3,13 +3,14 @@
 // Wallet connection helpers come from wallet.js.
 
 import { connectWallet, disconnectWallet } from './wallet.js';
+import { SQMU_ADDRESS } from './config.js';
 
 let provider;
 let signer;
 let contract;
 
 // Deployed proxy address. Update this value when redeploying the contract.
-const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
+const contractAddress = SQMU_ADDRESS;
 
 async function connect() {
   try {

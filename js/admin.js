@@ -1,4 +1,5 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
+import { SQMU_ADDRESS } from './config.js';
 
 let provider;
 let signer;
@@ -14,7 +15,7 @@ function toggleContractButtons(disabled) {
 // disable operations until contract loads
 toggleContractButtons(true);
 
-const contractAddress = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
+const contractAddress = SQMU_ADDRESS;
 
 async function connect() {
   try {

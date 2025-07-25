@@ -7,6 +7,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
+- `js/config.js` – Centralized addresses for the SQMU and distributor contracts
 - `src/` – Additional JavaScript utilities used by the widgets
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
@@ -69,7 +70,7 @@ Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
 
 3. **Update Front-End**
    - Record the proxy address in `notes/deployment_log.md`.
-   - Update widgets in `html/` and modules in `js/` with this address so the `contractAddress` constant reflects the deployed proxy.
+   - Edit `js/config.js` and set `SQMU_ADDRESS` to this value so all widgets load the correct contract.
 
 4. **Perform UUPS Upgrades**
    - Modify `contracts/SQMU.sol` as needed and recompile.
@@ -98,6 +99,8 @@ Use the same approach to deploy the payment distributor contract.
 4. **Export ABI**
    - From the Remix compilation details, copy the ABI JSON for `AtomicSQMUDistributor`.
    - Save it as `abi/AtomicSQMUDistributor.json` and record the addresses in `notes/deployment_log.md`.
+5. **Update Front-End**
+   - Edit `js/config.js` and set `DISTRIBUTOR_ADDRESS` to the deployed proxy so widgets can interact with the distributor.
 
 ## Dependencies
 
