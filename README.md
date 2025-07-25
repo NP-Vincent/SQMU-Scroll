@@ -213,7 +213,9 @@ balance of each SQMU token ID along with the current USD price for that token.
    non-zero amount appears in a simple table showing your balance and the
    token's price.
 4. Prices are retrieved from the `AtomicSQMUDistributor` contract using
-   property codes like `SQMU1` and formatted as `USD 10,000.00`.
+   property codes like `SQMU1`. The contract returns the USD price for
+   `sqmuAmount = 1` (representing **0.01 SQMU**), so the table displays
+   values like `USD 100.00` when that call returns `100`.
 
 ## Distributor Admin Interface
 

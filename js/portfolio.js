@@ -11,7 +11,8 @@ const DECIMALS = 2;
 const MAX_TOKEN_ID = 20; // adjust if your token ids exceed this range
 
 function formatUSD(bn) {
-  const num = Number(ethers.utils.formatUnits(bn, 18));
+  // getPrice returns a plain integer amount in USD for 0.01 SQMU
+  const num = Number(ethers.utils.formatUnits(bn, 0));
   return 'USD ' + num.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
