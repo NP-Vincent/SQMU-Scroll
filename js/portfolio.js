@@ -135,6 +135,12 @@ async function createListing() {
   const priceInput = document.getElementById('list-price').value;
   const paymentToken = document.getElementById('list-payment-token').value.trim();
   try {
+    const approved = await sqmu.isApprovedForAll(await signer.getAddress(), TRADE_ADDRESS);
+    if (!approved) {
+      setTradeStatus('Approving SQMU transfer...');
+      const tx0 = await sqmu.setApprovalForAll(TRADE_ADDRESS, true);
+      await tx0.wait();
+    }
     const erc20 = new ethers.Contract(paymentToken, erc20Abi, signer);
     const decimals = await erc20.decimals();
     const amount = ethers.utils.parseUnits(amountInput, DECIMALS);
