@@ -53,7 +53,8 @@ async function connect() {
     const sqmuUrl = new URL('../abi/SQMU.json', import.meta.url);
     const sqmuRes = await fetch(sqmuUrl);
     const sqmuAbi = (await sqmuRes.json()).abi;
-    sqmu = new ethers.Contract(SQMU_ADDRESS, sqmuAbi, provider);
+    // Use the signer so we can call setApprovalForAll when creating listings
+    sqmu = new ethers.Contract(SQMU_ADDRESS, sqmuAbi, signer);
     const distUrl = new URL('../abi/AtomicSQMUDistributor.json', import.meta.url);
     const distRes = await fetch(distUrl);
     const distAbi = (await distRes.json()).abi;
