@@ -12,10 +12,18 @@ const SQMU_ADDRESS = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
 const distributorAddress = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
 const DECIMALS = 2;
 
-// Update this list with all active property codes and token IDs to display
+// List property codes you want to display in the portfolio table. If a tokenId
+// is omitted the script automatically extracts it from the code using the
+// pattern `SQMU<id>` where `<id>` is the numeric token id.
 const PROPERTIES = [
   { code: 'EXAMPLE', tokenId: 0 }
 ];
+
+function getTokenId(property) {
+  if (typeof property.tokenId === 'number') return property.tokenId;
+  const match = property.code.match(/(\d+)$/);
+  return match ? Number(match[1]) : 0;
+}
 
 function setStatus(msg, color) {
   const el = document.getElementById('portfolio-status');
@@ -42,7 +50,8 @@ async function connect() {
 }
 
 async function fetchHolding(property, owner) {
-  const bal = await sqmu.balanceOf(owner, property.tokenId);
+  const tokenId = getTokenId(property);
+  const bal = await sqmu.balanceOf(owner, tokenId);
   const amount = Number(ethers.utils.formatUnits(bal, DECIMALS));
   if (amount === 0) return null;
   const info = await distributor.getPropertyInfo(property.code);

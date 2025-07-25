@@ -203,13 +203,14 @@ SQMU holdings along with the USD value for each property.
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
    module loads correctly.
 2. Edit `js/portfolio.js` and populate the `PROPERTIES` array with your
-   property codes and token IDs:
+   property codes. You may also include explicit `tokenId` values. When
+   omitted the script extracts the numeric ID from a code like `SQMU3`.
 
    ```javascript
-   const PROPERTIES = [
-     { code: '123', tokenId: 1 },
-     { code: '456', tokenId: 2 }
-   ];
+  const PROPERTIES = [
+    { code: 'SQMU3' },          // tokenId automatically parsed as 3
+    { code: 'SQMU5', tokenId: 5 } // explicit id also works
+  ];
    ```
 
 3. Click **Connect Wallet** to fetch your balances. Each property with a
