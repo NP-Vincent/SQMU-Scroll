@@ -11,7 +11,7 @@ const DECIMALS = 2;
 const MAX_TOKEN_ID = 20; // adjust if your token ids exceed this range
 
 function formatUSD(bn) {
-  // getPrice returns a plain integer amount in USD for 0.01 SQMU
+  // getPrice returns an integer amount in USD with no decimals
   const num = Number(ethers.utils.formatUnits(bn, 0));
   return 'USD ' + num.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -55,15 +55,21 @@ async function displayBalances() {
   const balances = await sqmu.balanceOfBatch(owners, ids);
   const tbody = document.querySelector('#portfolio-table tbody');
   tbody.innerHTML = '';
+  let totalSqmu = 0;
+  let totalUsd = ethers.BigNumber.from(0);
   for (let i = 0; i < ids.length; i++) {
     const amt = Number(ethers.utils.formatUnits(balances[i], DECIMALS));
     if (amt === 0) continue;
-    const priceBn = await distributor.getPrice('SQMU' + ids[i], 1);
+    const priceBn = await distributor.getPrice('SQMU' + ids[i], balances[i]);
+    totalSqmu += amt;
+    totalUsd = totalUsd.add(priceBn);
     const priceStr = formatUSD(priceBn);
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${ids[i]}</td><td>${amt.toFixed(DECIMALS)}</td><td>${priceStr}</td>`;
+    row.innerHTML = `<td>SQMU${ids[i]}</td><td>${amt.toFixed(DECIMALS)}</td><td>${priceStr}</td>`;
     tbody.appendChild(row);
   }
+  document.getElementById('total-sqmu').textContent = totalSqmu.toFixed(DECIMALS);
+  document.getElementById('total-usd').textContent = formatUSD(totalUsd);
   setStatus('Balances loaded', 'green');
 }
 
