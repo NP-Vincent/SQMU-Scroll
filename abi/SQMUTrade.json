@@ -1,0 +1,192 @@
+{
+  "name": "SQMUTrade",
+  "address": "0x0000000000000000000000000000000000000000",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "treasury_",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "commissionBps_",
+          "type": "uint256"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "string", "name": "propertyCode", "type": "string" },
+        { "internalType": "address", "name": "tokenAddress", "type": "address" },
+        { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "uint256", "name": "pricePerToken", "type": "uint256" },
+        { "internalType": "address", "name": "paymentToken", "type": "address" }
+      ],
+      "name": "listToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "listingId", "type": "uint256" },
+        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      ],
+      "name": "buy",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "listingId", "type": "uint256" }
+      ],
+      "name": "cancelListing",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "uint256", "name": "bps", "type": "uint256" }
+      ],
+      "name": "setCommission",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "newTreasury", "type": "address" }
+      ],
+      "name": "setTreasury",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" },
+        { "internalType": "bool", "name": "allowed", "type": "bool" }
+      ],
+      "name": "allowPaymentToken",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [ { "internalType": "uint256", "name": "listingId", "type": "uint256" } ],
+      "name": "getListing",
+      "outputs": [
+        {
+          "components": [
+            { "internalType": "uint256", "name": "listingId", "type": "uint256" },
+            { "internalType": "address", "name": "seller", "type": "address" },
+            { "internalType": "string", "name": "propertyCode", "type": "string" },
+            { "internalType": "address", "name": "tokenAddress", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "internalType": "uint256", "name": "amountListed", "type": "uint256" },
+            { "internalType": "uint256", "name": "pricePerToken", "type": "uint256" },
+            { "internalType": "address", "name": "paymentToken", "type": "address" },
+            { "internalType": "bool", "name": "active", "type": "bool" }
+          ],
+          "internalType": "struct SQMUTrade.Listing",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getActiveListings",
+      "outputs": [
+        {
+          "components": [
+            { "internalType": "uint256", "name": "listingId", "type": "uint256" },
+            { "internalType": "address", "name": "seller", "type": "address" },
+            { "internalType": "string", "name": "propertyCode", "type": "string" },
+            { "internalType": "address", "name": "tokenAddress", "type": "address" },
+            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+            { "internalType": "uint256", "name": "amountListed", "type": "uint256" },
+            { "internalType": "uint256", "name": "pricePerToken", "type": "uint256" },
+            { "internalType": "address", "name": "paymentToken", "type": "address" },
+            { "internalType": "bool", "name": "active", "type": "bool" }
+          ],
+          "internalType": "struct SQMUTrade.Listing[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [ { "internalType": "address", "name": "token", "type": "address" } ],
+      "name": "isAllowedToken",
+      "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256" },
+        { "indexed": true, "internalType": "address", "name": "seller", "type": "address" },
+        { "indexed": false, "internalType": "string", "name": "propertyCode", "type": "string" },
+        { "indexed": false, "internalType": "address", "name": "tokenAddress", "type": "address" },
+        { "indexed": false, "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "indexed": false, "internalType": "uint256", "name": "pricePerToken", "type": "uint256" },
+        { "indexed": false, "internalType": "address", "name": "paymentToken", "type": "address" }
+      ],
+      "name": "ListingCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256" },
+        { "indexed": true, "internalType": "address", "name": "buyer", "type": "address" },
+        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "indexed": false, "internalType": "uint256", "name": "totalPaid", "type": "uint256" },
+        { "indexed": false, "internalType": "uint256", "name": "commission", "type": "uint256" },
+        { "indexed": false, "internalType": "address", "name": "paymentToken", "type": "address" }
+      ],
+      "name": "Purchase",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": false, "internalType": "uint256", "name": "listingId", "type": "uint256" },
+        { "indexed": true, "internalType": "address", "name": "seller", "type": "address" }
+      ],
+      "name": "ListingCancelled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [ { "indexed": false, "internalType": "uint256", "name": "bps", "type": "uint256" } ],
+      "name": "CommissionUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
+        { "indexed": false, "internalType": "bool", "name": "allowed", "type": "bool" }
+      ],
+      "name": "PaymentTokenAllowed",
+      "type": "event"
+    }
+  ]
+}

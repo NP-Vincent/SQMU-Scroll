@@ -102,6 +102,22 @@ Use the same approach to deploy the payment distributor contract.
 5. **Update Front-End**
    - Edit `js/config.js` and set `DISTRIBUTOR_ADDRESS` to the deployed proxy so widgets can interact with the distributor.
 
+## Deploying SQMUTrade
+
+This contract provides the on-chain marketplace for listing and purchasing SQMU tokens.
+
+1. **Compile in Remix**
+   - Open `contracts/SQMUTrade.sol` and ensure OpenZeppelin upgradeable libraries are available.
+   - Compile the contract with Solidity `^0.8.24`.
+2. **Deploy a UUPS Proxy**
+   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
+   - Call `initialize(treasury, commissionBps)` to set the treasury address and starting commission.
+3. **Export ABI**
+   - Copy the ABI JSON and save it as `abi/SQMUTrade.json`.
+   - Record the proxy and implementation in `notes/deployment_log.md`.
+4. **Update Front-End**
+   - Add the proxy address to `js/config.js` and load the new ABI in any marketplace widgets.
+
 ## Dependencies
 
 - OpenZeppelin Contracts (upgradeable)
