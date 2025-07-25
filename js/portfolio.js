@@ -1,4 +1,5 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
+import { SQMU_ADDRESS, DISTRIBUTOR_ADDRESS } from './config.js';
 
 let provider;
 let signer;
@@ -7,9 +8,7 @@ let sqmuAbi;
 let sqmu;
 
 // SQMU ERC-1155 contract address
-const SQMU_ADDRESS = '0xd0b895e975f24045e43d788d42BD938b78666EC8';
-
-const distributorAddress = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
+const distributorAddress = DISTRIBUTOR_ADDRESS;
 const DECIMALS = 2;
 
 // List property codes you want to display in the portfolio table. If a tokenId

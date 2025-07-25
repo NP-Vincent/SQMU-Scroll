@@ -1,5 +1,6 @@
+import { DISTRIBUTOR_ADDRESS } from './config.js';
 const RPC = 'https://rpc.scroll.io';
-const SALE_ADDR = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
+const SALE_ADDR = DISTRIBUTOR_ADDRESS;
 const DECIMALS = 2;
 
 function findPropertyCode() {

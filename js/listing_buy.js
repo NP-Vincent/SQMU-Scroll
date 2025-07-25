@@ -1,7 +1,8 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
+import { DISTRIBUTOR_ADDRESS } from './config.js';
 
 const RPC = 'https://rpc.scroll.io';
-const distributorAddress = '0x19d8D25DD4C85264B2AC502D66aEE113955b8A07';
+const distributorAddress = DISTRIBUTOR_ADDRESS;
 const DECIMALS = 2;
 
 let provider;
