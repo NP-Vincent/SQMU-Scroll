@@ -1,14 +1,20 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
-import { SQMU_ADDRESS, DISTRIBUTOR_ADDRESS } from './config.js';
+import { SQMU_ADDRESS, DISTRIBUTOR_ADDRESS, TRADE_ADDRESS } from './config.js';
 
 let provider;
 let signer;
 let sqmu;
 let distributor;
+let trade;
 
 // SQMU tokens use two decimal places
 const DECIMALS = 2;
 const MAX_TOKEN_ID = 100; // adjust if your token ids exceed this range
+const erc20Abi = [
+  'function decimals() view returns (uint8)',
+  'function allowance(address owner, address spender) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)'
+];
 
 function formatUSD(bn) {
   // getPrice returns an integer amount in USD with no decimals
@@ -24,6 +30,23 @@ function setStatus(msg, color) {
   el.innerHTML = color ? `<span style="color:${color};">${msg}</span>` : msg;
 }
 
+function setTradeStatus(msg, color) {
+  const el = document.getElementById('trade-status');
+  if (el) {
+    el.innerHTML = color ? `<span style="color:${color};">${msg}</span>` : msg;
+  }
+}
+
+async function ensureAllowance(tokenAddr, requiredAmount) {
+  const erc20 = new ethers.Contract(tokenAddr, erc20Abi, signer);
+  const owner = await signer.getAddress();
+  const current = await erc20.allowance(owner, TRADE_ADDRESS);
+  if (current.gte(requiredAmount)) return;
+  const tx = await erc20.approve(TRADE_ADDRESS, requiredAmount);
+  setTradeStatus('Approving payment token...');
+  await tx.wait();
+}
+
 async function connect() {
   try {
     ({ provider, signer } = await connectWallet('portfolio-status'));
@@ -35,10 +58,17 @@ async function connect() {
     const distRes = await fetch(distUrl);
     const distAbi = (await distRes.json()).abi;
     distributor = new ethers.Contract(DISTRIBUTOR_ADDRESS, distAbi, provider);
+    const tradeUrl = new URL('../abi/SQMUTrade.json', import.meta.url);
+    const tradeRes = await fetch(tradeUrl);
+    const tradeAbi = (await tradeRes.json()).abi;
+    trade = new ethers.Contract(TRADE_ADDRESS, tradeAbi, signer);
     document.getElementById('disconnect').style.display = '';
     document.getElementById('connect').disabled = true;
+    document.getElementById('list-btn').disabled = false;
+    document.getElementById('buy-btn').disabled = false;
     setStatus('Connected. Loading balances...', 'green');
     await displayBalances();
+    await displayListings();
   } catch (err) {
     setStatus(err.message, 'red');
   }
@@ -73,15 +103,90 @@ async function displayBalances() {
   setStatus('Balances loaded', 'green');
 }
 
+async function displayListings() {
+  if (!trade) return;
+  const tbody = document.querySelector('#listing-table tbody');
+  tbody.innerHTML = '';
+  try {
+    const listings = await trade.getActiveListings();
+    for (const l of listings) {
+      const erc20 = new ethers.Contract(l.paymentToken, erc20Abi, provider);
+      let decimals = 18;
+      try { decimals = await erc20.decimals(); } catch (e) {}
+      const price = ethers.utils.formatUnits(l.pricePerToken, decimals);
+      const amount = Number(ethers.utils.formatUnits(l.amountListed, DECIMALS));
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${l.paymentToken}</td><td>${l.seller}</td>`;
+      tbody.appendChild(row);
+    }
+  } catch (err) {
+    setTradeStatus(err.message, 'red');
+  }
+}
+
+async function createListing() {
+  if (!trade) {
+    setTradeStatus('Connect wallet first.', 'red');
+    return;
+  }
+  const code = document.getElementById('list-code').value.trim();
+  const tokenId = document.getElementById('list-token-id').value;
+  const amountInput = document.getElementById('list-amount').value;
+  const priceInput = document.getElementById('list-price').value;
+  const paymentToken = document.getElementById('list-payment-token').value.trim();
+  try {
+    const erc20 = new ethers.Contract(paymentToken, erc20Abi, signer);
+    const decimals = await erc20.decimals();
+    const amount = ethers.utils.parseUnits(amountInput, DECIMALS);
+    const price = ethers.utils.parseUnits(priceInput, decimals);
+    const tx = await trade.listToken(code, SQMU_ADDRESS, tokenId, amount, price, paymentToken);
+    setTradeStatus('Listing tokens...');
+    await tx.wait();
+    setTradeStatus('Listing created', 'green');
+    await displayListings();
+    await displayBalances();
+  } catch (err) {
+    setTradeStatus(err.message, 'red');
+  }
+}
+
+async function buyListing() {
+  if (!trade) {
+    setTradeStatus('Connect wallet first.', 'red');
+    return;
+  }
+  const listingId = document.getElementById('buy-listing-id').value;
+  const amtInput = document.getElementById('buy-amount').value;
+  try {
+    const listing = await trade.getListing(listingId);
+    const amount = ethers.utils.parseUnits(amtInput, DECIMALS);
+    const totalPrice = ethers.BigNumber.from(listing.pricePerToken).mul(amount);
+    await ensureAllowance(listing.paymentToken, totalPrice);
+    const tx = await trade.buy(listingId, amount);
+    setTradeStatus('Buying tokens...');
+    await tx.wait();
+    setTradeStatus('Purchase complete', 'green');
+    await displayListings();
+    await displayBalances();
+  } catch (err) {
+    setTradeStatus(err.message, 'red');
+  }
+}
+
 async function disconnect() {
   await disconnectWallet('portfolio-status');
   provider = undefined;
   signer = undefined;
   sqmu = undefined;
   distributor = undefined;
+  trade = undefined;
   document.getElementById('disconnect').style.display = 'none';
   document.getElementById('connect').disabled = false;
+  document.getElementById('list-btn').disabled = true;
+  document.getElementById('buy-btn').disabled = true;
 }
 
 document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
+document.getElementById('list-btn').addEventListener('click', createListing);
+document.getElementById('buy-btn').addEventListener('click', buyListing);
