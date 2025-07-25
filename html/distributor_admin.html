@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Distributor Admin Interface</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/distributor_admin.js"></script>
+  <style>
+    #layout { display:flex; flex-wrap:wrap; gap:1em; justify-content:center; align-items:flex-start; }
+    #info { flex:1 1 60%; min-width:300px; }
+    #widget { text-align:center; flex:1 1 40%; min-width:280px; }
+    #widget > * { margin:0.6em 0; }
+    label { display:block; margin:0.5em 0 0.2em; }
+    input[type=text], input[type=number] { font: inherit; padding:0.6em; width:100%; max-width:320px; box-sizing:border-box; }
+    #dist-status { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+<div id="layout">
+  <div id="widget">
+    <h3>Distributor Admin</h3>
+    <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+    <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+
+    <div id="manual-section">
+      <h4>Manual Distribution</h4>
+      <label>Property Code <input id="manual-property" type="text"></label>
+      <label>Buyer <input id="manual-buyer" type="text"></label>
+      <label>SQMU Amount <input id="manual-amount" type="number" value="1"></label>
+      <label>Agent Code <input id="manual-agent" type="text"></label>
+      <button id="manual-btn" class="wp-block-button__link" disabled>Distribute</button>
+    </div>
+
+    <div id="agent-section">
+      <h4>Register Agent</h4>
+      <label>Agent Code <input id="agent-code" type="text"></label>
+      <label>Name <input id="agent-name" type="text"></label>
+      <label>Wallet <input id="agent-wallet" type="text"></label>
+      <button id="agent-btn" class="wp-block-button__link" disabled>Register Agent</button>
+    </div>
+
+    <div id="property-section">
+      <h4>Register Property</h4>
+      <label>Property Code <input id="prop-code" type="text"></label>
+      <label>Name <input id="prop-name" type="text"></label>
+      <label>Token Address <input id="prop-token" type="text"></label>
+      <label>Token ID <input id="prop-token-id" type="number"></label>
+      <label>Treasury <input id="prop-treasury" type="text"></label>
+      <label>Price USD (18 decimals) <input id="prop-price" type="text"></label>
+      <label>Active <input id="prop-active" type="checkbox"></label>
+      <button id="property-btn" class="wp-block-button__link" disabled>Register Property</button>
+    </div>
+
+    <div id="status-section">
+      <h4>Set Property Status</h4>
+      <label>Property Code <input id="status-code" type="text"></label>
+      <label>Active <input id="status-active" type="checkbox"></label>
+      <button id="status-btn" class="wp-block-button__link" disabled>Update Status</button>
+    </div>
+
+    <div id="commission-section">
+      <h4>Global Commission Bps</h4>
+      <label>Commission Bps <input id="commission-bps" type="number"></label>
+      <button id="commission-btn" class="wp-block-button__link" disabled>Set Commission</button>
+    </div>
+
+    <div id="query-section">
+      <h4>Queries</h4>
+      <label>Property Code <input id="query-code" type="text"></label>
+      <label>Amount <input id="query-amount" type="number" value="1"></label>
+      <button id="info-btn" class="wp-block-button__link" disabled>Get Property Info</button>
+      <button id="avail-btn" class="wp-block-button__link" disabled>Get Available</button>
+      <button id="price-btn" class="wp-block-button__link" disabled>Get Price</button>
+    </div>
+
+    <pre id="dist-status"></pre>
+  </div>
+
+  <div id="info">
+    <div id="admin-guide" style="max-width:640px; text-align:left; margin:0 auto;">
+      <h3>Distributor Admin Guide</h3>
+      <ol>
+        <li>Click <strong>Connect Wallet</strong> and approve MetaMask access.</li>
+        <li>Use the forms to register properties and agents, change commission or update property status.</li>
+        <li>The Manual Distribution section transfers SQMU directly from a property's treasury.</li>
+        <li>Use the Queries section to inspect property details, price and available supply.</li>
+        <li>Click <strong>Disconnect</strong> when finished.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -191,8 +191,25 @@ for a given property.
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/available.js` so the
    module loads correctly.
 2. The widget automatically extracts the property code from the listing page
-   (or the `code` query parameter) and calls `getAvailable` on the
-   `AtomicSQMUDistributor` contract to show the current supply.
+  (or the `code` query parameter) and calls `getAvailable` on the
+  `AtomicSQMUDistributor` contract to show the current supply.
+
+## Distributor Admin Interface
+
+The page `html/distributor_admin.html` allows owners to manage the
+`AtomicSQMUDistributor` contract. Use it to register properties and agents,
+update the global commission, toggle property status and perform manual
+token distributions.
+
+1. Open the file locally or embed it in a WordPress.com block and keep the
+   script tag pointing to
+   `https://np-vincent.github.io/SQMU-Scroll/js/distributor_admin.js` so the
+   module loads correctly.
+2. Click **Connect Wallet** to initialize MetaMask.
+3. Fill in the desired form and submit. Only the contract owner can call these
+   functions.
+4. Use the **Queries** section to retrieve property info, price and remaining
+   supply for a code.
 
 ## Developer Guidelines
 
