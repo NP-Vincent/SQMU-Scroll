@@ -20,17 +20,25 @@
   <table id="portfolio-table">
     <thead>
       <tr>
-        <th>Token ID</th>
-        <th>Balance</th>
-        <th>Price (USD for 0.01 SQMU)</th>
+        <th>Property Code</th>
+        <th>SQMU Balance</th>
+        <th>USD Value</th>
       </tr>
     </thead>
     <tbody></tbody>
+    <tfoot>
+      <tr>
+        <td>Total</td>
+        <td id="total-sqmu"></td>
+        <td id="total-usd"></td>
+      </tr>
+    </tfoot>
   </table>
   <script>
     // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js.
-    // After connecting your wallet it lists each token ID with balance and the
-    // USD price returned by AtomicSQMUDistributor for 0.01 SQMU.
+    // After connecting your wallet it lists each property code with your
+    // balance and the USD value returned by AtomicSQMUDistributor for that
+    // amount of SQMU.
   </script>
 </body>
 </html>
