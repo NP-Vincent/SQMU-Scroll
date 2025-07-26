@@ -124,6 +124,14 @@
 
 ---
 
+## **7. Relevant Account Abstraction and Multi-Sig OpenZeppelin References**
+- https://docs.openzeppelin.com/contracts/5.x/account-abstraction
+- https://docs.openzeppelin.com/contracts/5.x/accounts
+- https://docs.openzeppelin.com/contracts/5.x/eoa-delegation
+- https://docs.openzeppelin.com/contracts/5.x/multisig
+
+---
+
 # **Summary**
 
 - Fully auditable, transparent, upgradeable escrow contracts per property deal.
