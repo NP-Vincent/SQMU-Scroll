@@ -120,7 +120,7 @@ This contract provides the on-chain marketplace for listing and purchasing SQMU 
 
 ## Deploying Escrow
 
-This contract handles staged funding and multisig release of property payments using `MultiSignerERC7913`.
+This contract handles staged funding and multisig release of property payments using `MultiSignerERC7913Upgradeable`.
 
 1. **Compile in Remix**
    - Open `contracts/Escrow.sol` and ensure OpenZeppelin upgradeable libraries are available.

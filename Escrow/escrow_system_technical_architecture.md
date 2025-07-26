@@ -7,7 +7,7 @@
 ### **A. Escrow Implementation Contract**
 
 - **Upgradeable (UUPS):** OpenZeppelin’s `UUPSUpgradeable`.
-- **Multi-Sig:** 2-of-3 using OpenZeppelin’s `MultiSignerERC7913`.
+- **Multi-Sig:** 2-of-3 using OpenZeppelin’s `MultiSignerERC7913Upgradeable`.
 - **Reentrancy-Proof:** All fund-moving functions use `ReentrancyGuardUpgradeable`.
 - **Access Control:** `AccessControlUpgradeable` for roles: buyer, seller (can be added post-deployment), agent, admin.
 - **Flexible Role Initialization:** Escrow can be initialized with buyer and agent only; seller added later before funding closes. Roles mutable by multisig agreement until 'Funded' state.
@@ -97,7 +97,7 @@
 | -------------------- | ---------------------------------------------------------------------------- |
 | UUPS Upgradeable     | `UUPSUpgradeable` (per proxy instance)                                       |
 | Minimal Proxy        | `Clones` (EIP-1167)                                               |
-| Multi-Sig            | `MultiSignerERC7913` (2 of 3)                                         |
+| Multi-Sig            | `MultiSignerERC7913Upgradeable` (2 of 3)                                         |
 | Access Control       | `AccessControlUpgradeable`                                                   |
 | ERC20 Payment        | `SafeERC20Upgradeable` with whitelisted token list                           |
 | Reentrancy Guard     | `ReentrancyGuardUpgradeable`                                                 |
