@@ -8,7 +8,7 @@ import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgrad
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import {MultiSignerERC7913} from "@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913.sol";
+import {MultiSignerERC7913Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
 
 /// @title Upgradeable Escrow Contract with Minimal Proxy Factory
 /// @notice Implements a basic property escrow following the architecture
@@ -19,7 +19,7 @@ contract Escrow is
     ReentrancyGuardUpgradeable,
     AccessControlEnumerableUpgradeable,
     PausableUpgradeable,
-    MultiSignerERC7913
+    MultiSignerERC7913Upgradeable
 {
     using SafeERC20 for IERC20;
 
@@ -113,8 +113,7 @@ contract Escrow is
         }
         _grantRole(ADMIN_ROLE, agent);
 
-        _addSigners(signers);
-        _setThreshold(2);
+        __MultiSignerERC7913_init(signers, 2);
     }
 
     // ------------------------------------------------------------
