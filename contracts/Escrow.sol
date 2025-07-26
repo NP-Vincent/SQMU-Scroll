@@ -2,20 +2,19 @@
 pragma solidity ^0.8.24;
 
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {ClonesUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/ClonesUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
-import {AccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {SafeERC20Upgradeable, IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-// NOTE: MultisigModule lives in OpenZeppelin Contracts v5.x accounts library
-import {MultisigModule} from "@openzeppelin/contracts/multisig/MultisigModule.sol";
+import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {MultiSignerERC7913} from "@openzeppelin/contracts/utils/cryptography/signers/MultiSignerERC7913.sol";
 
 /// @title Property Purchase Escrow
 /// @notice Minimal proxy escrow contract with staged funding and multisig release
 /// @dev Based on documentation in `Escrow/escrow_system_technical_architecture.md`
-contract Escrow is Initializable, UUPSUpgradeable, AccessControlUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, MultisigModule {
-    using SafeERC20Upgradeable for IERC20Upgradeable;
+contract Escrow is Initializable, UUPSUpgradeable, AccessControlEnumerableUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, MultiSignerERC7913 {
+    using SafeERC20 for IERC20;
 
     /// @notice Escrow lifecycle states
     enum State {
@@ -32,7 +31,7 @@ contract Escrow is Initializable, UUPSUpgradeable, AccessControlUpgradeable, Pau
     bytes32 public constant AGENT_ROLE = keccak256("AGENT_ROLE");
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    IERC20Upgradeable public paymentToken;
+    IERC20 public paymentToken;
     uint256 public totalRequired;
     uint256 public fundedAmount;
     uint256 public deadline;
@@ -55,7 +54,7 @@ contract Escrow is Initializable, UUPSUpgradeable, AccessControlUpgradeable, Pau
     event Expired(address indexed by);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {
+    constructor() MultiSignerERC7913(new bytes[](0), 1) {
         _disableInitializers();
     }
 
@@ -71,14 +70,14 @@ contract Escrow is Initializable, UUPSUpgradeable, AccessControlUpgradeable, Pau
         address buyer,
         address agent,
         address seller,
-        IERC20Upgradeable token,
+        IERC20 token,
         uint256 amount,
         uint256 deadlineTs,
         address factoryAddr
     ) external initializer {
         require(buyer != address(0) && agent != address(0), "roles required");
         __UUPSUpgradeable_init();
-        __AccessControl_init();
+        __AccessControlEnumerable_init();
         __Pausable_init();
         __ReentrancyGuard_init();
 
