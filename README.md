@@ -120,11 +120,11 @@ This contract provides the on-chain marketplace for listing and purchasing SQMU 
 
 ## Deploying Escrow
 
-This contract handles staged funding and multisig release of property payments.
+This contract handles staged funding and multisig release of property payments using `MultiSignerERC7913`.
 
 1. **Compile in Remix**
    - Open `contracts/Escrow.sol` and ensure OpenZeppelin upgradeable libraries are available.
-   - Compile with Solidity `^0.8.24`.
+   - Compile with Solidity `^0.8.24` and OpenZeppelin Contracts **v5.4**.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
    - Initialize with buyer, agent, optional seller, token, amount and deadline.
@@ -136,7 +136,7 @@ This contract handles staged funding and multisig release of property payments.
 
 ## Dependencies
 
-- OpenZeppelin Contracts (upgradeable)
+- OpenZeppelin Contracts **v5.4** (upgradeable)
 - ethers.js **v5.7.2**
 - @metamask/sdk
 
