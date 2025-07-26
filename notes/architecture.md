@@ -7,7 +7,7 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 ## Smart Contracts
 
 - `SQMU.sol` implements an upgradeable ERC-1155 token using OpenZeppelin libraries and the UUPS proxy pattern.
-- The current contract is generated from the OpenZeppelin **v5** wizard and compiled with Solidity **0.8.24**.
+- The current contract is generated from the OpenZeppelin **v5** wizard and compiled with Solidity **0.8.26**.
 - `SQMUTrade.sol` provides a simple on-chain marketplace allowing users to list and purchase SQMU tokens with escrowed transfers and commission payouts.
 - `Escrow.sol` manages staged funding and multi-signature release for property purchases using `MultiSignerERC7913`.
 - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.

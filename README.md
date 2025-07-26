@@ -23,7 +23,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 
 2. **Contract Deployment**
    - Edit or extend the smart contract in `contracts/SQMU.sol`
-   - The contract is based on OpenZeppelin Contracts **v5** and compiled with Solidity **0.8.24**.
+   - The contract is based on OpenZeppelin Contracts **v5** and compiled with Solidity **0.8.26**.
    - Deploy using Remix or Hardhat, on the Scroll network
    - Export the ABI and update `abi/SQMU.json`
    - Record the new proxy and implementation in `notes/deployment_log.md`
@@ -87,7 +87,7 @@ Use the same approach to deploy the payment distributor contract.
 1. **Compile in Remix**
    - Open [Remix IDE](https://remix.ethereum.org/) and load `contracts/AtomicSQMUDistributor.sol`.
    - Under **Libraries**, install **OpenZeppelin Contracts (upgradeable)** so the imports resolve.
-   - Compile the contract with Solidity `^0.8.24`.
+   - Compile the contract with Solidity `^0.8.26`.
 
 2. **Deploy a UUPS Proxy**
    - Activate the OpenZeppelin Upgrades plugin (or use the deploy/run panel) and choose **Deploy (uups) Proxy**.
@@ -108,7 +108,7 @@ This contract provides the on-chain marketplace for listing and purchasing SQMU 
 
 1. **Compile in Remix**
    - Open `contracts/SQMUTrade.sol` and ensure OpenZeppelin upgradeable libraries are available.
-   - Compile the contract with Solidity `^0.8.24`.
+   - Compile the contract with Solidity `^0.8.26`.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
    - Call `initialize(treasury, commissionBps)` to set the treasury address and starting commission.
@@ -124,7 +124,7 @@ This contract handles staged funding and multisig release of property payments u
 
 1. **Compile in Remix**
    - Open `contracts/Escrow.sol` and ensure OpenZeppelin upgradeable libraries are available.
-   - Compile with Solidity `^0.8.24` and OpenZeppelin Contracts **v5.4**.
+   - Compile with Solidity `^0.8.26` and OpenZeppelin Contracts **v5.4**.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
    - Initialize with buyer, agent, optional seller, token, amount and deadline.
