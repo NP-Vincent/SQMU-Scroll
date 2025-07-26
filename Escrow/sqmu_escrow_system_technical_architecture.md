@@ -1,4 +1,4 @@
-# **SQMU Escrow System — Technical Architecture (Minimal Proxy + UUPS Upgradeable)**
+# **Escrow System — Technical Architecture (Minimal Proxy + UUPS Upgradeable)**
 
 ---
 
