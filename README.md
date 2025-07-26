@@ -118,6 +118,22 @@ This contract provides the on-chain marketplace for listing and purchasing SQMU 
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the new ABI in any marketplace widgets.
 
+## Deploying Escrow
+
+This contract handles staged funding and multisig release of property payments.
+
+1. **Compile in Remix**
+   - Open `contracts/Escrow.sol` and ensure OpenZeppelin upgradeable libraries are available.
+   - Compile with Solidity `^0.8.24`.
+2. **Deploy a UUPS Proxy**
+   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
+   - Initialize with buyer, agent, optional seller, token, amount and deadline.
+3. **Export ABI**
+   - Save the ABI JSON as `abi/Escrow.json` and record addresses in `notes/deployment_log.md`.
+4. **Update Front-End**
+   - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+
+
 ## Dependencies
 
 - OpenZeppelin Contracts (upgradeable)
