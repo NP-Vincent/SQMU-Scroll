@@ -4,7 +4,7 @@ pragma solidity ^0.8.26;
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
@@ -45,7 +45,7 @@ contract SQMUGovernance is
         bool forfeited;
     }
 
-    IERC1155Upgradeable public sqmuToken;
+    ERC1155Upgradeable public sqmuToken;
     uint256 public constant GOVERNANCE_ID = 0;
 
     uint256 public tokenPriceUSD; // USD price with 18 decimals
@@ -79,7 +79,7 @@ contract SQMUGovernance is
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {_disableInitializers();}
 
-    receive() external payable {
+    receive() external payable override {
         if (msg.value > 0) {
             emit RevenueReceived(msg.sender, msg.value, address(0));
         }
@@ -119,7 +119,7 @@ contract SQMUGovernance is
         __GovernorCountingSimple_init();
         __GovernorTimelockControl_init(TimelockControllerUpgradeable(payable(timelockAddr)));
 
-        sqmuToken = IERC1155Upgradeable(sqmuAddress);
+        sqmuToken = ERC1155Upgradeable(sqmuAddress);
         tokenPriceUSD = priceUSD;
         founder = founderAddr;
         team = teamAddr;
@@ -268,16 +268,44 @@ contract SQMUGovernance is
     }
 
     // ------- Governor Overrides -------
-    function votingDelay() public pure override returns (uint256) {
+    function votingDelay()
+        public
+        pure
+        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
+        returns (uint256)
+    {
         return 1;
     }
 
-    function votingPeriod() public pure override returns (uint256) {
+    function votingPeriod()
+        public
+        pure
+        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
+        returns (uint256)
+    {
         return 45818;
     }
 
     function quorum(uint256 blockNumber) public view override(GovernorUpgradeable, GovernorVotesQuorumFractionUpgradeable) returns (uint256) {
         return super.quorum(blockNumber);
+    }
+
+    function proposalThreshold()
+        public
+        view
+        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
+        returns (uint256)
+    {
+        return super.proposalThreshold();
+    }
+
+    function proposalNeedsQueuing(uint256 proposalId)
+        public
+        view
+        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        returns (bool)
+    {
+        return super.proposalNeedsQueuing(proposalId);
     }
 
     function getVotes(address account, uint256 blockNumber) public view override returns (uint256) {
@@ -302,7 +330,7 @@ contract SQMUGovernance is
         uint256[] memory values,
         bytes[] memory calldatas,
         string memory description
-    ) public override(GovernorUpgradeable, IGovernor) returns (uint256) {
+    ) public override(GovernorUpgradeable) returns (uint256) {
         return super.propose(targets, values, calldatas, description);
     }
 
@@ -323,6 +351,35 @@ contract SQMUGovernance is
         bytes32 descriptionHash
     ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
+    }
+
+    function _queueOperations(
+        uint256 proposalId,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        bytes32 descriptionHash
+    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint48) {
+        return super._queueOperations(proposalId, targets, values, calldatas, descriptionHash);
+    }
+
+    function _executeOperations(
+        uint256 proposalId,
+        address[] memory targets,
+        uint256[] memory values,
+        bytes[] memory calldatas,
+        bytes32 descriptionHash
+    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) {
+        super._executeOperations(proposalId, targets, values, calldatas, descriptionHash);
+    }
+
+    function _executor()
+        internal
+        view
+        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        returns (address)
+    {
+        return super._executor();
     }
 
     function supportsInterface(bytes4 interfaceId)
