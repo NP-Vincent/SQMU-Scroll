@@ -133,6 +133,22 @@ This contract handles staged funding and multisig release of property payments u
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
 
+## Deploying SQMUTimelock
+
+This contract wraps OpenZeppelin's `TimelockController` in a UUPS upgradeable
+proxy. It will control execution of all governance proposals.
+
+1. **Compile in Remix**
+   - Open `contracts/SQMUTimelock.sol` and ensure OpenZeppelin upgradeable libraries are available.
+   - Compile with Solidity `^0.8.26`.
+2. **Deploy a UUPS Proxy**
+   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
+   - After deployment, call `initialize(minDelay, proposers, executors)` to configure the timelock roles.
+3. **Export ABI**
+   - Save the ABI JSON as `abi/SQMUTimelock.json` and record the proxy and implementation addresses in `notes/deployment_log.md`.
+
+Record this proxy address for use when initializing `SQMUGovernance`.
+
 ## Deploying SQMUGovernance
 
 This contract manages the governance token sale, vesting logic and on-chain voting.
@@ -144,7 +160,7 @@ address's total allocated governance tokens (both locked and unlocked).
    - Compile with Solidity `^0.8.26`.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - Supply initialization arguments for token price, recipient wallets, stablecoin addresses and the deployed `TimelockController` contract.
+   - Supply initialization arguments for token price, recipient wallets, stablecoin addresses and the deployed `SQMUTimelock` proxy.
 3. **Export ABI**
    - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
