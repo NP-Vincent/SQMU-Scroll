@@ -144,7 +144,7 @@ address's total allocated governance tokens (both locked and unlocked).
    - Compile with Solidity `^0.8.26`.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - Supply initialization arguments for token price, recipient wallets and stablecoin addresses.
+   - Supply initialization arguments for token price, recipient wallets, stablecoin addresses and the deployed `TimelockController` contract.
 3. **Export ABI**
    - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**

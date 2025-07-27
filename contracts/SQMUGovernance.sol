@@ -84,6 +84,18 @@ contract SQMUGovernance is
         }
     }
 
+    /// @notice Initialize the governance module and mint the full token supply.
+    /// @param sqmuAddress Address of the SQMU ERC1155 token contract.
+    /// @param priceUSD Price of one governance token denominated in USD with 18 decimals.
+    /// @param founderAddr Wallet for founder token allocation.
+    /// @param teamAddr Wallet for team token allocation.
+    /// @param vcAddr Wallet for VC token allocation.
+    /// @param publicSaleAddr Wallet for public sale token allocation.
+    /// @param treasuryAddr Treasury wallet receiving forfeited tokens and revenue.
+    /// @param usdcAddr USDC token address used for purchases.
+    /// @param usdtAddr USDT token address used for purchases.
+    /// @param usdqAddr USDQ token address used for purchases.
+    /// @param timelockAddr Deployed TimelockController used by GovernorTimelockControl.
     function initialize(
         address sqmuAddress,
         uint256 priceUSD,
@@ -94,7 +106,8 @@ contract SQMUGovernance is
         address treasuryAddr,
         address usdcAddr,
         address usdtAddr,
-        address usdqAddr
+        address usdqAddr,
+        address timelockAddr
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -103,7 +116,7 @@ contract SQMUGovernance is
         __GovernorVotes_init(new ERC1155VotesAdapter(ISQMUGovernance(address(this))));
         __GovernorVotesQuorumFraction_init(4);
         __GovernorCountingSimple_init();
-        __GovernorTimelockControl_init(TimelockController(payable(address(0))));
+        __GovernorTimelockControl_init(TimelockController(payable(timelockAddr)));
 
         sqmuToken = IERC1155Upgradeable(sqmuAddress);
         tokenPriceUSD = priceUSD;
