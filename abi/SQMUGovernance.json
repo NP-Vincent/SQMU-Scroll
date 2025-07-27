@@ -4,6 +4,25 @@
   "abi": [
     {
       "inputs": [
+        { "internalType": "address", "name": "sqmuAddress", "type": "address" },
+        { "internalType": "uint256", "name": "priceUSD", "type": "uint256" },
+        { "internalType": "address", "name": "founderAddr", "type": "address" },
+        { "internalType": "address", "name": "teamAddr", "type": "address" },
+        { "internalType": "address", "name": "vcAddr", "type": "address" },
+        { "internalType": "address", "name": "publicSaleAddr", "type": "address" },
+        { "internalType": "address", "name": "treasuryAddr", "type": "address" },
+        { "internalType": "address", "name": "usdcAddr", "type": "address" },
+        { "internalType": "address", "name": "usdtAddr", "type": "address" },
+        { "internalType": "address", "name": "usdqAddr", "type": "address" },
+        { "internalType": "address", "name": "timelockAddr", "type": "address" }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
         { "internalType": "uint256", "name": "amount", "type": "uint256" },
         { "internalType": "address", "name": "paymentToken", "type": "address" }
       ],
@@ -99,5 +118,5 @@
     }
   ],
   "filePath": "SQMU-Scroll/SQMUGovernance.sol",
-  "pinnedAt": 1753639599259
+  "pinnedAt": 1753641587565
 }
