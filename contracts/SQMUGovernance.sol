@@ -199,6 +199,9 @@ contract SQMUGovernance is
 
     function getVotes(address account, uint256 blockNumber) public view override returns (uint256) {
         LockInfo storage info = locks[account];
+        if (info.forfeited) {
+            return 0;
+        }
         return info.totalAllocated; // simplified
     }
 

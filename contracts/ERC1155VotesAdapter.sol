@@ -45,6 +45,9 @@ contract ERC1155VotesAdapter is IVotes {
 
     function getVotes(address account) public view override returns (uint256) {
         ISQMUGovernance.LockInfo memory info = governance.locks(account);
+        if (info.forfeited) {
+            return 0;
+        }
         return info.totalAllocated;
     }
 
