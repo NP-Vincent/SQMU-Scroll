@@ -127,6 +127,29 @@ contract SQMUGovernance is
         _allocate(treasuryAddr, 250_000, 52 weeks, 0); // treasury locked until DAO
     }
 
+    /// @notice Return the metadata URI for the governance token.
+    /// @dev Replaces `{id}` with the token ID if present in the base URI.
+    function governanceURI() public view returns (string memory) {
+        string memory base = sqmuToken.uri(GOVERNANCE_ID);
+        bytes memory b = bytes(base);
+        for (uint256 i = 0; i + 3 < b.length; ++i) {
+            if (b[i] == '{' && b[i + 1] == 'i' && b[i + 2] == 'd' && b[i + 3] == '}') {
+                bytes memory prefix = new bytes(i);
+                for (uint256 j; j < i; ++j) {
+                    prefix[j] = b[j];
+                }
+                bytes memory suffix = new bytes(b.length - i - 4);
+                for (uint256 j; j < suffix.length; ++j) {
+                    suffix[j] = b[i + 4 + j];
+                }
+                return string(
+                    abi.encodePacked(prefix, Strings.toHexString(GOVERNANCE_ID, 32), suffix)
+                );
+            }
+        }
+        return string(abi.encodePacked(base, Strings.toString(GOVERNANCE_ID), ".json"));
+    }
+
     function _allocate(address account, uint256 amount, uint64 cliff, uint64 duration) internal {
         locks[account] = LockInfo({
             totalAllocated: amount,

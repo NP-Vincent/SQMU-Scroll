@@ -153,6 +153,8 @@ address's total allocated governance tokens (both locked and unlocked).
 5. **Governance Token Sale**
    - Call `buyGovernance(amount, paymentToken)` using USDC, USDT or USDQ to purchase locked governance tokens.
    - Holders claim vested tokens over time via `claimUnlockedTokens()`.
+6. **Metadata**
+   - Call `governanceURI()` to retrieve the finalized URI for token ID 0 so front-end widgets can load the logo.
 
 ### ERC1155VotesAdapter
 
