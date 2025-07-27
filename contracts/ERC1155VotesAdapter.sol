@@ -28,7 +28,7 @@ contract ERC1155VotesAdapter is IVotes {
         governance = governance_;
     }
 
-    function delegates(address) public view override returns (address) {
+    function delegates(address) public pure override returns (address) {
         return address(0);
     }
 
