@@ -7,6 +7,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
+import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
@@ -16,7 +17,6 @@ import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/ex
 import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
-import {PaymentSplitter} from "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 import {ERC1155VotesAdapter} from "./ERC1155VotesAdapter.sol";
 
 import {SQMU} from "./SQMU.sol";
@@ -33,8 +33,7 @@ contract SQMUGovernance is
     GovernorVotes,
     GovernorVotesQuorumFraction,
     GovernorCountingSimple,
-    GovernorTimelockControl,
-    PaymentSplitter
+    GovernorTimelockControl
 {
     struct LockInfo {
         uint256 totalAllocated;
@@ -62,12 +61,28 @@ contract SQMUGovernance is
 
     mapping(address => LockInfo) public locks;
 
+    uint256 public totalAllocatedTokens;
+
+    uint256 public totalEthReleased;
+    mapping(address => uint256) public ethReleased;
+    mapping(address => uint256) public erc20TotalReleased;
+    mapping(address => mapping(address => uint256)) public erc20Released;
+
+    event RevenueClaimed(address indexed account, address indexed token, uint256 amount);
+    event RevenueReceived(address indexed from, uint256 amount, address indexed token);
+
     event GovernancePurchased(address indexed buyer, uint256 amount, address paymentToken);
     event TokensClaimed(address indexed account, uint256 amount);
     event TokensForfeited(address indexed account, uint256 amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
+
+    receive() external payable {
+        if (msg.value > 0) {
+            emit RevenueReceived(msg.sender, msg.value, address(0));
+        }
+    }
 
     function initialize(
         address sqmuAddress,
@@ -79,9 +94,7 @@ contract SQMUGovernance is
         address treasuryAddr,
         address usdcAddr,
         address usdtAddr,
-        address usdqAddr,
-        address[] memory payees,
-        uint256[] memory shares_
+        address usdqAddr
     ) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
@@ -91,7 +104,6 @@ contract SQMUGovernance is
         __GovernorVotesQuorumFraction_init(4);
         __GovernorCountingSimple_init();
         __GovernorTimelockControl_init(TimelockController(payable(address(0))));
-        PaymentSplitter(payees, shares_);
 
         sqmuToken = IERC1155Upgradeable(sqmuAddress);
         tokenPriceUSD = priceUSD;
@@ -124,6 +136,7 @@ contract SQMUGovernance is
             duration: duration,
             forfeited: false
         });
+        totalAllocatedTokens += amount;
     }
 
     function buyGovernance(uint256 amount, address paymentToken) external {
@@ -142,11 +155,11 @@ contract SQMUGovernance is
 
         LockInfo storage info = locks[msg.sender];
         if (info.totalAllocated == 0) {
-            info.startTime = uint64(block.timestamp);
-            info.cliff = uint64(2 weeks);
-            info.duration = uint64(7 weeks);
+            _allocate(msg.sender, amount, 2 weeks, 7 weeks);
+        } else {
+            info.totalAllocated += amount;
+            totalAllocatedTokens += amount;
         }
-        info.totalAllocated += amount;
 
         emit GovernancePurchased(msg.sender, amount, paymentToken);
     }
@@ -182,6 +195,39 @@ contract SQMUGovernance is
         info.forfeited = true;
         locks[treasury].totalAllocated += remaining;
         emit TokensForfeited(account, remaining);
+    }
+
+    function pendingRevenue(address account, address token) public view returns (uint256) {
+        LockInfo storage info = locks[account];
+        if (info.forfeited || info.totalAllocated == 0) {
+            return 0;
+        }
+        uint256 totalReceived;
+        uint256 released;
+        if (token == address(0)) {
+            totalReceived = address(this).balance + totalEthReleased;
+            released = ethReleased[account];
+        } else {
+            IERC20Upgradeable erc20 = IERC20Upgradeable(token);
+            totalReceived = erc20.balanceOf(address(this)) + erc20TotalReleased[token];
+            released = erc20Released[token][account];
+        }
+        return (totalReceived * info.totalAllocated) / totalAllocatedTokens - released;
+    }
+
+    function claimRevenue(address token) external {
+        uint256 payment = pendingRevenue(msg.sender, token);
+        require(payment > 0, "none");
+        if (token == address(0)) {
+            ethReleased[msg.sender] += payment;
+            totalEthReleased += payment;
+            AddressUpgradeable.sendValue(payable(msg.sender), payment);
+        } else {
+            erc20Released[token][msg.sender] += payment;
+            erc20TotalReleased[token] += payment;
+            IERC20Upgradeable(token).transfer(msg.sender, payment);
+        }
+        emit RevenueClaimed(msg.sender, token, payment);
     }
 
     // ------- Governor Overrides -------

@@ -10,7 +10,7 @@ This document outlines the remaining steps to bring the governance module into p
   - `UUPSUpgradeable`
   - `Strings`
   - Governor modules: `Governor`, `GovernorSettings`, `GovernorVotes`, `GovernorVotesQuorumFraction`, `GovernorCountingSimple`, `GovernorTimelockControl`
-  - Revenue distribution via `PaymentSplitter`
+  - Revenue distribution via custom dynamic logic
 - Complete custom locking and forfeiture features as described in `governance_contract_requirements.md`.
 - Implement an ERC1155Votes adapter so the Governor can read ID 0 balances (locked and unlocked).
 - Add comprehensive events for sales, locking, unlocking and voting actions.

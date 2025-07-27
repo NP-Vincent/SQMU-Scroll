@@ -35,7 +35,7 @@
 
 | Feature Area      | OpenZeppelin Import                                                                                                                                                                    | Purpose                                                                      |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Revenue Splitting | `PaymentSplitter` from `@openzeppelin/contracts/finance/PaymentSplitter.sol` ([docs.openzeppelin.com](https://docs.openzeppelin.com/contracts/4.x/api/finance?utm_source=chatgpt.com)) | Distributes income (ETH or ERC‑20 tokens) pro-rata based on share allocation |
+| Revenue Splitting | Custom dynamic logic | Distributes income (ETH or ERC‑20 tokens) pro-rata based on each holder's total allocated tokens |
 
 You can treat governance tokens (ID 0) as "shares" for splitting revenue. Allocation should reflect both locked and unlocked balances per user.
 
@@ -58,7 +58,7 @@ import "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol
 import "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 
 // For profit-sharing logic
-import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
+// Custom dynamic distribution implemented in SQMUGovernance.sol
 ```
 
 ---
@@ -67,7 +67,7 @@ import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 
 - **Lock/Unlock Logic & Control** → Built within your custom Governance contract using `OwnableUpgradeable`; tracks total allocated, locked, and unlocked balances.
 - **Governance Voting** → Uses Governor modules, connected to a wrapper (or adapter) to read ID 0 balances (locked + unlocked total).
-- **Revenue Distribution** → Leverage `PaymentSplitter` to distribute income among holders of ID 0, mapped to locked/unlocked voting shares.
+- **Revenue Distribution** → Custom logic distributes income among holders based on total allocated governance tokens (locked and unlocked).
 - **Upgradeability & Ownership** → UUPS and Ownable give flexibility and secure control.
 
 ---

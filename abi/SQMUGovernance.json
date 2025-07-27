@@ -20,6 +20,27 @@
       "type": "function"
     },
     {
+      "inputs": [
+        { "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "claimRevenue",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        { "internalType": "address", "name": "account", "type": "address" },
+        { "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "pendingRevenue",
+      "outputs": [
+        { "internalType": "uint256", "name": "", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
       "anonymous": false,
       "inputs": [
         { "indexed": true, "internalType": "address", "name": "buyer", "type": "address" },
@@ -45,6 +66,26 @@
         { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
       ],
       "name": "TokensForfeited",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": true, "internalType": "address", "name": "account", "type": "address" },
+        { "indexed": false, "internalType": "address", "name": "token", "type": "address" },
+        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" }
+      ],
+      "name": "RevenueClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        { "indexed": true, "internalType": "address", "name": "from", "type": "address" },
+        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "indexed": false, "internalType": "address", "name": "token", "type": "address" }
+      ],
+      "name": "RevenueReceived",
       "type": "event"
     }
   ],
