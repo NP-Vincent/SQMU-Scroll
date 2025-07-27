@@ -11,16 +11,16 @@ import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/Addr
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 
-import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
-import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
-import {GovernorVotes} from "@openzeppelin/contracts/governance/extensions/GovernorVotes.sol";
-import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
-import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
-import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
-import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
-import {ERC1155VotesAdapter} from "https://np-vincent.github.io/SQMU-Scroll/contracts/ERC1155VotesAdapter.sol";
+import {GovernorUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
+import {GovernorSettingsUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorSettingsUpgradeable.sol";
+import {GovernorVotesUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
+import {GovernorVotesQuorumFractionUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesQuorumFractionUpgradeable.sol";
+import {GovernorCountingSimpleUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
+import {GovernorTimelockControlUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
+import {TimelockControllerUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
+import {ERC1155VotesAdapter, ISQMUGovernance} from "./ERC1155VotesAdapter.sol";
 
-import {SQMU} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMU.sol";
+import {SQMU} from "./SQMU.sol";
 
 /// @title SQMUGovernance
 /// @notice Governance and revenue sharing for SQMU ecosystem.
@@ -29,12 +29,12 @@ contract SQMUGovernance is
     Initializable,
     OwnableUpgradeable,
     UUPSUpgradeable,
-    Governor,
-    GovernorSettings,
-    GovernorVotes,
-    GovernorVotesQuorumFraction,
-    GovernorCountingSimple,
-    GovernorTimelockControl
+    GovernorUpgradeable,
+    GovernorSettingsUpgradeable,
+    GovernorVotesUpgradeable,
+    GovernorVotesQuorumFractionUpgradeable,
+    GovernorCountingSimpleUpgradeable,
+    GovernorTimelockControlUpgradeable
 {
     struct LockInfo {
         uint256 totalAllocated;
@@ -77,7 +77,7 @@ contract SQMUGovernance is
     event TokensForfeited(address indexed account, uint256 amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    constructor() {_disableInitializers();}
 
     receive() external payable {
         if (msg.value > 0) {
@@ -96,7 +96,7 @@ contract SQMUGovernance is
     /// @param usdcAddr USDC token address used for purchases.
     /// @param usdtAddr USDT token address used for purchases.
     /// @param usdqAddr USDQ token address used for purchases.
-    /// @param timelockAddr Deployed TimelockController used by GovernorTimelockControl.
+    /// @param timelockAddr Deployed TimelockController used by GovernorTimelockControlUpgradeable.
     function initialize(
         address sqmuAddress,
         uint256 priceUSD,
@@ -117,7 +117,7 @@ contract SQMUGovernance is
         __GovernorVotes_init(new ERC1155VotesAdapter(ISQMUGovernance(address(this))));
         __GovernorVotesQuorumFraction_init(4);
         __GovernorCountingSimple_init();
-        __GovernorTimelockControl_init(TimelockController(payable(timelockAddr)));
+        __GovernorTimelockControl_init(TimelockControllerUpgradeable(payable(timelockAddr)));
 
         sqmuToken = IERC1155Upgradeable(sqmuAddress);
         tokenPriceUSD = priceUSD;
@@ -276,7 +276,7 @@ contract SQMUGovernance is
         return 45818;
     }
 
-    function quorum(uint256 blockNumber) public view override(Governor, GovernorVotesQuorumFraction) returns (uint256) {
+    function quorum(uint256 blockNumber) public view override(GovernorUpgradeable, GovernorVotesQuorumFractionUpgradeable) returns (uint256) {
         return super.quorum(blockNumber);
     }
 
@@ -291,7 +291,7 @@ contract SQMUGovernance is
     function state(uint256 proposalId)
         public
         view
-        override(Governor, GovernorTimelockControl)
+        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
         returns (ProposalState)
     {
         return super.state(proposalId);
@@ -302,7 +302,7 @@ contract SQMUGovernance is
         uint256[] memory values,
         bytes[] memory calldatas,
         string memory description
-    ) public override(Governor, IGovernor) returns (uint256) {
+    ) public override(GovernorUpgradeable, IGovernor) returns (uint256) {
         return super.propose(targets, values, calldatas, description);
     }
 
@@ -312,7 +312,7 @@ contract SQMUGovernance is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(Governor, GovernorTimelockControl) {
+    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) {
         super._execute(proposalId, targets, values, calldatas, descriptionHash);
     }
 
@@ -321,14 +321,14 @@ contract SQMUGovernance is
         uint256[] memory values,
         bytes[] memory calldatas,
         bytes32 descriptionHash
-    ) internal override(Governor, GovernorTimelockControl) returns (uint256) {
+    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint256) {
         return super._cancel(targets, values, calldatas, descriptionHash);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(Governor, GovernorTimelockControl)
+        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
