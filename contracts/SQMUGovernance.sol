@@ -15,6 +15,7 @@ import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensi
 import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 import {PaymentSplitter} from "@openzeppelin/contracts/finance/PaymentSplitter.sol";
+import {ERC1155VotesAdapter} from "./ERC1155VotesAdapter.sol";
 
 import {SQMU} from "./SQMU.sol";
 
@@ -84,7 +85,7 @@ contract SQMUGovernance is
         __UUPSUpgradeable_init();
         __Governor_init("SQMUGovernance");
         __GovernorSettings_init(1 /* voting delay */, 45818 /* voting period */, 0);
-        __GovernorVotes_init(IVotes(address(0)));
+        __GovernorVotes_init(new ERC1155VotesAdapter(ISQMUGovernance(address(this))));
         __GovernorVotesQuorumFraction_init(4);
         __GovernorCountingSimple_init();
         __GovernorTimelockControl_init(TimelockController(payable(address(0))));
