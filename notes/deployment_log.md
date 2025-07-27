@@ -12,6 +12,3 @@ This file records every deployment and upgrade of the SQMU smart contracts. Use 
 | 07/27/2025 | Escrow.sol | Scroll (Chain ID: 534352) | Proxy Creation Failed | 0x17E17099d857cDa91341d9D180bf310440B4f7A4 | Version 1 | https://scrollscan.com/address/ProxyCreationFailed , https://scrollscan.com/address/0x17E17099d857cDa91341d9D180bf310440B4f7A4 |
 | 07/27/2025 | EscrowFactory.sol | Scroll (Chain ID: 534352) | Proxy Creation Failed | 0xCC562e273c53366C14AD8B3C9b6D0E5F02B77e21 | Version 1 | https://scrollscan.com/address/ProxyCreationFailed , https://scrollscan.com/address/0xCC562e273c53366C14AD8B3C9b6D0E5F02B77e21|
 | 07/28/2025 | SQMUTimelock.sol | Scroll (Chain ID: 534352) | Proxy Creation Failed | 0x5471E09c5eE5244291dA4a9acAac6F47BfEdC70C | Version 1 | https://scrollscan.com/address/ProxyCreationFailed , https://scrollscan.com/address/0x5471E09c5eE5244291dA4a9acAac6F47BfEdC70C |
-
-
- escrowfactory.sol deploy 1 0xa7c180B1538b2BDc73D7a5b3293B9C7fA7A085DA
