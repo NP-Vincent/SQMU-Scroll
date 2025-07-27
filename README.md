@@ -157,6 +157,7 @@ address's total allocated governance tokens (both locked and unlocked).
 ### ERC1155VotesAdapter
 
 `ERC1155VotesAdapter.sol` implements the `IVotes` interface for the Governor. It reads the `locks` mapping in `SQMUGovernance` so voting weight equals the sum of locked and unlocked allocations for each address.
+When `adminForfeit` is called on an account, the lock is flagged as forfeited and both the adapter and governor report zero votes for that address.
 
 
 ## Dependencies
