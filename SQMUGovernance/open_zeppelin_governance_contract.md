@@ -75,6 +75,6 @@ import "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 ### Additional Notes
 
 - OpenZeppelin’s **VestingWallet** and **TokenTimelock** modules operate for ERC‑20 tokens and help as references (not directly usable with ERC‑1155 government token) ([OpenZeppelin Forum](https://forum.openzeppelin.com/t/how-to-use-tokentimelock-sol-to-lock-up-tokens/738?utm_source=chatgpt.com), [docs.openzeppelin.com](https://docs.openzeppelin.com/contracts/4.x/api/finance?utm_source=chatgpt.com), [docs.openzeppelin.com](https://docs.openzeppelin.com/contracts/4.x/api/governance?utm_source=chatgpt.com)).
-- For ERC‑1155 governance token support with OpenZeppelin governance system, you will likely create a small adapter contract to expose ID 0 balances via the `IVotes` interface expected by `GovernorVotes`.
+- For ERC‑1155 governance token support with OpenZeppelin governance system, you will likely create a small adapter contract to expose ID 0 balances via the `IVotes` interface expected by `GovernorVotes`. ERC1155VotesAdapter.sol now provides this function by returning each account's total allocated tokens (locked + unlocked) as votes.
 
 ---

@@ -136,6 +136,8 @@ This contract handles staged funding and multisig release of property payments u
 ## Deploying SQMUGovernance
 
 This contract manages the governance token sale, vesting logic and on-chain voting.
+Voting power is measured through `ERC1155VotesAdapter`, which reports each
+address's total allocated governance tokens (both locked and unlocked).
 
 1. **Compile in Remix**
    - Open `contracts/SQMUGovernance.sol` with OpenZeppelin upgradeable libraries available.
@@ -147,6 +149,10 @@ This contract manages the governance token sale, vesting logic and on-chain voti
    - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the ABI in the governance widgets.
+
+### ERC1155VotesAdapter
+
+`ERC1155VotesAdapter.sol` implements the `IVotes` interface for the Governor. It reads the `locks` mapping in `SQMUGovernance` so voting weight equals the sum of locked and unlocked allocations for each address.
 
 
 ## Dependencies
