@@ -7,7 +7,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
-- `js/config.js` – Centralized addresses for the SQMU and distributor contracts
+- `js/config.js` – Centralized addresses for the SQMU, distributor and governance contracts
 - `src/` – Additional JavaScript utilities used by the widgets
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
@@ -132,6 +132,21 @@ This contract handles staged funding and multisig release of property payments u
    - Save the ABI JSON as `abi/Escrow.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+
+## Deploying SQMUGovernance
+
+This contract manages the governance token sale, vesting logic and on-chain voting.
+
+1. **Compile in Remix**
+   - Open `contracts/SQMUGovernance.sol` with OpenZeppelin upgradeable libraries available.
+   - Compile with Solidity `^0.8.26`.
+2. **Deploy a UUPS Proxy**
+   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
+   - Supply initialization arguments for token price, recipient wallets and stablecoin addresses.
+3. **Export ABI**
+   - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
+4. **Update Front-End**
+   - Add the proxy address to `js/config.js` and load the ABI in the governance widgets.
 
 
 ## Dependencies

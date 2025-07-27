@@ -8,9 +8,11 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 
 - `SQMU.sol` implements an upgradeable ERC-1155 token using OpenZeppelin libraries and the UUPS proxy pattern.
 - The current contract is generated from the OpenZeppelin **v5** wizard and compiled with Solidity **0.8.26**.
-- `SQMUTrade.sol` provides a simple on-chain marketplace allowing users to list and purchase SQMU tokens with escrowed transfers and commission payouts.
- - `Escrow.sol` manages staged funding and multi-signature release for property purchases using `MultiSignerERC7913Upgradeable`.
+  - `SQMUTrade.sol` provides a simple on-chain marketplace allowing users to list and purchase SQMU tokens with escrowed transfers and commission payouts.
+  - `Escrow.sol` manages staged funding and multi-signature release for property purchases using `MultiSignerERC7913Upgradeable`.
+  - `SQMUGovernance.sol` controls the governance token sale, vesting schedules and on-chain voting.
 - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.
+- The governance module proxy address is recorded in `notes/deployment_log.md` and referenced by `GOVERNANCE_ADDRESS` in `js/config.js`.
 
 ## Front-End Widgets
 
@@ -27,6 +29,9 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
     removed in favour of this unified widget alongside `buy.html`.
   - `portfolio.html` lists each SQMU token ID owned by the connected wallet
     using `portfolio.js`.
+  - `governance_buy.html` allows investors to purchase governance tokens.
+  - `governance_status.html` displays locked and unlocked balances for the connected wallet.
+  - `governance_vote.html` provides a simple interface to cast votes on proposals.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
