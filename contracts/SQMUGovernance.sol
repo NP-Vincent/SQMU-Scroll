@@ -205,7 +205,7 @@ contract SQMUGovernance is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(Governor, IERC165, PaymentSplitter)
+        override(Governor, GovernorTimelockControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
