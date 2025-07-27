@@ -150,6 +150,10 @@ address's total allocated governance tokens (both locked and unlocked).
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the ABI in the governance widgets.
 
+5. **Governance Token Sale**
+   - Call `buyGovernance(amount, paymentToken)` using USDC, USDT or USDQ to purchase locked governance tokens.
+   - Holders claim vested tokens over time via `claimUnlockedTokens()`.
+
 ### ERC1155VotesAdapter
 
 `ERC1155VotesAdapter.sol` implements the `IVotes` interface for the Governor. It reads the `locks` mapping in `SQMUGovernance` so voting weight equals the sum of locked and unlocked allocations for each address.

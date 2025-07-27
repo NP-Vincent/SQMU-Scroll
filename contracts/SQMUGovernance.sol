@@ -5,6 +5,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
@@ -129,14 +131,48 @@ contract SQMUGovernance is
             paymentToken == usdc || paymentToken == usdt || paymentToken == usdq,
             "invalid token"
         );
-        // Payment and accounting omitted in skeleton
-        locks[msg.sender].totalAllocated += amount;
+        require(amount > 0, "amount");
+        uint8 decimals = IERC20MetadataUpgradeable(paymentToken).decimals();
+        uint256 totalPrice = (tokenPriceUSD * amount * (10 ** decimals)) / 1e18;
+        IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
+        require(
+            erc20.transferFrom(msg.sender, address(this), totalPrice),
+            "payment failed"
+        );
+
+        LockInfo storage info = locks[msg.sender];
+        if (info.totalAllocated == 0) {
+            info.startTime = uint64(block.timestamp);
+            info.cliff = uint64(2 weeks);
+            info.duration = uint64(7 weeks);
+        }
+        info.totalAllocated += amount;
+
         emit GovernancePurchased(msg.sender, amount, paymentToken);
     }
 
     function claimUnlockedTokens() external {
-        // Unlock logic omitted in skeleton
-        emit TokensClaimed(msg.sender, 0);
+        LockInfo storage info = locks[msg.sender];
+        require(!info.forfeited, "forfeited");
+
+        uint256 unlocked;
+        if (block.timestamp < info.startTime + info.cliff) {
+            unlocked = 0;
+        } else if (info.duration == 0) {
+            unlocked = info.totalAllocated;
+        } else {
+            uint256 elapsed = block.timestamp - info.startTime - info.cliff;
+            if (elapsed > info.duration) {
+                elapsed = info.duration;
+            }
+            unlocked = (info.totalAllocated * elapsed) / info.duration;
+        }
+
+        uint256 claimable = unlocked - info.claimed;
+        require(claimable > 0, "none");
+        info.claimed += claimable;
+        sqmuToken.safeTransferFrom(address(this), msg.sender, GOVERNANCE_ID, claimable, "");
+        emit TokensClaimed(msg.sender, claimable);
     }
 
     function adminForfeit(address account) external onlyOwner {
