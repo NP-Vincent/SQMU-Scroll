@@ -13,6 +13,7 @@ import {GovernorVotes} from "@openzeppelin/contracts/governance/extensions/Gover
 import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
+import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
 import {PaymentSplitter} from "@openzeppelin/contracts/finance/PaymentSplitter.sol";
 
 import {SQMU} from "./SQMU.sol";
