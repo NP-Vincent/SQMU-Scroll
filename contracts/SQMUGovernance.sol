@@ -9,6 +9,7 @@ import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20
 import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 
 import {Governor} from "@openzeppelin/contracts/governance/Governor.sol";
 import {GovernorSettings} from "@openzeppelin/contracts/governance/extensions/GovernorSettings.sol";
@@ -17,9 +18,9 @@ import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/ex
 import {GovernorCountingSimple} from "@openzeppelin/contracts/governance/extensions/GovernorCountingSimple.sol";
 import {GovernorTimelockControl} from "@openzeppelin/contracts/governance/extensions/GovernorTimelockControl.sol";
 import {TimelockController} from "@openzeppelin/contracts/governance/TimelockController.sol";
-import {ERC1155VotesAdapter} from "./ERC1155VotesAdapter.sol";
+import {ERC1155VotesAdapter} from "https://np-vincent.github.io/SQMU-Scroll/contracts/ERC1155VotesAdapter.sol";
 
-import {SQMU} from "./SQMU.sol";
+import {SQMU} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMU.sol";
 
 /// @title SQMUGovernance
 /// @notice Governance and revenue sharing for SQMU ecosystem.
@@ -336,4 +337,3 @@ contract SQMUGovernance is
     // ------- Upgradeability -------
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
-
