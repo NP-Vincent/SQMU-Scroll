@@ -5,8 +5,8 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
-import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
@@ -182,9 +182,9 @@ contract SQMUGovernance is
             "invalid token"
         );
         require(amount > 0, "amount");
-        uint8 decimals = IERC20MetadataUpgradeable(paymentToken).decimals();
+        uint8 decimals = IERC20Metadata(paymentToken).decimals();
         uint256 totalPrice = (tokenPriceUSD * amount * (10 ** decimals)) / 1e18;
-        IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
+        IERC20 erc20 = IERC20(paymentToken);
         require(
             erc20.transferFrom(msg.sender, address(this), totalPrice),
             "payment failed"
@@ -245,7 +245,7 @@ contract SQMUGovernance is
             totalReceived = address(this).balance + totalEthReleased;
             released = ethReleased[account];
         } else {
-            IERC20Upgradeable erc20 = IERC20Upgradeable(token);
+            IERC20 erc20 = IERC20(token);
             totalReceived = erc20.balanceOf(address(this)) + erc20TotalReleased[token];
             released = erc20Released[token][account];
         }
@@ -262,7 +262,7 @@ contract SQMUGovernance is
         } else {
             erc20Released[token][msg.sender] += payment;
             erc20TotalReleased[token] += payment;
-            IERC20Upgradeable(token).transfer(msg.sender, payment);
+            IERC20(token).transfer(msg.sender, payment);
         }
         emit RevenueClaimed(msg.sender, token, payment);
     }
@@ -334,15 +334,6 @@ contract SQMUGovernance is
         return super.propose(targets, values, calldatas, description);
     }
 
-    function _execute(
-        uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) {
-        super._execute(proposalId, targets, values, calldatas, descriptionHash);
-    }
 
     function _cancel(
         address[] memory targets,
@@ -385,7 +376,7 @@ contract SQMUGovernance is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
+        override(GovernorUpgradeable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
