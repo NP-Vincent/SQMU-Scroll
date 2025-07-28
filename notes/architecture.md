@@ -17,9 +17,6 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `ERC1155VotesAdapter.sol` implements `IVotes` so the Governor can read each account's total allocated governance tokens.
 - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.
 - The governance module proxy address is recorded in `notes/deployment_log.md` and referenced by `GOVERNANCE_ADDRESS` in `js/config.js`.
-- OpenZeppelin dependencies are imported via commit `c64a1edb67b6e3f4a15cca8909c9482ad33a02b0` for `openzeppelin-contracts`
-  and commit `e725abddf1e01cf05ace496e950fc8e243cc7cab` for `openzeppelin-contracts-upgradeable` to ensure
-  deterministic compilation.
 
 ## Front-End Widgets
 
