@@ -7,7 +7,7 @@ import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/U
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {AddressUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
 
@@ -18,9 +18,9 @@ import {GovernorVotesQuorumFractionUpgradeable} from "@openzeppelin/contracts-up
 import {GovernorCountingSimpleUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
 import {GovernorTimelockControlUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
 import {TimelockControllerUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {ERC1155VotesAdapter, ISQMUGovernance} from "https://np-vincent.github.io/SQMU-Scroll/contracts/ERC1155VotesAdapter.sol";
+import {ERC1155VotesAdapter, ISQMUGovernance} from "./ERC1155VotesAdapter.sol";
 
-import {SQMU} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMU.sol";
+import {SQMU} from "./SQMU.sol";
 
 /// @title SQMUGovernance
 /// @notice Governance and revenue sharing for SQMU ecosystem.
@@ -258,7 +258,7 @@ contract SQMUGovernance is
         if (token == address(0)) {
             ethReleased[msg.sender] += payment;
             totalEthReleased += payment;
-            AddressUpgradeable.sendValue(payable(msg.sender), payment);
+            Address.sendValue(payable(msg.sender), payment);
         } else {
             erc20Released[token][msg.sender] += payment;
             erc20TotalReleased[token] += payment;
@@ -308,7 +308,7 @@ contract SQMUGovernance is
         return super.proposalNeedsQueuing(proposalId);
     }
 
-    function getVotes(address account, uint256 blockNumber) public view override returns (uint256) {
+    function getVotes(address account, uint256 /* blockNumber */) public view override returns (uint256) {
         LockInfo storage info = locks[account];
         if (info.forfeited) {
             return 0;
