@@ -25,6 +25,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
    - Edit or extend the smart contract in `contracts/SQMU.sol`
    - The contract is based on OpenZeppelin Contracts **v5** and compiled with Solidity **0.8.26**.
    - Deploy using Remix or Hardhat, on the Scroll network
+   - Solidity files import other modules using raw GitHub Pages URLs like `https://np-vincent.github.io/...`. **Keep these import paths intact** so Remix can fetch the dependencies during compilation and so the verified source matches the deployed code.
    - Export the ABI and update `abi/SQMU.json`
    - Record the new proxy and implementation in `notes/deployment_log.md`
 3. **Front-End Development**
