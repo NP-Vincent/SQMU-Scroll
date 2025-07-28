@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {SQMUVesting} from "./SQMUVesting.sol";
+import {SQMUVesting} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUVesting.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
