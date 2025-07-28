@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {SQMUVesting} from "./SQMUVesting.sol";
+import {SQMUVesting} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUVesting.sol";
 import {GovernorUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {GovernorSettingsUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorSettingsUpgradeable.sol";
 import {GovernorVotesUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
@@ -9,7 +9,7 @@ import {GovernorVotesQuorumFractionUpgradeable} from "@openzeppelin/contracts-up
 import {GovernorCountingSimpleUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
 import {GovernorTimelockControlUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
 import {TimelockControllerUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {ERC1155VotesAdapter, ISQMUGovernance} from "./ERC1155VotesAdapter.sol";
+import {ERC1155VotesAdapter, ISQMUGovernance} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/ERC1155VotesAdapter.sol";
 
 /// @title SQMUGovernorModule
 /// @notice Core governance logic and proposal management.
