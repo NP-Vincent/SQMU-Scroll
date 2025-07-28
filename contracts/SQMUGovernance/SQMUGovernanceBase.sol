@@ -6,7 +6,7 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 
-import {SQMU} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMU.sol";
+import {SQMU} from "../SQMU.sol";
 
 /// @title SQMUGovernanceBase
 /// @notice Shared storage for the SQMU governance modules.
@@ -35,5 +35,10 @@ abstract contract SQMUGovernanceBase is Initializable, OwnableUpgradeable, UUPSU
         SQMU(sqmuAddress).mint(address(this), GOVERNANCE_ID, 1_000_000, "");
     }
 
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        virtual
+        override
+        onlyOwner
+    {}
 }
