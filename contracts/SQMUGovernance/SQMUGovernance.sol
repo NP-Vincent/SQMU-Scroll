@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {SQMUGovernanceBase} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUGovernanceBase.sol";
-import {SQMUSale} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUSale.sol";
-import {SQMUPaymentSplitter} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUPaymentSplitter.sol";
-import {SQMUGovernorModule} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUGovernorModule.sol";
+import {SQMUGovernanceBase} from "./SQMUGovernanceBase.sol";
+import {SQMUSale} from "./SQMUSale.sol";
+import {SQMUPaymentSplitter} from "./SQMUPaymentSplitter.sol";
+import {SQMUGovernorModule} from "./SQMUGovernorModule.sol";
 import {GovernorUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+
+/// @custom:oz-upgrades-unsafe-allow delegatecall
 
 /// @title SQMUGovernance
 /// @notice Top level contract composing all governance modules.
@@ -84,5 +86,14 @@ contract SQMUGovernance is SQMUGovernanceBase, SQMUSale, SQMUPaymentSplitter, SQ
         if (msg.value > 0) {
             emit RevenueReceived(msg.sender, msg.value, address(0));
         }
+    }
+
+    /// @dev Authorize contract upgrades through the owner only.
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override(SQMUGovernanceBase)
+        onlyOwner
+    {
+        super._authorizeUpgrade(newImplementation);
     }
 }
