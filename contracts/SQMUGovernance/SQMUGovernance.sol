@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {SQMUGovernanceBase} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUGovernanceBase.sol";
-import {SQMUSale} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUSale.sol";
-import {SQMUPaymentSplitter} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUPaymentSplitter.sol";
-import {SQMUGovernorModule} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUGovernorModule.sol";
+import {SQMUGovernanceBase} from "./SQMUGovernanceBase.sol";
+import {SQMUSale} from "./SQMUSale.sol";
+import {SQMUPaymentSplitter} from "./SQMUPaymentSplitter.sol";
+import {SQMUGovernorModule} from "./SQMUGovernorModule.sol";
+import {GovernorUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @title SQMUGovernance
@@ -73,5 +74,15 @@ contract SQMUGovernance is SQMUGovernanceBase, SQMUSale, SQMUPaymentSplitter, SQ
             }
         }
         return string(abi.encodePacked(base, Strings.toString(GOVERNANCE_ID), ".json"));
+    }
+
+    /// @notice Accept ETH and emit revenue event while checking governor deposit rules
+    receive() external payable override(SQMUPaymentSplitter, GovernorUpgradeable) {
+        if (_executor() != address(this)) {
+            revert GovernorDisabledDeposit();
+        }
+        if (msg.value > 0) {
+            emit RevenueReceived(msg.sender, msg.value, address(0));
+        }
     }
 }

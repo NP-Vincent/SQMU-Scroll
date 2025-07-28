@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {SQMUVesting} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/SQMUVesting.sol";
+import {SQMUVesting} from "./SQMUVesting.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 
@@ -16,7 +16,7 @@ contract SQMUPaymentSplitter is SQMUVesting {
     event RevenueClaimed(address indexed account, address indexed token, uint256 amount);
     event RevenueReceived(address indexed from, uint256 amount, address indexed token);
 
-    receive() external payable {
+    receive() external payable virtual {
         if (msg.value > 0) {
             emit RevenueReceived(msg.sender, msg.value, address(0));
         }
