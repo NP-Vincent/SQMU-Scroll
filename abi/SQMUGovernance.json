@@ -117,6 +117,6 @@
       "type": "event"
     }
   ],
-  "filePath": "SQMU-Scroll/SQMUGovernance.sol",
-  "pinnedAt": 1753641587565
+  "filePath": "contracts/SQMUGovernance.sol",
+  "pinnedAt": 1753665867
 }

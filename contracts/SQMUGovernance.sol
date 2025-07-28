@@ -1,102 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {ERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
-import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {SQMUGovernanceBase} from "./SQMUGovernanceBase.sol";
+import {SQMUSale} from "./SQMUSale.sol";
+import {SQMUPaymentSplitter} from "./SQMUPaymentSplitter.sol";
+import {SQMUGovernorModule} from "./SQMUGovernorModule.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {IGovernor} from "@openzeppelin/contracts/governance/IGovernor.sol";
-
-import {GovernorUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/GovernorUpgradeable.sol";
-import {GovernorSettingsUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorSettingsUpgradeable.sol";
-import {GovernorVotesUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesUpgradeable.sol";
-import {GovernorVotesQuorumFractionUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorVotesQuorumFractionUpgradeable.sol";
-import {GovernorCountingSimpleUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
-import {GovernorTimelockControlUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
-import {TimelockControllerUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {ERC1155VotesAdapter, ISQMUGovernance} from "https://np-vincent.github.io/SQMU-Scroll/contracts/ERC1155VotesAdapter.sol";
-
-import {SQMU} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMU.sol";
 
 /// @title SQMUGovernance
-/// @notice Governance and revenue sharing for SQMU ecosystem.
-/// @dev Skeleton contract implementing token allocation, sales and voting logic.
-contract SQMUGovernance is
-    Initializable,
-    OwnableUpgradeable,
-    UUPSUpgradeable,
-    GovernorUpgradeable,
-    GovernorSettingsUpgradeable,
-    GovernorVotesUpgradeable,
-    GovernorVotesQuorumFractionUpgradeable,
-    GovernorCountingSimpleUpgradeable,
-    GovernorTimelockControlUpgradeable
-{
-    struct LockInfo {
-        uint256 totalAllocated;
-        uint256 claimed;
-        uint64 startTime;
-        uint64 cliff;
-        uint64 duration;
-        bool forfeited;
-    }
-
-    ERC1155Upgradeable public sqmuToken;
-    uint256 public constant GOVERNANCE_ID = 0;
-
-    uint256 public tokenPriceUSD; // USD price with 18 decimals
-
+/// @notice Top level contract composing all governance modules.
+contract SQMUGovernance is SQMUGovernanceBase, SQMUSale, SQMUPaymentSplitter, SQMUGovernorModule {
     address public founder;
     address public team;
     address public vc;
     address public publicSale;
     address public treasury;
 
-    address public usdc;
-    address public usdt;
-    address public usdq;
-
-    mapping(address => LockInfo) public locks;
-
-    uint256 public totalAllocatedTokens;
-
-    uint256 public totalEthReleased;
-    mapping(address => uint256) public ethReleased;
-    mapping(address => uint256) public erc20TotalReleased;
-    mapping(address => mapping(address => uint256)) public erc20Released;
-
-    event RevenueClaimed(address indexed account, address indexed token, uint256 amount);
-    event RevenueReceived(address indexed from, uint256 amount, address indexed token);
-
-    event GovernancePurchased(address indexed buyer, uint256 amount, address paymentToken);
-    event TokensClaimed(address indexed account, uint256 amount);
-    event TokensForfeited(address indexed account, uint256 amount);
-
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() {_disableInitializers();}
-
-    receive() external payable override {
-        if (msg.value > 0) {
-            emit RevenueReceived(msg.sender, msg.value, address(0));
-        }
+    constructor() {
+        _disableInitializers();
     }
 
-    /// @notice Initialize the governance module and mint the full token supply.
-    /// @param sqmuAddress Address of the SQMU ERC1155 token contract.
-    /// @param priceUSD Price of one governance token denominated in USD with 18 decimals.
-    /// @param founderAddr Wallet for founder token allocation.
-    /// @param teamAddr Wallet for team token allocation.
-    /// @param vcAddr Wallet for VC token allocation.
-    /// @param publicSaleAddr Wallet for public sale token allocation.
-    /// @param treasuryAddr Treasury wallet receiving forfeited tokens and revenue.
-    /// @param usdcAddr USDC token address used for purchases.
-    /// @param usdtAddr USDT token address used for purchases.
-    /// @param usdqAddr USDQ token address used for purchases.
-    /// @param timelockAddr Deployed TimelockController used by GovernorTimelockControlUpgradeable.
     function initialize(
         address sqmuAddress,
         uint256 priceUSD,
@@ -110,39 +33,29 @@ contract SQMUGovernance is
         address usdqAddr,
         address timelockAddr
     ) public initializer {
-        __Ownable_init(msg.sender);
-        __UUPSUpgradeable_init();
-        __Governor_init("SQMUGovernance");
-        __GovernorSettings_init(1 /* voting delay */, 45818 /* voting period */, 0);
-        __GovernorVotes_init(new ERC1155VotesAdapter(ISQMUGovernance(address(this))));
-        __GovernorVotesQuorumFraction_init(4);
-        __GovernorCountingSimple_init();
-        __GovernorTimelockControl_init(TimelockControllerUpgradeable(payable(timelockAddr)));
+        __SQMUGovernanceBase_init(sqmuAddress);
+        __SQMUSale_init(priceUSD, usdcAddr, usdtAddr, usdqAddr);
+        __SQMUPaymentSplitter_init();
+        __SQMUGovernorModule_init(timelockAddr);
 
-        sqmuToken = ERC1155Upgradeable(sqmuAddress);
-        tokenPriceUSD = priceUSD;
         founder = founderAddr;
         team = teamAddr;
         vc = vcAddr;
         publicSale = publicSaleAddr;
         treasury = treasuryAddr;
-        usdc = usdcAddr;
-        usdt = usdtAddr;
-        usdq = usdqAddr;
 
-        // Mint governance token supply to this contract
-        SQMU(sqmuAddress).mint(address(this), GOVERNANCE_ID, 1_000_000, "");
-
-        // Set up initial allocations (example schedule)
         _allocate(founderAddr, 150_000, 2 weeks, 15 weeks);
         _allocate(teamAddr, 100_000, 2 weeks, 10 weeks);
         _allocate(publicSaleAddr, 350_000, 2 weeks, 7 weeks);
         _allocate(vcAddr, 150_000, 2 weeks, 15 weeks);
-        _allocate(treasuryAddr, 250_000, 52 weeks, 0); // treasury locked until DAO
+        _allocate(treasuryAddr, 250_000, 52 weeks, 0);
     }
 
-    /// @notice Return the metadata URI for the governance token.
-    /// @dev Replaces `{id}` with the token ID if present in the base URI.
+    function __SQMUPaymentSplitter_init() internal onlyInitializing {
+        // reuse vesting storage
+        __SQMUVesting_init();
+    }
+
     function governanceURI() public view returns (string memory) {
         string memory base = sqmuToken.uri(GOVERNANCE_ID);
         bytes memory b = bytes(base);
@@ -156,232 +69,9 @@ contract SQMUGovernance is
                 for (uint256 j; j < suffix.length; ++j) {
                     suffix[j] = b[i + 4 + j];
                 }
-                return string(
-                    abi.encodePacked(prefix, Strings.toHexString(GOVERNANCE_ID, 32), suffix)
-                );
+                return string(abi.encodePacked(prefix, Strings.toHexString(GOVERNANCE_ID, 32), suffix));
             }
         }
         return string(abi.encodePacked(base, Strings.toString(GOVERNANCE_ID), ".json"));
     }
-
-    function _allocate(address account, uint256 amount, uint64 cliff, uint64 duration) internal {
-        locks[account] = LockInfo({
-            totalAllocated: amount,
-            claimed: 0,
-            startTime: uint64(block.timestamp),
-            cliff: cliff,
-            duration: duration,
-            forfeited: false
-        });
-        totalAllocatedTokens += amount;
-    }
-
-    function buyGovernance(uint256 amount, address paymentToken) external {
-        require(
-            paymentToken == usdc || paymentToken == usdt || paymentToken == usdq,
-            "invalid token"
-        );
-        require(amount > 0, "amount");
-        uint8 decimals = IERC20Metadata(paymentToken).decimals();
-        uint256 totalPrice = (tokenPriceUSD * amount * (10 ** decimals)) / 1e18;
-        IERC20 erc20 = IERC20(paymentToken);
-        require(
-            erc20.transferFrom(msg.sender, address(this), totalPrice),
-            "payment failed"
-        );
-
-        LockInfo storage info = locks[msg.sender];
-        if (info.totalAllocated == 0) {
-            _allocate(msg.sender, amount, 2 weeks, 7 weeks);
-        } else {
-            info.totalAllocated += amount;
-            totalAllocatedTokens += amount;
-        }
-
-        emit GovernancePurchased(msg.sender, amount, paymentToken);
-    }
-
-    function claimUnlockedTokens() external {
-        LockInfo storage info = locks[msg.sender];
-        require(!info.forfeited, "forfeited");
-
-        uint256 unlocked;
-        if (block.timestamp < info.startTime + info.cliff) {
-            unlocked = 0;
-        } else if (info.duration == 0) {
-            unlocked = info.totalAllocated;
-        } else {
-            uint256 elapsed = block.timestamp - info.startTime - info.cliff;
-            if (elapsed > info.duration) {
-                elapsed = info.duration;
-            }
-            unlocked = (info.totalAllocated * elapsed) / info.duration;
-        }
-
-        uint256 claimable = unlocked - info.claimed;
-        require(claimable > 0, "none");
-        info.claimed += claimable;
-        sqmuToken.safeTransferFrom(address(this), msg.sender, GOVERNANCE_ID, claimable, "");
-        emit TokensClaimed(msg.sender, claimable);
-    }
-
-    function adminForfeit(address account) external onlyOwner {
-        LockInfo storage info = locks[account];
-        require(!info.forfeited, "already");
-        uint256 remaining = info.totalAllocated - info.claimed;
-        info.forfeited = true;
-        locks[treasury].totalAllocated += remaining;
-        emit TokensForfeited(account, remaining);
-    }
-
-    function pendingRevenue(address account, address token) public view returns (uint256) {
-        LockInfo storage info = locks[account];
-        if (info.forfeited || info.totalAllocated == 0) {
-            return 0;
-        }
-        uint256 totalReceived;
-        uint256 released;
-        if (token == address(0)) {
-            totalReceived = address(this).balance + totalEthReleased;
-            released = ethReleased[account];
-        } else {
-            IERC20 erc20 = IERC20(token);
-            totalReceived = erc20.balanceOf(address(this)) + erc20TotalReleased[token];
-            released = erc20Released[token][account];
-        }
-        return (totalReceived * info.totalAllocated) / totalAllocatedTokens - released;
-    }
-
-    function claimRevenue(address token) external {
-        uint256 payment = pendingRevenue(msg.sender, token);
-        require(payment > 0, "none");
-        if (token == address(0)) {
-            ethReleased[msg.sender] += payment;
-            totalEthReleased += payment;
-            Address.sendValue(payable(msg.sender), payment);
-        } else {
-            erc20Released[token][msg.sender] += payment;
-            erc20TotalReleased[token] += payment;
-            IERC20(token).transfer(msg.sender, payment);
-        }
-        emit RevenueClaimed(msg.sender, token, payment);
-    }
-
-    // ------- Governor Overrides -------
-    function votingDelay()
-        public
-        pure
-        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
-        returns (uint256)
-    {
-        return 1;
-    }
-
-    function votingPeriod()
-        public
-        pure
-        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
-        returns (uint256)
-    {
-        return 45818;
-    }
-
-    function quorum(uint256 blockNumber) public view override(GovernorUpgradeable, GovernorVotesQuorumFractionUpgradeable) returns (uint256) {
-        return super.quorum(blockNumber);
-    }
-
-    function proposalThreshold()
-        public
-        view
-        override(GovernorUpgradeable, GovernorSettingsUpgradeable)
-        returns (uint256)
-    {
-        return super.proposalThreshold();
-    }
-
-    function proposalNeedsQueuing(uint256 proposalId)
-        public
-        view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
-        returns (bool)
-    {
-        return super.proposalNeedsQueuing(proposalId);
-    }
-
-    function getVotes(address account, uint256 /* blockNumber */) public view override returns (uint256) {
-        LockInfo storage info = locks[account];
-        if (info.forfeited) {
-            return 0;
-        }
-        return info.totalAllocated; // simplified
-    }
-
-    function state(uint256 proposalId)
-        public
-        view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
-        returns (ProposalState)
-    {
-        return super.state(proposalId);
-    }
-
-    function propose(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        string memory description
-    ) public override(GovernorUpgradeable) returns (uint256) {
-        return super.propose(targets, values, calldatas, description);
-    }
-
-
-    function _cancel(
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint256) {
-        return super._cancel(targets, values, calldatas, descriptionHash);
-    }
-
-    function _queueOperations(
-        uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) returns (uint48) {
-        return super._queueOperations(proposalId, targets, values, calldatas, descriptionHash);
-    }
-
-    function _executeOperations(
-        uint256 proposalId,
-        address[] memory targets,
-        uint256[] memory values,
-        bytes[] memory calldatas,
-        bytes32 descriptionHash
-    ) internal override(GovernorUpgradeable, GovernorTimelockControlUpgradeable) {
-        super._executeOperations(proposalId, targets, values, calldatas, descriptionHash);
-    }
-
-    function _executor()
-        internal
-        view
-        override(GovernorUpgradeable, GovernorTimelockControlUpgradeable)
-        returns (address)
-    {
-        return super._executor();
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(GovernorUpgradeable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    // ------- Upgradeability -------
-    function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }

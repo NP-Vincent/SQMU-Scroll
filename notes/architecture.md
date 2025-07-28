@@ -10,9 +10,12 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
 - The current contract is generated from the OpenZeppelin **v5** wizard and compiled with Solidity **0.8.26**.
   - `SQMUTrade.sol` provides a simple on-chain marketplace allowing users to list and purchase SQMU tokens with escrowed transfers and commission payouts.
   - `Escrow.sol` manages staged funding and multi-signature release for property purchases using `MultiSignerERC7913Upgradeable`.
-  - `SQMUGovernance.sol` controls the governance token sale, vesting schedules and on-chain voting.
-    It now exposes `governanceURI()` to return the final metadata URI for token ID 0.
-    Initialization requires the address of a deployed `SQMUTimelock` so proposals execute through a timelock.
+  - `SQMUGovernance.sol` now composes four smaller contracts:
+    `SQMUSale`, `SQMUVesting`, `SQMUPaymentSplitter` and `SQMUGovernorModule`.
+    The modular design keeps each contract under the 24KB size limit while
+    exposing the same functionality. `governanceURI()` remains on the main
+    contract. Initialization requires the address of a deployed
+    `SQMUTimelock` so proposals execute through a timelock.
   - `SQMUTimelock.sol` wraps `TimelockController` with UUPS upgradeability and holds queued governance actions until the delay expires.
   - `ERC1155VotesAdapter.sol` implements `IVotes` so the Governor can read each account's total allocated governance tokens.
 - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.
