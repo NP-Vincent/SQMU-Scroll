@@ -151,9 +151,20 @@ Record this proxy address for use when initializing `SQMUGovernance`.
 
 ## Deploying SQMUGovernance
 
-This contract manages the governance token sale, vesting logic and on-chain voting.
-Voting power is measured through `ERC1155VotesAdapter`, which reports each
-address's total allocated governance tokens (both locked and unlocked).
+`SQMUGovernance` is now composed of several smaller contracts to avoid the EVM
+24KB size limit. The modules are:
+
+- `SQMUSale` – collects stablecoin payments and allocates locked governance
+  tokens.
+- `SQMUVesting` – tracks vesting schedules, claims and forfeitures.
+- `SQMUPaymentSplitter` – distributes ETH and ERC-20 revenue to token holders.
+- `SQMUGovernorModule` – implements proposals and voting logic using
+  OpenZeppelin Governor extensions.
+
+The `SQMUGovernance` proxy inherits from all four modules so deployment is still
+performed as a single UUPS upgradeable contract. Voting power is measured
+through `ERC1155VotesAdapter`, which reports each address's total allocated
+governance tokens (locked and unlocked).
 
 1. **Compile in Remix**
    - Open `contracts/SQMUGovernance.sol` with OpenZeppelin upgradeable libraries available.
