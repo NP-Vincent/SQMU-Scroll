@@ -1,18 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.26;
 
-// OpenZeppelin imports pinned to commit hashes for deterministic compilation
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/c64a1edb67b6e3f4a15cca8909c9482ad33a02b0/contracts/utils/structs/EnumerableSet.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/c64a1edb67b6e3f4a15cca8909c9482ad33a02b0/contracts/utils/Arrays.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/proxy/utils/UUPSUpgradeable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/utils/ReentrancyGuardUpgradeable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/access/extensions/AccessControlEnumerableUpgradeable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/utils/PausableUpgradeable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/proxy/utils/Initializable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts-upgradeable/e725abddf1e01cf05ace496e950fc8e243cc7cab/contracts/utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/c64a1edb67b6e3f4a15cca8909c9482ad33a02b0/contracts/proxy/Clones.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/c64a1edb67b6e3f4a15cca8909c9482ad33a02b0/contracts/token/ERC20/utils/SafeERC20.sol";
-import "https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/c64a1edb67b6e3f4a15cca8909c9482ad33a02b0/contracts/token/ERC20/IERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.4.0/contracts/utils/structs/EnumerableSet.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.4.0/contracts/utils/Arrays.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/proxy/utils/UUPSUpgradeable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/utils/ReentrancyGuardUpgradeable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/access/extensions/AccessControlEnumerableUpgradeable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/utils/PausableUpgradeable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/proxy/utils/Initializable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts-upgradeable/blob/v5.4.0/contracts/utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.4.0/contracts/proxy/Clones.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.4.0/contracts/token/ERC20/utils/SafeERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.4.0/contracts/token/ERC20/IERC20.sol";
 
 /// @title Upgradeable Escrow Contract with Minimal Proxy Factory
 /// @notice Implements a basic property escrow following the architecture
