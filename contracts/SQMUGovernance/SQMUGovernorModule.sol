@@ -9,7 +9,7 @@ import {GovernorVotesQuorumFractionUpgradeable} from "@openzeppelin/contracts-up
 import {GovernorCountingSimpleUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorCountingSimpleUpgradeable.sol";
 import {GovernorTimelockControlUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/extensions/GovernorTimelockControlUpgradeable.sol";
 import {TimelockControllerUpgradeable} from "@openzeppelin/contracts-upgradeable/governance/TimelockControllerUpgradeable.sol";
-import {ERC1155VotesAdapter, ISQMUGovernance} from "https://np-vincent.github.io/SQMU-Scroll/contracts/ERC1155VotesAdapter.sol";
+import {ERC1155VotesAdapter, ISQMUGovernance} from "https://np-vincent.github.io/SQMU-Scroll/contracts/SQMUGovernance/ERC1155VotesAdapter.sol";
 
 /// @title SQMUGovernorModule
 /// @notice Core governance logic and proposal management.
