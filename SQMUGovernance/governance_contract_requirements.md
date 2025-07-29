@@ -47,7 +47,7 @@
 7. **Metadata Integration**
 
    - References or fetches metadata for governance token (ID 0) to display unique image/logo in UI.
-   - Exposes `governanceURI()` so front-end code can load the token metadata.
+   - (Deprecated) the previous `governanceURI()` helper was removed in the trimmed contract.
 
 8. **Upgrade & Modularity**
 
