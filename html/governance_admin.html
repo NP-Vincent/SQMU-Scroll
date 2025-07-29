@@ -11,9 +11,21 @@
   <h3>Governance Admin</h3>
   <button id="connect">Connect Wallet</button>
   <button id="disconnect" style="display:none;">Disconnect</button>
-  <label>Recipient <input id="admin-to" type="text"></label>
-  <label>Amount <input id="admin-amount" type="number" value="1"></label>
-  <button id="admin-btn" disabled>Mint</button>
+  <div>
+    <label>Token Price (USD) <input id="price" type="number" value="1"></label>
+    <button id="price-btn" disabled>Update Price</button>
+  </div>
+  <div>
+    <label>Withdraw Token
+      <select id="withdraw-token">
+        <option value="0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df">USDT (Scroll)</option>
+        <option value="0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4">USDC (Scroll)</option>
+        <option value="0xdb9E8F82D6d45fFf803161F2a5f75543972B229a">USDQ (Scroll)</option>
+      </select>
+    </label>
+    <label>Amount (0 = all) <input id="withdraw-amount" type="number" value="0"></label>
+    <button id="withdraw-btn" disabled>Withdraw</button>
+  </div>
   <div id="admin-status"></div>
 </body>
 </html>

@@ -136,13 +136,13 @@ This contract handles staged funding and multisig release of property payments u
 
 ## Deploying SQMUCrowdfund
 
-This contract sells governance tokens for stablecoins.
+This contract sells pre-minted governance tokens for stablecoins held by the contract.
 
 1. **Compile in Remix**
    - Open `contracts/SQMUCrowdfund.sol`.
    - Compile with Solidity `^0.8.26` and ensure OpenZeppelin upgradeable libraries are available.
 2. **Deploy a UUPS Proxy**
-   - Use the Upgrades plugin to deploy and then call `initialize(sqmuAddress)`.
+   - Use the Upgrades plugin to deploy and then call `initialize(sqmuAddress, priceUSD)`.
 3. **Export ABI**
    - Save the ABI JSON as `abi/SQMUCrowdfund.json` and record the proxy in `notes/deployment_log.md`.
 4. **Update Front-End**
@@ -271,13 +271,14 @@ balance of each SQMU property along with the USD value of that balance.
 
 ## Governance Crowdfund
 
-The contract `SQMUCrowdfund.sol` sells governance tokens for $1 each in
-USDC, USDT or USDQ. Two widgets interact with this contract:
+The contract `SQMUCrowdfund.sol` sells its pre-minted governance tokens at a USD price
+set by the owner. Payments are kept in the contract until withdrawn.
+Two widgets interact with this contract:
 
 1. `html/governance_buy.html` lets investors purchase token ID `0`.
    Include the script `https://np-vincent.github.io/SQMU-Scroll/js/governance_buy.js`.
-2. `html/governance_admin.html` exposes the owner-only `adminMint` function
-   for manual distribution.
+2. `html/governance_admin.html` lets the owner update the token price and
+   withdraw collected stablecoins.
 
 ## Distributor Admin Interface
 

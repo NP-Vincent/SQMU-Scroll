@@ -4,7 +4,8 @@
   "abi": [
     {
       "inputs": [
-        {"internalType": "address", "name": "sqmuAddress", "type": "address"}
+        {"internalType": "address", "name": "sqmuAddress", "type": "address"},
+        {"internalType": "uint256", "name": "priceUSD_", "type": "uint256"}
       ],
       "name": "initialize",
       "outputs": [],
@@ -23,10 +24,19 @@
     },
     {
       "inputs": [
-        {"internalType": "address", "name": "to", "type": "address"},
+        {"internalType": "uint256", "name": "newPriceUSD", "type": "uint256"}
+      ],
+      "name": "setPriceUSD",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {"internalType": "address", "name": "token", "type": "address"},
         {"internalType": "uint256", "name": "amount", "type": "uint256"}
       ],
-      "name": "adminMint",
+      "name": "withdrawPayments",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
