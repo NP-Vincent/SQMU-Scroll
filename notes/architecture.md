@@ -16,8 +16,9 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
     retaining UUPS upgradeability for future features.
   - `SQMUTimelock.sol` wraps `TimelockController` with UUPS upgradeability and holds queued governance actions until the delay expires.
   - `ERC1155VotesAdapter.sol` implements `IVotes` so the Governor can read each account's total allocated governance tokens.
-  - `SQMUCrowdfund.sol` sells governance tokens for $1 each using stablecoins and
-    provides an owner-only `adminMint` backdoor.
+  - `SQMUCrowdfund.sol` holds pre-minted governance tokens and sells them for a
+    USD price set by the owner. Collected stablecoins remain in the contract
+    until withdrawn.
   - All contracts are intended to deploy on the Scroll network. See the [Scroll Developer Docs](https://docs.scroll.io/en/developers/) and [Scroll Contracts](https://docs.scroll.io/en/developers/scroll-contracts/) for network details.
 - The governance module proxy address is recorded in `notes/deployment_log.md` and referenced by `GOVERNANCE_ADDRESS` in `js/config.js`.
 

@@ -8,11 +8,18 @@ import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/se
 import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import {ERC1155HolderUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 
 /// @title SQMU Crowdfund Contract
-/// @notice Accepts stablecoins and mints governance tokens (ID 0) from an ERC-1155 SQMU contract.
-/// @dev Upgradeable via UUPS pattern. Uses Ownable for admin controls.
-contract SQMUCrowdfund is Initializable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable {
+/// @notice Sells pre-minted governance tokens (ID 0) for stablecoins held by this contract.
+/// @dev Upgradeable via UUPS pattern. Uses Ownable for admin controls and holds ERC-1155 tokens.
+contract SQMUCrowdfund is
+    Initializable,
+    OwnableUpgradeable,
+    UUPSUpgradeable,
+    ReentrancyGuardUpgradeable,
+    ERC1155HolderUpgradeable
+{
     /// ---------------------------------------------------------------------
     /// Storage
     /// ---------------------------------------------------------------------
@@ -25,20 +32,24 @@ contract SQMUCrowdfund is Initializable, OwnableUpgradeable, UUPSUpgradeable, Re
     address public constant USDQ = 0xdb9E8F82D6d45fFf803161F2a5f75543972B229a;
 
     uint256 public constant GOVERNANCE_ID = 0;
+    /// @dev Price per governance token in USD with 18 decimals (1e18 = $1)
+    uint256 public priceUSD;
 
     event GovernancePurchased(address indexed buyer, address token, uint256 amount, uint256 totalPaid);
-    event AdminMint(address indexed to, uint256 amount);
+    event PriceUpdated(uint256 newPriceUSD);
+    event PaymentsWithdrawn(address indexed token, uint256 amount);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
 
-    function initialize(address sqmuAddress) public initializer {
+    function initialize(address sqmuAddress, uint256 priceUSD_) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         sqmu = IERC1155Upgradeable(sqmuAddress);
+        priceUSD = priceUSD_;
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -59,20 +70,39 @@ contract SQMUCrowdfund is Initializable, OwnableUpgradeable, UUPSUpgradeable, Re
 
         IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
         uint8 decimals = IERC20MetadataUpgradeable(paymentToken).decimals();
-        uint256 total = amount * (10 ** decimals); // $1 per token
+        uint256 total = (priceUSD * amount * (10 ** decimals)) / 1e18;
+        require(total > 0, "Zero price");
 
         require(erc20.transferFrom(msg.sender, address(this), total), "Payment failed");
+        require(
+            sqmu.balanceOf(address(this), GOVERNANCE_ID) >= amount,
+            "Insufficient supply"
+        );
 
-        sqmu.mint(msg.sender, GOVERNANCE_ID, amount, "");
+        sqmu.safeTransferFrom(address(this), msg.sender, GOVERNANCE_ID, amount, "");
 
         emit GovernancePurchased(msg.sender, paymentToken, amount, total);
     }
 
-    /// @notice Mint governance tokens to any address without payment.
-    /// @param to Recipient address.
-    /// @param amount Amount of governance tokens to mint.
-    function adminMint(address to, uint256 amount) external onlyOwner {
-        sqmu.mint(to, GOVERNANCE_ID, amount, "");
-        emit AdminMint(to, amount);
+    /// @notice Update the USD price per governance token.
+    function setPriceUSD(uint256 newPriceUSD) external onlyOwner {
+        priceUSD = newPriceUSD;
+        emit PriceUpdated(newPriceUSD);
+    }
+
+    /// @notice Withdraw collected stablecoins to the owner address.
+    /// @param token ERC20 stablecoin address.
+    /// @param amount Amount to withdraw (0 for full balance).
+    function withdrawPayments(address token, uint256 amount) external onlyOwner {
+        IERC20Upgradeable erc20 = IERC20Upgradeable(token);
+        uint256 bal = erc20.balanceOf(address(this));
+        if (amount == 0) {
+            amount = bal;
+        } else {
+            require(amount <= bal, "Insufficient balance");
+        }
+        require(erc20.transfer(owner(), amount), "Transfer failed");
+        emit PaymentsWithdrawn(token, amount);
     }
 }
+
