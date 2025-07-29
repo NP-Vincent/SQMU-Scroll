@@ -7,7 +7,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
-- `js/config.js` – Centralized addresses for the SQMU, distributor and governance contracts
+- `js/config.js` – Centralized addresses for the SQMU, distributor, crowdfund and governance contracts
 - `src/` – Additional JavaScript utilities used by the widgets
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
@@ -132,7 +132,21 @@ This contract handles staged funding and multisig release of property payments u
 3. **Export ABI**
    - Save the ABI JSON as `abi/Escrow.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
-   - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+  - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+
+## Deploying SQMUCrowdfund
+
+This contract sells governance tokens for stablecoins.
+
+1. **Compile in Remix**
+   - Open `contracts/SQMUCrowdfund.sol`.
+   - Compile with Solidity `^0.8.26` and ensure OpenZeppelin upgradeable libraries are available.
+2. **Deploy a UUPS Proxy**
+   - Use the Upgrades plugin to deploy and then call `initialize(sqmuAddress)`.
+3. **Export ABI**
+   - Save the ABI JSON as `abi/SQMUCrowdfund.json` and record the proxy in `notes/deployment_log.md`.
+4. **Update Front-End**
+   - Add the proxy address to `js/config.js` as `CROWDFUND_ADDRESS` so the governance widgets function.
 
 ## Dependencies
 
@@ -249,10 +263,21 @@ balance of each SQMU property along with the USD value of that balance.
    property codes like `SQMU1`. The contract calculates the USD price for the
    exact SQMU amount held, so the widget displays the value of your holdings in
    real time.
+
 5. The page also lets you list SQMU for sale through the `SQMUTrade` contract.
    If your wallet has not approved the trade contract, the widget will first
    call `setApprovalForAll` so it can escrow your tokens before creating the
    listing.
+
+## Governance Crowdfund
+
+The contract `SQMUCrowdfund.sol` sells governance tokens for $1 each in
+USDC, USDT or USDQ. Two widgets interact with this contract:
+
+1. `html/governance_buy.html` lets investors purchase token ID `0`.
+   Include the script `https://np-vincent.github.io/SQMU-Scroll/js/governance_buy.js`.
+2. `html/governance_admin.html` exposes the owner-only `adminMint` function
+   for manual distribution.
 
 ## Distributor Admin Interface
 
