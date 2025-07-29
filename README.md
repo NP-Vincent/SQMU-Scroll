@@ -134,45 +134,6 @@ This contract handles staged funding and multisig release of property payments u
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
 
-## Deploying SQMUTimelock
-
-This contract wraps OpenZeppelin's `TimelockController` in a UUPS upgradeable
-proxy. It will control execution of all governance proposals.
-
-1. **Compile in Remix**
-   - Open `contracts/SQMUTimelock.sol` and ensure OpenZeppelin upgradeable libraries are available.
-   - Compile with Solidity `^0.8.26`.
-2. **Deploy a UUPS Proxy**
-   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - After deployment, call `initialize(minDelay, proposers, executors)` to configure the timelock roles.
-3. **Export ABI**
-   - Save the ABI JSON as `abi/SQMUTimelock.json` and record the proxy and implementation addresses in `notes/deployment_log.md`.
-
-Record this proxy address for use when initializing `SQMUGovernance`.
-
-## Deploying SQMUGovernance
-
-`SQMUGovernance` has been reduced to a lightweight contract composed only of
-`SQMUSale` (and its underlying vesting logic). This keeps the bytecode well
-under the 24KB limit while still allowing governance tokens to be sold and
-claimed over time. The contract remains UUPS upgradable.
-
-1. **Compile in Remix**
-   - Open `contracts/SQMUGovernance.sol` with OpenZeppelin upgradeable libraries available.
-   - Compile with Solidity `^0.8.26`.
-2. **Deploy a UUPS Proxy**
-   - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - Supply initialization arguments for token price and the stablecoin token addresses.
-3. **Export ABI**
-   - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
-4. **Update Front-End**
-   - Add the proxy address to `js/config.js` and load the ABI in the governance widgets.
-
-5. **Governance Token Sale**
-   - Call `buyGovernance(amount, paymentToken)` using USDC, USDT or USDQ to purchase locked governance tokens.
-   - Holders claim vested tokens over time via `claimUnlockedTokens()`.
-
-
 ## Dependencies
 
 - OpenZeppelin Contracts **v5.4** (upgradeable)
