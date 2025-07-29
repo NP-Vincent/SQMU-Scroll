@@ -152,27 +152,17 @@ Record this proxy address for use when initializing `SQMUGovernance`.
 
 ## Deploying SQMUGovernance
 
-`SQMUGovernance` is now composed of several smaller contracts to avoid the EVM
-24KB size limit. The modules are:
-
-- `SQMUSale` – collects stablecoin payments and allocates locked governance
-  tokens.
-- `SQMUVesting` – tracks vesting schedules, claims and forfeitures.
-- `SQMUPaymentSplitter` – distributes ETH and ERC-20 revenue to token holders.
-- `SQMUGovernorModule` – implements proposals and voting logic using
-  OpenZeppelin Governor extensions.
-
-The `SQMUGovernance` proxy inherits from all four modules so deployment is still
-performed as a single UUPS upgradeable contract. Voting power is measured
-through `ERC1155VotesAdapter`, which reports each address's total allocated
-governance tokens (locked and unlocked).
+`SQMUGovernance` has been reduced to a lightweight contract composed only of
+`SQMUSale` (and its underlying vesting logic). This keeps the bytecode well
+under the 24KB limit while still allowing governance tokens to be sold and
+claimed over time. The contract remains UUPS upgradable.
 
 1. **Compile in Remix**
    - Open `contracts/SQMUGovernance.sol` with OpenZeppelin upgradeable libraries available.
    - Compile with Solidity `^0.8.26`.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - Supply initialization arguments for token price, recipient wallets, stablecoin addresses and the deployed `SQMUTimelock` proxy.
+   - Supply initialization arguments for token price and the stablecoin token addresses.
 3. **Export ABI**
    - Save the ABI JSON as `abi/SQMUGovernance.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
@@ -181,13 +171,6 @@ governance tokens (locked and unlocked).
 5. **Governance Token Sale**
    - Call `buyGovernance(amount, paymentToken)` using USDC, USDT or USDQ to purchase locked governance tokens.
    - Holders claim vested tokens over time via `claimUnlockedTokens()`.
-6. **Metadata**
-   - Call `governanceURI()` to retrieve the finalized URI for token ID 0 so front-end widgets can load the logo.
-
-### ERC1155VotesAdapter
-
-`ERC1155VotesAdapter.sol` implements the `IVotes` interface for the Governor. It reads the `locks` mapping in `SQMUGovernance` so voting weight equals the sum of locked and unlocked allocations for each address.
-When `adminForfeit` is called on an account, the lock is flagged as forfeited and both the adapter and governor report zero votes for that address.
 
 
 ## Dependencies
