@@ -10,6 +10,10 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {SafeERC20, IERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {MultiSignerERC7913Upgradeable} from "@openzeppelin/contracts-upgradeable/utils/cryptography/signers/MultiSignerERC7913Upgradeable.sol";
 
+interface IEscrowFactory {
+    function allowedTokens(address token) external view returns (bool);
+}
+
 /// @title Upgradeable Escrow Contract with Minimal Proxy Factory
 /// @notice Implements a basic property escrow following the architecture
 /// outlined in `escrow_system_technical_architecture.md`.
@@ -102,6 +106,10 @@ contract Escrow is
         __Pausable_init();
 
         factory = msg.sender;
+        require(
+            IEscrowFactory(msg.sender).allowedTokens(address(token)),
+            "token not allowed"
+        );
         paymentToken = token;
         deadline = deadline_;
         state = State.Created;
@@ -213,6 +221,7 @@ contract EscrowFactory is Initializable, UUPSUpgradeable, AccessControlEnumerabl
 
     address public escrowImplementation;
     address[] public escrows;
+    mapping(address => bool) public allowedTokens;
 
     event EscrowCreated(address indexed escrow, address buyer, address seller, address agent, IERC20 token, uint256 deadline);
     event ImplementationChanged(address newImplementation);
@@ -240,6 +249,7 @@ contract EscrowFactory is Initializable, UUPSUpgradeable, AccessControlEnumerabl
         uint256 deadline,
         bytes[] calldata signers
     ) external whenNotPaused onlyRole(ADMIN_ROLE) returns (address) {
+        require(allowedTokens[address(token)], "token not allowed");
         address clone = escrowImplementation.clone();
         Escrow(payable(clone)).initialize(buyer, agent, seller, token, deadline, signers);
         escrows.push(clone);
@@ -254,6 +264,14 @@ contract EscrowFactory is Initializable, UUPSUpgradeable, AccessControlEnumerabl
     function setImplementation(address implementation) external onlyRole(ADMIN_ROLE) {
         escrowImplementation = implementation;
         emit ImplementationChanged(implementation);
+    }
+
+    function addAllowedToken(address token) external onlyRole(ADMIN_ROLE) {
+        allowedTokens[token] = true;
+    }
+
+    function removeAllowedToken(address token) external onlyRole(ADMIN_ROLE) {
+        allowedTokens[token] = false;
     }
 
     function getEscrows() external view returns (address[] memory) {

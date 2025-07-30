@@ -133,7 +133,9 @@ This contract handles staged funding and multisig release of property payments u
 3. **Export ABI**
    - Save the ABI JSON as `abi/Escrow.json` and record addresses in `notes/deployment_log.md`.
 4. **Update Front-End**
-  - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+ - Add the proxy address to `js/config.js` and load the ABI in any escrow widgets.
+5. **Whitelist Payment Token**
+   - Before calling `createEscrow` on the factory, run `addAllowedToken(token)` so the escrow can initialize with that stablecoin.
 
 ## Deploying SQMUCrowdfund
 
@@ -318,7 +320,8 @@ token distributions.
 
 Property purchases use a dedicated `Escrow` contract for staged payments.
 The widget `html/escrow.html` lets buyers deposit stablecoins directly into
-the escrow instance.
+the escrow instance. Only tokens whitelisted in the `EscrowFactory` contract
+are accepted.
 
 1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/escrow.js` so the
