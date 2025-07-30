@@ -234,9 +234,8 @@ The page `html/buy.html` lets users purchase SQMU tokens through the
    Copy the HTML into a WordPress Custom HTML block so buyers can look up the
    property, connect their wallet and purchase without leaving the page. The
    older `listing_page_embed.html` file has been removed.
-3. Click **Connect Wallet** to initialize MetaMask. If you are on another
-   network, the widget requests a switch to Scroll. Declining keeps the wallet
-   connected but contract functions will fail until you switch manually.
+3. Click **Connect Wallet** to initialize MetaMask (the widget automatically
+   switches to the Scroll network).
 4. The property code comes directly from the listing and cannot be changed.
    Simply enter the number of SQMU tokens to purchase, select a payment token
    and optionally supply an agent code.
