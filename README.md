@@ -329,6 +329,7 @@ the escrow instance.
    **Deposit**. The script ensures sufficient token allowance before calling
    `deposit`.
 4. Progress and errors appear in the `#escrow-status` element.
+5. Tokens that omit `symbol()` now display a `-` placeholder instead of failing.
 
 ## Developer Guidelines
 
