@@ -363,6 +363,7 @@ The weekly price is derived from the monthly rate by dividing by four and adding
 - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
 - `AtomicSQMUDistributor.sol` now scales payments based on the ERC-20 token's decimals and simplifies the price calculation.
 - New event `PropertyStatusChanged` is emitted whenever a property is activated or deactivated.
+- `SQMURent` stores the active tenant and `nextRentDue` timestamp per property. Rent must be paid by that tenant within the configured window.
 - New view `getAvailable(propertyCode)` returns the remaining SQMU balance held in a property's treasury.
 
 ## External References
