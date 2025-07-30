@@ -91,7 +91,13 @@ async function displayBalances() {
   for (let i = 0; i < ids.length; i++) {
     const amt = Number(ethers.utils.formatUnits(balances[i], DECIMALS));
     if (amt === 0) continue;
-    const priceBn = await distributor.getPrice('SQMU' + ids[i], balances[i]);
+    let priceBn;
+    try {
+      priceBn = await distributor.getPrice('SQMU' + ids[i], balances[i]);
+    } catch (err) {
+      // Skip unregistered tokens such as governance ID 0
+      continue;
+    }
     totalSqmu += amt;
     totalUsd = totalUsd.add(priceBn);
     const priceStr = formatUSD(priceBn);
