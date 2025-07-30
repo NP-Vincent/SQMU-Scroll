@@ -24,8 +24,18 @@ function setStatus(msg, color) {
 async function loadInfo() {
   const tokenAddr = await escrow.paymentToken();
   token = new ethers.Contract(tokenAddr, erc20Abi, signer);
-  const symbol = await token.symbol();
-  const decimals = await token.decimals();
+  let symbol = '-';
+  let decimals = 18;
+  try {
+    symbol = await token.symbol();
+  } catch (e) {
+    console.warn('symbol() not available:', e.message);
+  }
+  try {
+    decimals = await token.decimals();
+  } catch (e) {
+    console.warn('decimals() not available:', e.message);
+  }
   document.getElementById('token-symbol').innerText = symbol;
 
   const stages = ['eoi', 'initial', 'balance'];
