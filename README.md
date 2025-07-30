@@ -270,9 +270,10 @@ balance of each SQMU property along with the USD value of that balance.
 1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
    pointing to `https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js` so the
    module loads correctly.
-2. The widget scans token IDs from `0` through `MAX_TOKEN_ID` (defined in
-   `js/portfolio.js`) and displays any non-zero balances. Adjust this constant if
-   your deployment uses higher token IDs.
+2. The widget scans token IDs from `1` through `MAX_TOKEN_ID` (defined in
+   `js/portfolio.js`) and displays any non-zero balances. Token ID `0` represents
+   the governance token and is purchased separately via `governance_buy.html`.
+   Adjust this constant if your deployment uses higher token IDs.
 
 3. Click **Connect Wallet** to fetch your balances. Each property code with a
    non-zero amount appears in a table showing your SQMU balance and the USD

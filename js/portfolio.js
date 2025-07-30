@@ -79,7 +79,7 @@ async function displayBalances() {
   const owner = await signer.getAddress();
   const ids = [];
   const owners = [];
-  for (let i = 0; i <= MAX_TOKEN_ID; i++) {
+  for (let i = 1; i <= MAX_TOKEN_ID; i++) {
     ids.push(i);
     owners.push(owner);
   }
@@ -117,6 +117,7 @@ async function displayListings() {
   try {
     const listings = await trade.getActiveListings();
     for (const l of listings) {
+      if (Number(l.tokenId) === 0) continue; // governance token handled elsewhere
       const erc20 = new ethers.Contract(l.paymentToken, erc20Abi, provider);
       let decimals = 18;
       try { decimals = await erc20.decimals(); } catch (e) {}
@@ -138,6 +139,10 @@ async function createListing() {
   }
   const code = document.getElementById('list-code').value.trim();
   const tokenId = document.getElementById('list-token-id').value;
+  if (Number(tokenId) === 0) {
+    setTradeStatus('Token ID 0 is reserved for governance tokens. Use governance_buy.html.', 'red');
+    return;
+  }
   const amountInput = document.getElementById('list-amount').value;
   const priceInput = document.getElementById('list-price').value;
   const paymentToken = document.getElementById('list-payment-token').value.trim();
