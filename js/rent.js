@@ -4,7 +4,10 @@ import { RENT_ADDRESS } from './config.js';
 let provider;
 let signer;
 let rent;
+let propertyCode = '';
 let propertyId = '';
+let rentPrice = 0;
+let rentPeriod = '';
 
 const rentAddress = RENT_ADDRESS;
 
@@ -13,6 +16,51 @@ const erc20Abi = [
   'function allowance(address owner, address spender) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)'
 ];
+
+function findPropertyCode() {
+  let code = '';
+  document.querySelectorAll('.es-entity-field').forEach((li) => {
+    const label = li.querySelector('.es-property-field__label');
+    const value = li.querySelector('.es-property-field__value');
+    if (label && value && label.textContent.includes('SQMU Property Code')) {
+      code = value.textContent.trim();
+    }
+  });
+  if (!code) {
+    const params = new URLSearchParams(location.search);
+    code = params.get('code') || '';
+  }
+  return code;
+}
+
+function findRentPrice() {
+  const priceEl = document.querySelector('.es-price-container .es-price');
+  if (priceEl) {
+    const num = parseFloat(priceEl.textContent.replace(/[^0-9.]/g, ''));
+    if (!Number.isNaN(num)) return num;
+  }
+  const params = new URLSearchParams(location.search);
+  const p = parseFloat(params.get('price'));
+  return Number.isNaN(p) ? 0 : p;
+}
+
+function findRentPeriod() {
+  let period = '';
+  document.querySelectorAll('.es-entity-field').forEach((li) => {
+    const label = li.querySelector('.es-property-field__label');
+    const value = li.querySelector('.es-property-field__value');
+    if (label && value && label.textContent.includes('Rent Period')) {
+      period = Array.from(value.querySelectorAll('a'))
+        .map((a) => a.textContent.trim())
+        .join(', ');
+    }
+  });
+  if (!period) {
+    const params = new URLSearchParams(location.search);
+    period = params.get('period') || '';
+  }
+  return period;
+}
 
 function setStatus(msg, color) {
   const el = document.getElementById('rent-status');
@@ -28,9 +76,24 @@ function toggleButtons(disabled) {
 
 toggleButtons(true);
 
-function findPropertyId() {
-  const params = new URLSearchParams(location.search);
-  return params.get('id') || '';
+function initFields() {
+  propertyCode = findPropertyCode();
+  rentPrice = findRentPrice();
+  rentPeriod = findRentPeriod();
+  document.getElementById('property-code').textContent = propertyCode || 'N/A';
+  document.getElementById('rent-price').textContent = rentPrice ? `$${rentPrice}` : 'N/A';
+  document.getElementById('rent-period').textContent = rentPeriod || 'N/A';
+
+  const numericId = parseInt(propertyCode.replace(/\D/g, ''), 10);
+  propertyId = Number.isNaN(numericId) ? '' : String(numericId);
+  toggleButtons(!propertyId);
+
+  const depositInput = document.getElementById('deposit-amount');
+  const rentInput = document.getElementById('rent-amount');
+  if (rentPrice && depositInput && rentInput) {
+    depositInput.value = (rentPrice * 1.1).toFixed(2);
+    rentInput.value = (rentPrice * 1.05).toFixed(2);
+  }
 }
 
 async function ensureAllowance(tokenAddr, amount) {
@@ -50,8 +113,6 @@ async function connect() {
     const res = await fetch(abiUrl);
     const abiJson = await res.json();
     rent = new ethers.Contract(rentAddress, abiJson.abi, signer);
-    propertyId = findPropertyId();
-    document.getElementById('property-id').textContent = propertyId || 'N/A';
     document.getElementById('disconnect').style.display = '';
     toggleButtons(!propertyId);
     setStatus('Connected. Contract ready!', 'green');
@@ -123,3 +184,4 @@ document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('deposit-btn').addEventListener('click', payDeposit);
 document.getElementById('rent-btn').addEventListener('click', payRent);
+document.addEventListener('DOMContentLoaded', initFields);
