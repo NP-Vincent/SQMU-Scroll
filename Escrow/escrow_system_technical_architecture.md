@@ -11,7 +11,7 @@
 - **Reentrancy-Proof:** All fund-moving functions use `ReentrancyGuardUpgradeable`.
 - **Access Control:** `AccessControlUpgradeable` for roles: buyer, seller (can be added post-deployment), agent, admin.
 - **Flexible Role Initialization:** Escrow can be initialized with buyer and agent only; seller added later before funding closes. Roles mutable by multisig agreement until 'Funded' state.
-- **ERC20 Payments:** Whitelisted stablecoins only (USDT, USDC, USDQ), via `SafeERC20Upgradeable`.
+- **ERC20 Payments:** Whitelisted stablecoins only (USDT, USDC, USDQ), via `SafeERC20Upgradeable`. Each escrow verifies the token against `EscrowFactory.allowedTokens` during initialization.
 - **Event Logging:** Emits events for every deposit, approval, withdrawal, role change, upgrade, state transition, and hash update, all with indexed parameters.
 - **Document Hashes:** Stores MOU/deed/supporting document hashes; hash updates are time-stamped and prior hashes retained for history.
 - **Staged Deposits:** Supports EOI, initial deposit, and balance, each logged separately.
@@ -42,7 +42,7 @@
 - **Strict Access Control:** Only intended parties can trigger actions; admin cannot move funds. All role changes/approvals are indexed and time-stamped in event logs.
 - **Multi-Sig Approval Logging:** Every signature includes signer's address and block timestamp in logs.
 - **Event Emissions:** All critical actions/events have indexed parameters for easy off-chain indexing.
-- **Whitelisted Tokens:** Only permitted ERC20 stablecoins for funding. Token list managed by multisig admin.
+- **Whitelisted Tokens:** Only permitted ERC20 stablecoins for funding. The factory maintains an `allowedTokens` mapping with admin functions `addAllowedToken` and `removeAllowedToken`.
 - **Upgradeable with Timelock:** (Optional) Upgrades are timelocked and publicly announced.
 - **Audit Trail:** All staged actions, document hashes (full history), approvals are on-chain for post-facto audit.
 - **Immutable Factory Reference:** Escrows store reference to their deploying factory.
