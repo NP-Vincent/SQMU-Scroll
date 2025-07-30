@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rent Admin Interface</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js"></script>
+  <style>
+    #layout { display:flex; flex-wrap:wrap; gap:1em; justify-content:center; align-items:flex-start; }
+    #info { flex:1 1 60%; min-width:300px; }
+    #widget { text-align:center; flex:1 1 40%; min-width:280px; }
+    #widget > * { margin:0.6em 0; }
+    label { display:block; margin:0.5em 0 0.2em; }
+    input[type=text], input[type=number] { font: inherit; padding:0.6em; width:100%; max-width:320px; box-sizing:border-box; }
+    #rent-admin-status { white-space: pre-wrap; word-break: break-word; }
+  </style>
+</head>
+<body>
+<div id="layout">
+  <div id="widget">
+    <h3>Rent Admin</h3>
+    <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+    <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+
+    <div id="token-section">
+      <h4>Set Accepted Token</h4>
+      <label>Token Address <input id="token-address" type="text"></label>
+      <label>Allowed <input id="token-status" type="checkbox"></label>
+      <button id="token-btn" class="wp-block-button__link" disabled>Update Token</button>
+    </div>
+
+    <div id="treasury-section">
+      <h4>Set Treasury</h4>
+      <label>Treasury Address <input id="treasury-wallet" type="text"></label>
+      <button id="treasury-btn" class="wp-block-button__link" disabled>Update Treasury</button>
+    </div>
+
+    <div id="fee-section">
+      <h4>Management Fee Bps</h4>
+      <label>Fee Bps <input id="fee-bps" type="number"></label>
+      <button id="fee-btn" class="wp-block-button__link" disabled>Set Fee</button>
+    </div>
+
+    <div id="refund-section">
+      <h4>Refund Deposit</h4>
+      <label>Property ID <input id="refund-id" type="number"></label>
+      <label>Tenant Address <input id="refund-tenant" type="text"></label>
+      <button id="refund-btn" class="wp-block-button__link" disabled>Refund</button>
+    </div>
+
+    <div id="withdraw-section">
+      <h4>Withdraw Fees</h4>
+      <label>Token Address <input id="withdraw-token" type="text"></label>
+      <button id="withdraw-btn" class="wp-block-button__link" disabled>Withdraw</button>
+    </div>
+
+    <pre id="rent-admin-status"></pre>
+  </div>
+  <div id="info">
+    <div id="admin-guide" style="max-width:640px; text-align:left; margin:0 auto;">
+      <h3>Rent Admin Guide</h3>
+      <ol>
+        <li>Connect your wallet to manage deposits and fees.</li>
+        <li>Use the forms to whitelist tokens, set the treasury wallet and update the management fee.</li>
+        <li>The Refund Deposit form returns a tenant's deposit.</li>
+        <li>Withdraw Fees moves accumulated management fees to the treasury.</li>
+        <li>Disconnect when finished.</li>
+      </ol>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -334,6 +334,22 @@ are accepted.
 4. Progress and errors appear in the `#escrow-status` element.
 5. Tokens that omit `symbol()` now display a `-` placeholder instead of failing.
 
+## Rent Widgets
+
+Tenants can pay deposits and monthly rent through the rent widget. Owners
+use a separate admin interface to manage fees and refunds.
+
+1. Embed `html/rent.html` in a property page with the property ID passed via the
+   `?id=` query parameter. Keep the script tag pointing to
+   `https://np-vincent.github.io/SQMU-Scroll/js/rent.js` so the module loads
+   correctly.
+2. The widget handles token approvals automatically and lets tenants submit a
+   refundable deposit and rent payments using approved stablecoins.
+3. Embed `html/rent_admin.html` with
+   `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
+   manage accepted tokens, treasury address, management fee, refund deposits and
+   withdraw accumulated fees.
+
 ## Developer Guidelines
 
 - All contract changes must be reflected in the ABI and UI
