@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Rent</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/rent.js"></script>
+  <style>
+    #widget { text-align:center; max-width:320px; margin:0 auto; }
+    #widget > * { margin:0.6em 0; }
+  </style>
+</head>
+<body>
+  <div id="widget">
+    <h3>Rent Payments</h3>
+    <p>Property ID: <span id="property-id"></span></p>
+    <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+    <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+    <div id="deposit-section">
+      <h4>Pay Deposit</h4>
+      <label>Token
+        <select id="deposit-token">
+          <option value="0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df">USDT (Scroll)</option>
+          <option value="0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4">USDC (Scroll)</option>
+          <option value="0xdb9E8F82D6d45fFf803161F2a5f75543972B229a">USDQ (Scroll)</option>
+        </select>
+      </label>
+      <label>Amount <input id="deposit-amount" type="number" step="0.01"></label>
+      <button id="deposit-btn" class="wp-block-button__link" disabled>Pay Deposit</button>
+    </div>
+    <div id="rent-section">
+      <h4>Pay Rent</h4>
+      <label>Token
+        <select id="rent-token">
+          <option value="0xf55BEC9cafDbE8730f096Aa55dad6D22d44099Df">USDT (Scroll)</option>
+          <option value="0x06eFdBFf2a14a7c8E15944D1F4A48F9F95F663A4">USDC (Scroll)</option>
+          <option value="0xdb9E8F82D6d45fFf803161F2a5f75543972B229a">USDQ (Scroll)</option>
+        </select>
+      </label>
+      <label>Amount <input id="rent-amount" type="number" step="0.01"></label>
+      <button id="rent-btn" class="wp-block-button__link" disabled>Pay Rent</button>
+    </div>
+    <pre id="rent-status"></pre>
+  </div>
+  <script>
+    // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/rent.js
+    // It lets tenants pay refundable deposits and monthly rent.
+  </script>
+</body>
+</html>
