@@ -15,6 +15,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
 - `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements
+- `contracts/SQMURent.sol` and `contracts/SQMURentDistribution.sol` – Manage tenant deposits, rent collection and distribution
 
 ## Quick Start
 
@@ -147,6 +148,22 @@ This contract sells pre-minted governance tokens for stablecoins held by the con
    - Save the ABI JSON as `abi/SQMUCrowdfund.json` and record the proxy in `notes/deployment_log.md`.
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` as `CROWDFUND_ADDRESS` so the governance widgets function.
+
+## Deploying SQMURent and SQMURentDistribution
+
+These contracts manage deposits, rent collection and manual distribution.
+
+1. **Compile in Remix**
+   - Open `contracts/SQMURent.sol` and `contracts/SQMURentDistribution.sol`.
+   - Compile with Solidity `^0.8.26` and ensure OpenZeppelin upgradeable libraries are available.
+2. **Deploy UUPS Proxies**
+   - Deploy `SQMURentDistribution` first and call `initialize()`.
+   - Deploy `SQMURent` with `initialize(vaultAddress)` using the distribution proxy address.
+3. **Export ABI**
+   - Save the ABI JSON as `abi/SQMURent.json` and `abi/SQMURentDistribution.json`.
+   - Record the proxy addresses in `notes/deployment_log.md`.
+4. **Update Front-End**
+   - Add both proxy addresses to `js/config.js` for any rent widgets.
 
 ## Dependencies
 
