@@ -4,11 +4,11 @@ pragma solidity ^0.8.26;
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {SafeERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import {ERC1155HolderUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
-import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 
 interface ISQMURentDistribution {
     function depositRent(uint256 propertyId, address token, uint256 amount) external;
@@ -31,8 +31,19 @@ contract SQMURent is
         address token;
     }
 
-    /// @notice Deposits per property and tenant.
-    mapping(uint256 => mapping(address => Deposit)) public deposits;
+    struct RentalInfo {
+        address tenant;
+        uint256 nextRentDue;
+        bool occupied;
+    }
+
+    /// @notice Deposit per property for the active tenant.
+    mapping(uint256 => Deposit) public deposits;
+    /// @notice Rental details per property.
+    mapping(uint256 => RentalInfo) public rentals;
+
+    uint256 public constant RENT_PERIOD = 30 days;
+    uint256 public constant RENT_WINDOW = 7 days;
     /// @notice Allowed ERC-20 stablecoins.
     mapping(address => bool) public acceptedTokens;
 
@@ -49,6 +60,8 @@ contract SQMURent is
     event ManagementFeeSet(uint256 fee);
     event NFTDeposited(address indexed from, address token, uint256 id, uint256 amount);
     event NFTWithdrawn(address indexed to, address token, uint256 id, uint256 amount);
+    event PropertyOccupied(uint256 indexed propertyId, address indexed tenant, uint256 nextRentDue);
+    event PropertyVacated(uint256 indexed propertyId, address indexed tenant);
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -95,25 +108,49 @@ contract SQMURent is
     /// @notice Tenant pays a refundable deposit in an accepted stablecoin.
     function payDeposit(uint256 propertyId, address token, uint256 amount) external nonReentrant {
         require(acceptedTokens[token], "Token not accepted");
-        deposits[propertyId][msg.sender] = Deposit(amount, token);
+        RentalInfo storage info = rentals[propertyId];
+        require(!info.occupied, "Property occupied");
+
+        deposits[propertyId] = Deposit(amount, token);
+        rentals[propertyId] = RentalInfo({
+            tenant: msg.sender,
+            nextRentDue: block.timestamp + RENT_PERIOD,
+            occupied: true
+        });
+
         IERC20Upgradeable(token).safeTransferFrom(msg.sender, address(this), amount);
         emit DepositPaid(propertyId, msg.sender, token, amount);
+        emit PropertyOccupied(propertyId, msg.sender, block.timestamp + RENT_PERIOD);
     }
 
     /// @notice Owner refunds a tenant deposit.
     function refundDeposit(uint256 propertyId, address tenant) external onlyOwner nonReentrant {
-        Deposit storage dep = deposits[propertyId][tenant];
+        RentalInfo storage info = rentals[propertyId];
+        require(info.occupied && info.tenant == tenant, "Not tenant");
+
+        Deposit storage dep = deposits[propertyId];
         require(dep.amount > 0, "No deposit");
         uint256 amount = dep.amount;
         address token = dep.token;
-        delete deposits[propertyId][tenant];
+
+        delete deposits[propertyId];
+        delete rentals[propertyId];
         IERC20Upgradeable(token).safeTransfer(tenant, amount);
         emit DepositRefunded(propertyId, tenant, token, amount);
+        emit PropertyVacated(propertyId, tenant);
     }
 
     /// @notice Collect rent from a tenant and forward the net amount to the vault.
     function collectRent(uint256 propertyId, address token, uint256 amount) external nonReentrant {
         require(acceptedTokens[token], "Token not accepted");
+        RentalInfo storage info = rentals[propertyId];
+        require(info.occupied && info.tenant == msg.sender, "Not tenant");
+        require(
+            block.timestamp >= info.nextRentDue - RENT_WINDOW &&
+                block.timestamp <= info.nextRentDue + RENT_WINDOW,
+            "Outside window"
+        );
+
         IERC20Upgradeable(token).safeTransferFrom(msg.sender, address(this), amount);
 
         uint256 fee = (amount * managementFee) / 10000;
@@ -121,6 +158,8 @@ contract SQMURent is
 
         IERC20Upgradeable(token).safeApprove(address(vault), net);
         vault.depositRent(propertyId, token, net);
+
+        info.nextRentDue += RENT_PERIOD;
 
         emit RentCollected(propertyId, msg.sender, token, amount, fee);
     }
@@ -138,13 +177,13 @@ contract SQMURent is
 
     /// @notice Deposit an ERC-1155 token into the contract.
     function depositNFT(address token, uint256 id, uint256 amount, bytes calldata data) external {
-        IERC1155Upgradeable(token).safeTransferFrom(msg.sender, address(this), id, amount, data);
+        IERC1155(token).safeTransferFrom(msg.sender, address(this), id, amount, data);
         emit NFTDeposited(msg.sender, token, id, amount);
     }
 
     /// @notice Owner can withdraw ERC-1155 tokens held by this contract.
     function withdrawNFT(address token, uint256 id, uint256 amount, address to) external onlyOwner {
-        IERC1155Upgradeable(token).safeTransferFrom(address(this), to, id, amount, "");
+        IERC1155(token).safeTransferFrom(address(this), to, id, amount, "");
         emit NFTWithdrawn(to, token, id, amount);
     }
 }
