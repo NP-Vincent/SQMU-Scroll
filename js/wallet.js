@@ -40,29 +40,39 @@ export async function connectWallet(statusId) {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: SCROLL_CHAIN_ID }],
         });
+        chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
       } catch (switchErr) {
         if (switchErr.code === 4902) {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [SCROLL_PARAMS],
-          });
-          await ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: SCROLL_CHAIN_ID }],
-          });
-        } else {
-          throw switchErr;
+          try {
+            await ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [SCROLL_PARAMS],
+            });
+            await ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: SCROLL_CHAIN_ID }],
+            });
+            chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
+          } catch (_) {
+            // fall through - user rejected adding the chain
+          }
         }
+        // Do not throw on switch errors so the wallet remains connected
       }
-      chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     }
 
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
 
-    statusDiv.innerHTML =
-      '<span style="color:green;">Connected to Scroll</span>';
-    return { provider, signer };
+    if (chainId === SCROLL_CHAIN_ID) {
+      statusDiv.innerHTML =
+        '<span style="color:green;">Connected to Scroll</span>';
+    } else {
+      const dec = parseInt(chainId, 16);
+      statusDiv.innerHTML =
+        `<span style="color:orange;">Connected to chain ${dec}. Switch to Scroll for full functionality.</span>`;
+    }
+    return { provider, signer, chainId };
   } catch (err) {
     statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
     throw err;
