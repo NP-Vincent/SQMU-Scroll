@@ -41,6 +41,9 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `governance_admin.html` provides owner-only access to mint governance tokens.
   - `governance_status.html` displays locked and unlocked balances for the connected wallet.
   - `governance_vote.html` provides a simple interface to cast votes on proposals.
+  - `escrow.html` allows buyers to fund a property-specific Escrow contract. The companion
+    script `escrow.js` fetches the payment token from the contract, ensures allowance
+    and submits deposits for the selected stage.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
