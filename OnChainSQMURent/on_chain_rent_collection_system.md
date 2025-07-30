@@ -26,7 +26,7 @@ You will require **three main smart contracts**:
 - Receives net rent for each property (from RentManager).
 - Tracks last distribution timestamp for each property.
 - Calculates each SQMU holder’s share using ERC-1155 totalSupply per property.
-- On interval trigger (via Chainlink Automation/Keepers or similar), distributes rent to all holders in a single batch transaction.
+- On manual trigger by owner, distributes rent to all holders in a single batch transaction.
 - Handles “dust” via min payout, or allows holders to claim when their share exceeds a threshold.
 
 ### **C. SQMU ERC-1155 Token**
