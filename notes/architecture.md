@@ -45,6 +45,9 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `escrow.html` allows buyers to fund a property-specific Escrow contract. The companion
     script `escrow.js` fetches the payment token from the contract, ensures allowance
     and submits deposits for the selected stage.
+  - `rent.html` lets tenants pay deposits and rent. If a weekly period is available,
+    the script derives the weekly price from the monthly rate (`monthly / 4 * 110%`)
+    before calculating deposit and management fees.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.

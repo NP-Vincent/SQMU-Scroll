@@ -337,8 +337,11 @@ are accepted.
 
 ## Rent Widgets
 
-Tenants can pay deposits and monthly rent through the rent widget. Owners
-use a separate admin interface to manage fees and refunds.
+Tenants can pay deposits and rent through the rent widget. Owners
+use a separate admin interface to manage fees and refunds. When a property
+offers a weekly option, a dropdown appears to select **Monthly** or **Weekly**.
+The weekly price is derived from the monthly rate by dividing by four and adding
+10%, then deposit and fee calculations use this adjusted price.
 
 1. Embed `html/rent.html` in a property page with the property ID passed via the
    `?id=` query parameter. Keep the script tag pointing to

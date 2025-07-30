@@ -6,8 +6,10 @@ let signer;
 let rent;
 let propertyCode = '';
 let propertyId = '';
+let monthlyPrice = 0;
 let rentPrice = 0;
-let rentPeriod = '';
+let pricePeriod = '';
+let availablePeriods = [];
 
 const rentAddress = RENT_ADDRESS;
 
@@ -44,6 +46,13 @@ function findRentPrice() {
   return Number.isNaN(p) ? 0 : p;
 }
 
+function findPricePeriod() {
+  const badge = document.querySelector('.es-price-container .es-badge');
+  if (badge) return badge.textContent.trim();
+  const params = new URLSearchParams(location.search);
+  return params.get('pricePeriod') || 'Monthly';
+}
+
 function findRentPeriod() {
   let period = '';
   document.querySelectorAll('.es-entity-field').forEach((li) => {
@@ -59,7 +68,10 @@ function findRentPeriod() {
     const params = new URLSearchParams(location.search);
     period = params.get('period') || '';
   }
-  return period;
+  return period
+    .split(/,\s*/)
+    .map((p) => p.trim())
+    .filter((p) => p);
 }
 
 function setStatus(msg, color) {
@@ -76,17 +88,16 @@ function toggleButtons(disabled) {
 
 toggleButtons(true);
 
-function initFields() {
-  propertyCode = findPropertyCode();
-  rentPrice = findRentPrice();
-  rentPeriod = findRentPeriod();
-  document.getElementById('property-code').textContent = propertyCode || 'N/A';
-  document.getElementById('rent-price').textContent = rentPrice ? `$${rentPrice}` : 'N/A';
-  document.getElementById('rent-period').textContent = rentPeriod || 'N/A';
-
-  const numericId = parseInt(propertyCode.replace(/\D/g, ''), 10);
-  propertyId = Number.isNaN(numericId) ? '' : String(numericId);
-  toggleButtons(!propertyId);
+function updateAmounts() {
+  const select = document.getElementById('period-select');
+  const chosen = select ? select.value : pricePeriod;
+  let price = monthlyPrice;
+  if (chosen === 'Weekly') {
+    price = (monthlyPrice / 4) * 1.1;
+  }
+  rentPrice = price;
+  document.getElementById('rent-price').textContent = rentPrice ? `$${rentPrice.toFixed(2)}` : 'N/A';
+  document.getElementById('rent-period').textContent = chosen;
 
   const depositInput = document.getElementById('deposit-amount');
   const rentInput = document.getElementById('rent-amount');
@@ -94,6 +105,33 @@ function initFields() {
     depositInput.value = (rentPrice * 1.1).toFixed(2);
     rentInput.value = (rentPrice * 1.05).toFixed(2);
   }
+}
+
+function initFields() {
+  propertyCode = findPropertyCode();
+  monthlyPrice = findRentPrice();
+  pricePeriod = findPricePeriod();
+  availablePeriods = findRentPeriod();
+  document.getElementById('property-code').textContent = propertyCode || 'N/A';
+
+  const select = document.getElementById('period-select');
+  if (select) {
+    select.innerHTML = '';
+    if (availablePeriods.length === 0) availablePeriods = [pricePeriod];
+    availablePeriods.forEach((p) => {
+      const opt = document.createElement('option');
+      opt.value = p;
+      opt.textContent = p;
+      select.appendChild(opt);
+    });
+    select.value = pricePeriod;
+  }
+
+  updateAmounts();
+
+  const numericId = parseInt(propertyCode.replace(/\D/g, ''), 10);
+  propertyId = Number.isNaN(numericId) ? '' : String(numericId);
+  toggleButtons(!propertyId);
 }
 
 async function ensureAllowance(tokenAddr, amount) {
@@ -185,3 +223,4 @@ document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('deposit-btn').addEventListener('click', payDeposit);
 document.getElementById('rent-btn').addEventListener('click', payRent);
 document.addEventListener('DOMContentLoaded', initFields);
+document.getElementById('period-select').addEventListener('change', updateAmounts);
