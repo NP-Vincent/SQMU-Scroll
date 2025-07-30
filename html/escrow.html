@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Property Escrow</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/escrow.js"></script>
+  <style>
+    #widget { text-align:center; max-width:320px; margin:0 auto; }
+    #widget > * { margin:0.6em 0; }
+  </style>
+</head>
+<body>
+  <div id="widget">
+    <h3>Escrow Funding</h3>
+    <button id="connect" class="wp-block-button__link">Connect Wallet</button>
+    <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
+    <p>Token: <span id="token-symbol">-</span></p>
+    <p>State: <span id="escrow-state">-</span></p>
+    <p>EOI Deposited: <span id="deposit-eoi">0</span></p>
+    <p>Initial Deposited: <span id="deposit-initial">0</span></p>
+    <p>Balance Deposited: <span id="deposit-balance">0</span></p>
+    <label>Amount <input id="deposit-amount" type="number" step="0.01"></label>
+    <label>Stage
+      <select id="deposit-stage">
+        <option value="0">EOI</option>
+        <option value="1">Initial</option>
+        <option value="2">Balance</option>
+      </select>
+    </label>
+    <button id="deposit-btn" class="wp-block-button__link" disabled>Deposit</button>
+    <pre id="escrow-status"></pre>
+  </div>
+  <script>
+    // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/escrow.js
+    // and connects to the Escrow contract to handle stablecoin deposits.
+  </script>
+</body>
+</html>

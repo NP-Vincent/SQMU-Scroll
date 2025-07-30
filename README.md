@@ -312,7 +312,23 @@ token distributions.
 3. Fill in the desired form and submit. Only the contract owner can call these
    functions.
 4. Use the **Queries** section to retrieve property info, price and remaining
-   supply for a code.
+  supply for a code.
+
+## Escrow Funding
+
+Property purchases use a dedicated `Escrow` contract for staged payments.
+The widget `html/escrow.html` lets buyers deposit stablecoins directly into
+the escrow instance.
+
+1. Embed the file in a WordPress.com Custom HTML block and keep the script tag
+   pointing to `https://np-vincent.github.io/SQMU-Scroll/js/escrow.js` so the
+   module loads correctly.
+2. Click **Connect Wallet** to fetch the escrow state and payment token.
+   The widget displays amounts already deposited for each stage.
+3. Enter a deposit amount, choose `EOI`, `Initial` or `Balance` and click
+   **Deposit**. The script ensures sufficient token allowance before calling
+   `deposit`.
+4. Progress and errors appear in the `#escrow-status` element.
 
 ## Developer Guidelines
 
