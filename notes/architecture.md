@@ -35,8 +35,9 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
     property lookup and purchasing in a single embed and replace the older
     two-page flow. The deprecated `listing_page_embed.html` file has been
     removed in favour of this unified widget alongside `buy.html`.
-  - `portfolio.html` lists each SQMU token ID owned by the connected wallet
-    using `portfolio.js`.
+  - `portfolio.html` lists each SQMU token ID starting from `1` owned by the
+    connected wallet using `portfolio.js`. Token ID `0` represents the
+    governance token and is handled separately.
   - `governance_buy.html` allows investors to purchase governance tokens.
   - `governance_admin.html` provides owner-only access to mint governance tokens.
   - `governance_status.html` displays locked and unlocked balances for the connected wallet.
