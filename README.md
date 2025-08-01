@@ -9,6 +9,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
 - `js/config.js` – Centralized addresses for the SQMU, distributor, crowdfund and governance contracts
 - `src/` – Additional JavaScript utilities used by the widgets
+- `gas/` – Google App Script sources for email receipts
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
 - `notes/deployment_log.md` – Canonical record of deployments and contract addresses
@@ -356,6 +357,14 @@ The weekly price is derived from the monthly rate by dividing by four and adding
    `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
    manage accepted tokens, treasury address, management fee, refund deposits and
    withdraw accumulated fees.
+
+## Email Receipts
+
+Payment widgets can send buyers a confirmation email. Include `js/email.js` in
+pages that process purchases and call `sendReceipt()` after a successful
+transaction. The function posts payment details to the Google App Script in
+`gas/email_receipt.gs`, which sends the formatted receipt via Gmail. Update the
+`MAIL_URL` constant in `email.js` if you deploy your own script.
 
 ## Developer Guidelines
 
