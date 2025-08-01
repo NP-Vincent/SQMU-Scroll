@@ -349,6 +349,9 @@ The weekly price is derived from the monthly rate by dividing by four and adding
    correctly.
 2. The widget handles token approvals automatically and lets tenants submit a
    refundable deposit and rent payments using approved stablecoins.
+   A **Start Rental** button combines the deposit and first rent in one flow.
+   Because the contract enforces a payment window, two wallet confirmations are
+   required and the rent transaction may fail if attempted too early.
 3. Embed `html/rent_admin.html` with
    `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
    manage accepted tokens, treasury address, management fee, refund deposits and
