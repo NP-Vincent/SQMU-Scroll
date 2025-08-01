@@ -80,7 +80,7 @@ function setStatus(msg, color) {
 }
 
 function toggleButtons(disabled) {
-  ['deposit-btn', 'rent-btn'].forEach((id) => {
+  ['deposit-btn', 'rent-btn', 'start-btn'].forEach((id) => {
     const btn = document.getElementById(id);
     if (btn) btn.disabled = disabled;
   });
@@ -209,6 +209,42 @@ async function payRent() {
   }
 }
 
+async function startRental() {
+  if (!rent) {
+    setStatus('Connect wallet first.', 'red');
+    return;
+  }
+  if (!propertyId) {
+    setStatus('Property ID missing', 'red');
+    return;
+  }
+  const depToken = document.getElementById('deposit-token').value;
+  const depRaw = document.getElementById('deposit-amount').value;
+  const rentToken = document.getElementById('rent-token').value;
+  const rentRaw = document.getElementById('rent-amount').value;
+  try {
+    const depErc20 = new ethers.Contract(depToken, erc20Abi, signer);
+    const depDec = await depErc20.decimals();
+    const depAmount = ethers.utils.parseUnits(depRaw, depDec);
+    await ensureAllowance(depToken, depAmount);
+    let tx = await rent.payDeposit(propertyId, depToken, depAmount);
+    setStatus('Submitting deposit...');
+    await tx.wait();
+    setStatus('Deposit paid. Paying first rent...');
+
+    const rentErc20 = new ethers.Contract(rentToken, erc20Abi, signer);
+    const rentDec = await rentErc20.decimals();
+    const rentAmount = ethers.utils.parseUnits(rentRaw, rentDec);
+    await ensureAllowance(rentToken, rentAmount);
+    tx = await rent.collectRent(propertyId, rentToken, rentAmount);
+    setStatus('Submitting rent...');
+    await tx.wait();
+    setStatus('Deposit and first rent paid', 'green');
+  } catch (err) {
+    setStatus(err.message, 'red');
+  }
+}
+
 async function disconnect() {
   await disconnectWallet('rent-status');
   provider = undefined;
@@ -222,5 +258,7 @@ document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('deposit-btn').addEventListener('click', payDeposit);
 document.getElementById('rent-btn').addEventListener('click', payRent);
+const startBtn = document.getElementById('start-btn');
+if (startBtn) startBtn.addEventListener('click', startRental);
 document.addEventListener('DOMContentLoaded', initFields);
 document.getElementById('period-select').addEventListener('change', updateAmounts);
