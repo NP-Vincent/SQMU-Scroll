@@ -48,6 +48,8 @@ Detailed contract requirements are maintained in `../erc_1155_sqmu_ownership_sma
   - `rent.html` lets tenants pay deposits and rent. If a weekly period is available,
     the script derives the weekly price from the monthly rate (`monthly / 4 * 110%`)
     before calculating deposit and management fees.
+  - Transaction receipts are emailed by calling `sendReceipt()` from `js/email.js`.
+    The companion Google App Script lives in `gas/email_receipt.gs`.
   - Shared wallet logic resides in `js/wallet.js` providing
     `connectWallet()` and `disconnectWallet()` for all widgets. The disconnect
     helper now calls `MMSDK.terminate()` to fully close the MetaMask session.
