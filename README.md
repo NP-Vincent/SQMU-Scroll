@@ -356,7 +356,7 @@ The weekly price is derived from the monthly rate by dividing by four and adding
 3. Embed `html/rent_admin.html` with
    `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
   manage accepted tokens, treasury address, vault address, management fee,
-  refund deposits and withdraw accumulated fees.
+  check deposits, refund deposits (including partial refunds) and withdraw accumulated fees.
 
 ## Email Receipts
 

@@ -18,6 +18,7 @@ function toggleButtons(disabled) {
     'treasury-btn',
     'vault-btn',
     'fee-btn',
+    'check-btn',
     'refund-btn',
     'withdraw-btn'
   ].forEach(id => {
@@ -117,6 +118,23 @@ async function setFee() {
   }
 }
 
+async function checkDeposit() {
+  if (!rent) {
+    setStatus('Connect wallet first.', 'red');
+    return;
+  }
+  const id = document.getElementById('check-id').value;
+  try {
+    const [amount, token, , balance] = await rent.getDepositDetails(id);
+    document.getElementById('deposit-amount').textContent = amount.toString();
+    document.getElementById('deposit-token').textContent = token;
+    document.getElementById('deposit-balance').textContent = balance.toString();
+    setStatus('Deposit details loaded', 'green');
+  } catch (err) {
+    setStatus(err.message, 'red');
+  }
+}
+
 async function refundDeposit() {
   if (!rent) {
     setStatus('Connect wallet first.', 'red');
@@ -124,10 +142,13 @@ async function refundDeposit() {
   }
   const id = document.getElementById('refund-id').value;
   const tenant = document.getElementById('refund-tenant').value.trim();
+  const amount = document.getElementById('refund-amount').value;
   try {
-    const tx = await rent.refundDeposit(id, tenant);
+    const tx = await rent.refundDeposit(id, tenant, amount);
     setStatus('Refunding deposit...');
     await tx.wait();
+    document.getElementById('check-id').value = id;
+    await checkDeposit();
     setStatus('Deposit refunded', 'green');
   } catch (err) {
     setStatus(err.message, 'red');
@@ -156,5 +177,6 @@ document.getElementById('token-btn').addEventListener('click', updateToken);
 document.getElementById('treasury-btn').addEventListener('click', setTreasury);
 document.getElementById('vault-btn').addEventListener('click', setVaultAddress);
 document.getElementById('fee-btn').addEventListener('click', setFee);
+document.getElementById('check-btn').addEventListener('click', checkDeposit);
 document.getElementById('refund-btn').addEventListener('click', refundDeposit);
 document.getElementById('withdraw-btn').addEventListener('click', withdrawFees);

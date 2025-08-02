@@ -48,10 +48,20 @@
       <button id="fee-btn" class="wp-block-button__link" disabled>Set Fee</button>
     </div>
 
+    <div id="check-section">
+      <h4>Check Deposit</h4>
+      <label>Property ID <input id="check-id" type="number"></label>
+      <button id="check-btn" class="wp-block-button__link" disabled>Check</button>
+      <div>Deposit Amount: <span id="deposit-amount"></span></div>
+      <div>Token Address: <span id="deposit-token"></span></div>
+      <div>Contract Balance: <span id="deposit-balance"></span></div>
+    </div>
+
     <div id="refund-section">
       <h4>Refund Deposit</h4>
       <label>Property ID <input id="refund-id" type="number"></label>
       <label>Tenant Address <input id="refund-tenant" type="text"></label>
+      <label>Refund Amount <input id="refund-amount" type="number"></label>
       <button id="refund-btn" class="wp-block-button__link" disabled>Refund</button>
     </div>
 
@@ -69,7 +79,8 @@
       <ol>
         <li>Connect your wallet to manage deposits and fees.</li>
         <li>Use the forms to whitelist tokens, set the treasury and vault addresses, and update the management fee.</li>
-        <li>The Refund Deposit form returns a tenant's deposit.</li>
+        <li>Check Deposit looks up the deposit amount, token and contract-held balance for a property.</li>
+        <li>The Refund Deposit form can return part or all of a tenant's deposit.</li>
         <li>Withdraw Fees moves accumulated management fees to the treasury.</li>
         <li>Disconnect when finished.</li>
       </ol>
