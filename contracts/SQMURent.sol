@@ -52,7 +52,13 @@ contract SQMURent is
     ISQMURentDistribution public vault;
 
     event DepositPaid(uint256 indexed propertyId, address indexed tenant, address token, uint256 amount);
-    event DepositRefunded(uint256 indexed propertyId, address indexed tenant, address token, uint256 amount);
+    event DepositRefunded(
+        uint256 indexed propertyId,
+        address indexed tenant,
+        address token,
+        uint256 refundAmount,
+        uint256 remainder
+    );
     event RentCollected(uint256 indexed propertyId, address indexed tenant, address token, uint256 amount, uint256 fee);
     event ManagementFeesWithdrawn(address indexed token, uint256 amount);
     event TokenAccepted(address token, bool status);
@@ -130,20 +136,46 @@ contract SQMURent is
         emit PropertyOccupied(propertyId, msg.sender, block.timestamp + RENT_PERIOD);
     }
 
-    /// @notice Owner refunds a tenant deposit.
-    function refundDeposit(uint256 propertyId, address tenant) external onlyOwner nonReentrant {
+    /// @notice View the deposit details for a property including current contract balance.
+    function getDepositDetails(uint256 propertyId)
+        public
+        view
+        returns (uint256 amount, address token, address tenant, uint256 contractBalance)
+    {
+        Deposit memory dep = deposits[propertyId];
+        RentalInfo memory info = rentals[propertyId];
+        amount = dep.amount;
+        token = dep.token;
+        tenant = info.tenant;
+        contractBalance = token != address(0) ? IERC20Upgradeable(token).balanceOf(address(this)) : 0;
+    }
+
+    /// @notice Owner refunds a tenant deposit. Remaining balance is sent to the treasury.
+    function refundDeposit(uint256 propertyId, address tenant, uint256 refundAmount)
+        external
+        onlyOwner
+        nonReentrant
+    {
         RentalInfo storage info = rentals[propertyId];
         require(info.occupied && info.tenant == tenant, "Not tenant");
 
         Deposit storage dep = deposits[propertyId];
         require(dep.amount > 0, "No deposit");
-        uint256 amount = dep.amount;
+        require(refundAmount <= dep.amount, "Over refund");
+
+        uint256 remainder = dep.amount - refundAmount;
         address token = dep.token;
 
         delete deposits[propertyId];
         delete rentals[propertyId];
-        IERC20Upgradeable(token).safeTransfer(tenant, amount);
-        emit DepositRefunded(propertyId, tenant, token, amount);
+
+        if (refundAmount > 0) {
+            IERC20Upgradeable(token).safeTransfer(tenant, refundAmount);
+        }
+        if (remainder > 0) {
+            IERC20Upgradeable(token).safeTransfer(treasury, remainder);
+        }
+        emit DepositRefunded(propertyId, tenant, token, refundAmount, remainder);
         emit PropertyVacated(propertyId, tenant);
     }
 
