@@ -139,7 +139,7 @@ async function displayListings() {
       const price = ethers.utils.formatUnits(l.pricePerToken, decimals);
       const amount = Number(ethers.utils.formatUnits(l.amountListed, DECIMALS));
       const row = document.createElement('tr');
-      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${symbol}</td><td>${l.seller}</td>`;
+      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${symbol}</td>`;
       tbody.appendChild(row);
     }
   } catch (err) {
