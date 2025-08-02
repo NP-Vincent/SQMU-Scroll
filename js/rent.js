@@ -93,12 +93,28 @@ async function updateRentalButtons() {
     const info = await rent.rentals(propertyId);
     const startSection = document.getElementById('start-section');
     const rentSection = document.getElementById('rent-section');
+    const tokenSelect = document.getElementById('rent-token');
     if (info.occupied) {
       if (startSection) startSection.style.display = 'none';
       if (rentSection) rentSection.style.display = '';
+      if (tokenSelect) {
+        const dep = await rent.getDepositDetails(propertyId);
+        const depToken = dep.token;
+        Array.from(tokenSelect.options).forEach((opt) => {
+          opt.hidden = opt.value.toLowerCase() !== depToken.toLowerCase();
+        });
+        tokenSelect.value = depToken;
+        tokenSelect.disabled = true;
+      }
     } else {
       if (startSection) startSection.style.display = '';
       if (rentSection) rentSection.style.display = 'none';
+      if (tokenSelect) {
+        Array.from(tokenSelect.options).forEach((opt) => {
+          opt.hidden = false;
+        });
+        tokenSelect.disabled = false;
+      }
     }
   } catch (err) {
     setStatus(err.message, 'red');
@@ -261,6 +277,13 @@ async function disconnect() {
   rent = undefined;
   toggleButtons(true);
   document.getElementById('disconnect').style.display = 'none';
+  const tokenSelect = document.getElementById('rent-token');
+  if (tokenSelect) {
+    Array.from(tokenSelect.options).forEach((opt) => {
+      opt.hidden = false;
+    });
+    tokenSelect.disabled = false;
+  }
 }
 
 document.getElementById('connect').addEventListener('click', connect);
