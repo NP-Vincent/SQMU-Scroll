@@ -8,6 +8,7 @@ let propertyCode = '';
 let propertyId = '';
 let monthlyPrice = 0;
 let rentPrice = 0;
+let depositPrice = '0';
 let pricePeriod = '';
 let availablePeriods = [];
 
@@ -80,7 +81,7 @@ function setStatus(msg, color) {
 }
 
 function toggleButtons(disabled) {
-  ['deposit-btn', 'rent-btn', 'start-btn'].forEach((id) => {
+  ['rent-btn', 'start-btn'].forEach((id) => {
     const btn = document.getElementById(id);
     if (btn) btn.disabled = disabled;
   });
@@ -90,13 +91,13 @@ async function updateRentalButtons() {
   if (!rent || !propertyId) return;
   try {
     const info = await rent.rentals(propertyId);
-    const depositSection = document.getElementById('deposit-section');
+    const startSection = document.getElementById('start-section');
     const rentSection = document.getElementById('rent-section');
     if (info.occupied) {
-      if (depositSection) depositSection.style.display = 'none';
+      if (startSection) startSection.style.display = 'none';
       if (rentSection) rentSection.style.display = '';
     } else {
-      if (depositSection) depositSection.style.display = '';
+      if (startSection) startSection.style.display = '';
       if (rentSection) rentSection.style.display = 'none';
     }
   } catch (err) {
@@ -124,10 +125,9 @@ function updateAmounts() {
   document.getElementById('rent-price').textContent = rentPrice ? `$${rentPrice.toFixed(2)}` : 'N/A';
   document.getElementById('rent-period').textContent = chosen;
 
-  const depositInput = document.getElementById('deposit-amount');
   const rentInput = document.getElementById('rent-amount');
-  if (rentPrice && depositInput && rentInput) {
-    depositInput.value = (rentPrice * 1.1).toFixed(2);
+  depositPrice = (rentPrice * 1.1).toFixed(2);
+  if (rentPrice && rentInput) {
     rentInput.value = (rentPrice * 1.05).toFixed(2);
   }
 }
@@ -185,32 +185,6 @@ async function connect() {
   }
 }
 
-async function payDeposit() {
-  if (!rent) {
-    setStatus('Connect wallet first.', 'red');
-    return;
-  }
-  if (!propertyId) {
-    setStatus('Property ID missing', 'red');
-    return;
-  }
-  const token = document.getElementById('deposit-token').value;
-  const rawAmount = document.getElementById('deposit-amount').value;
-  try {
-    const erc20 = new ethers.Contract(token, erc20Abi, signer);
-    const dec = await erc20.decimals();
-    const amount = ethers.utils.parseUnits(rawAmount, dec);
-    await ensureAllowance(token, amount);
-    const tx = await rent.payDeposit(propertyId, token, amount);
-    setStatus('Submitting deposit...');
-    await tx.wait();
-    setStatus('Deposit paid', 'green');
-    updateRentalButtons();
-  } catch (err) {
-    setStatus(err.message, 'red');
-  }
-}
-
 async function payRent() {
   if (!rent) {
     setStatus('Connect wallet first.', 'red');
@@ -246,16 +220,14 @@ async function startRental() {
     setStatus('Property ID missing', 'red');
     return;
   }
-  const depToken = document.getElementById('deposit-token').value;
-  const depRaw = document.getElementById('deposit-amount').value;
-  const rentToken = document.getElementById('rent-token').value;
+  const token = document.getElementById('rent-token').value;
   const rentRaw = document.getElementById('rent-amount').value;
   try {
-    const depErc20 = new ethers.Contract(depToken, erc20Abi, signer);
-    const depDec = await depErc20.decimals();
-    const depAmount = ethers.utils.parseUnits(depRaw, depDec);
-    await ensureAllowance(depToken, depAmount);
-    let tx = await rent.payDeposit(propertyId, depToken, depAmount);
+    const erc20 = new ethers.Contract(token, erc20Abi, signer);
+    const dec = await erc20.decimals();
+    const depAmount = ethers.utils.parseUnits(depositPrice, dec);
+    await ensureAllowance(token, depAmount);
+    let tx = await rent.payDeposit(propertyId, token, depAmount);
     setStatus('Submitting deposit...');
     await tx.wait();
     updateRentalButtons();
@@ -270,11 +242,9 @@ async function startRental() {
     }
     setStatus('Deposit paid. Paying first rent...');
 
-    const rentErc20 = new ethers.Contract(rentToken, erc20Abi, signer);
-    const rentDec = await rentErc20.decimals();
-    const rentAmount = ethers.utils.parseUnits(rentRaw, rentDec);
-    await ensureAllowance(rentToken, rentAmount);
-    tx = await rent.collectRent(propertyId, rentToken, rentAmount);
+    const rentAmount = ethers.utils.parseUnits(rentRaw, dec);
+    await ensureAllowance(token, rentAmount);
+    tx = await rent.collectRent(propertyId, token, rentAmount);
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Deposit and first rent paid', 'green');
@@ -295,7 +265,6 @@ async function disconnect() {
 
 document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
-document.getElementById('deposit-btn').addEventListener('click', payDeposit);
 document.getElementById('rent-btn').addEventListener('click', payRent);
 const startBtn = document.getElementById('start-btn');
 if (startBtn) startBtn.addEventListener('click', startRental);
