@@ -60,6 +60,17 @@ You can embed any widget in WordPress.com in two ways:
 
 All scripts fetch the ABI using `new URL('../abi/SQMU.json', import.meta.url)`. Therefore the JavaScript modules and `abi/SQMU.json` must be hosted together on GitHub Pages so this path resolves correctly.
 
+### Widget Styling Conventions
+
+Widgets are designed to blend with WordPress.com blocks. When creating or updating HTML/JS:
+
+- Wrap each widget in a `wp-block-group` and give it a unique `sqmu-*` class.
+- Apply spacing with a rule like `.sqmu-widget > * + * { margin-top: 1em; }`.
+- Use `.wp-block-input` and `.wp-block-select` for form controls. Set `width:100%`, `font-size:1rem` and `padding:0.5em`.
+- Group buttons inside `.wp-block-buttons` containers. Each button should use `.wp-block-button` and `.wp-block-button__link`.
+- Labels are bold and centered (`class="has-text-align-center"` and `style="font-weight:bold;"`).
+- Show status or feedback messages in `<p>` elements with the `has-small-font-size` class.
+
 ## Deployment Guide
 
 Follow these steps to deploy and upgrade `SQMU.sol` on the Scroll network.
