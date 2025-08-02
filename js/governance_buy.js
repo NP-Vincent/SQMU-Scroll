@@ -16,20 +16,26 @@ async function connect() {
     contract = new ethers.Contract(contractAddress, abiJson.abi, signer);
     document.getElementById('disconnect').style.display = '';
     document.getElementById('buy-btn').disabled = false;
-    setStatus('Connected. Contract ready!', 'green');
+    setStatus('Connected. Contract ready!', 'success');
   } catch (err) {
-    setStatus(err.message, 'red');
+    setStatus(err.message, 'error');
   }
 }
 
-function setStatus(msg, color) {
+function setStatus(msg, tone) {
   const el = document.getElementById('gov-status');
-  el.innerHTML = color ? `<span style="color:${color};">${msg}</span>` : msg;
+  el.textContent = msg;
+  el.className = 'has-small-font-size';
+  if (tone === 'success') {
+    el.classList.add('has-primary-color');
+  } else if (tone === 'error') {
+    el.classList.add('has-foreground-color');
+  }
 }
 
 async function buy() {
   if (!contract) {
-    setStatus('Connect wallet first.', 'red');
+    setStatus('Connect wallet first.', 'error');
     return;
   }
   const amount = document.getElementById('gov-amount').value;
@@ -47,15 +53,15 @@ async function buy() {
     const allowance = await erc20.allowance(owner, contractAddress);
     if (allowance.lt(total)) {
       const txA = await erc20.approve(contractAddress, total);
-      setStatus('Approving token...');
+      setStatus('Approving token...', 'info');
       await txA.wait();
     }
     const tx = await contract.buy(token, amount);
-    setStatus('Submitting purchase...');
+    setStatus('Submitting purchase...', 'info');
     await tx.wait();
-    setStatus(`Purchased ${amount} governance tokens`, 'green');
+    setStatus(`Purchased ${amount} governance tokens`, 'success');
   } catch (err) {
-    setStatus(err.message, 'red');
+    setStatus(err.message, 'error');
   }
 }
 
@@ -66,6 +72,7 @@ async function disconnect() {
   contract = undefined;
   document.getElementById('disconnect').style.display = 'none';
   document.getElementById('buy-btn').disabled = true;
+  setStatus('Wallet disconnected');
 }
 
 document.getElementById('connect').addEventListener('click', connect);
