@@ -348,11 +348,11 @@ The weekly price is derived from the monthly rate by dividing by four and adding
    `?id=` query parameter. Keep the script tag pointing to
    `https://np-vincent.github.io/SQMU-Scroll/js/rent.js` so the module loads
    correctly.
-2. The widget handles token approvals automatically and lets tenants submit a
-   refundable deposit and rent payments using approved stablecoins.
-   A **Start Rental** button combines the deposit and first rent in one flow.
-   Because the contract enforces a payment window, two wallet confirmations are
-   required and the rent transaction may fail if attempted too early.
+2. The widget handles token approvals automatically. When a property has no
+   active tenant it shows a **Start Rental** button that sends the deposit and,
+   if the payment window is open, the first rent. Otherwise it stores the
+   deposit and asks the tenant to return closer to the due date. Once occupied
+   only the **Pay Rent** button is displayed for ongoing payments.
 3. Embed `html/rent_admin.html` with
    `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
   manage accepted tokens, treasury address, vault address, management fee,
