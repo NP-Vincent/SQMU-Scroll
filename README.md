@@ -2,6 +2,8 @@
 
 This repository manages the entire stack for the SQMU fractional real estate ownership system—including the smart contract, HTML/JavaScript user interfaces, MetaMask SDK integration, and all supporting documentation. All widgets are designed to be embedded directly into WordPress.com pages using the custom HTML block.
 
+Reference plugin and theme files live in `Wordpress.com References/` to assist with embedding HTML and JavaScript snippets in Custom HTML blocks on the sqmu.net WordPress.com site.
+
 ## Repository Structure
 
 - `contracts/` – Solidity smart contracts (ERC-1155, upgradeable, audited)
@@ -13,6 +15,7 @@ This repository manages the entire stack for the SQMU fractional real estate own
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
 - `notes/` – Technical and architectural notes
 - `notes/deployment_log.md` – Canonical record of deployments and contract addresses
+- `Wordpress.com References/` – Plugin and theme reference files demonstrating how to embed HTML/JS in WordPress.com Custom HTML blocks
 - `README.md` – This file
 - `AGENTS.md` – Development and AI agent instructions
 - `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` – Detailed contract requirements

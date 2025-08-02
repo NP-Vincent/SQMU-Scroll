@@ -47,6 +47,7 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
 - JS modules: `js/`
 - ABI: `abi/`
 - Notes: `notes/`
+- WordPress.com references: `Wordpress.com References/` – plugin and theme materials for embedding HTML/JS in Custom HTML blocks on sqmu.net
 
 *Always keep file and directory structure consistent with this guide.*
 
