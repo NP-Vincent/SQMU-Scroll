@@ -12,6 +12,7 @@ const DECIMALS = 2;
 const MAX_TOKEN_ID = 100; // adjust if your token ids exceed this range
 const erc20Abi = [
   'function decimals() view returns (uint8)',
+  'function symbol() view returns (string)',
   'function allowance(address owner, address spender) view returns (uint256)',
   'function approve(address spender, uint256 amount) returns (bool)'
 ];
@@ -130,11 +131,15 @@ async function displayListings() {
       if (Number(l.tokenId) === 0) continue; // governance token handled elsewhere
       const erc20 = new ethers.Contract(l.paymentToken, erc20Abi, provider);
       let decimals = 18;
-      try { decimals = await erc20.decimals(); } catch (e) {}
+      let symbol = l.paymentToken;
+      try {
+        decimals = await erc20.decimals();
+        symbol = await erc20.symbol();
+      } catch (e) {}
       const price = ethers.utils.formatUnits(l.pricePerToken, decimals);
       const amount = Number(ethers.utils.formatUnits(l.amountListed, DECIMALS));
       const row = document.createElement('tr');
-      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${l.paymentToken}</td><td>${l.seller}</td>`;
+      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${symbol}</td><td>${l.seller}</td>`;
       tbody.appendChild(row);
     }
   } catch (err) {
