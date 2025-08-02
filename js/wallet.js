@@ -32,7 +32,8 @@ export async function connectWallet(statusId) {
     if (!accountsPermission) {
       throw new Error('eth_accounts permission not granted');
     }
-    await ethereum.request({ method: 'eth_accounts', params: [] });
+    // wallet_requestPermissions already exposes the account; avoid an
+    // immediate eth_accounts call to prevent duplicate MetaMask popups
     let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     if (chainId !== SCROLL_CHAIN_ID) {
       try {
