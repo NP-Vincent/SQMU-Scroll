@@ -49,7 +49,7 @@ function doPost(e) {
       }
       body += '\n\nTo view your SQMU tokens:' +
         '\n1. Switch your wallet network to Scroll (chain ID 534352).' +
-        '\n2. Add a custom token using the address above.' +
+        '\n2. Add an NFT using the address above.' +
         '\n3. Set the token symbol to ' + tokenId + '';
       body += '\nTokens are delivered to the paying wallet within 24 hours.';
     }
