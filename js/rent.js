@@ -86,6 +86,31 @@ function toggleButtons(disabled) {
   });
 }
 
+async function updateRentalButtons() {
+  if (!rent || !propertyId) return;
+  try {
+    const info = await rent.rentals(propertyId);
+    const depositSection = document.getElementById('deposit-section');
+    const rentSection = document.getElementById('rent-section');
+    if (info.occupied) {
+      if (depositSection) depositSection.style.display = 'none';
+      if (rentSection) rentSection.style.display = '';
+    } else {
+      if (depositSection) depositSection.style.display = '';
+      if (rentSection) rentSection.style.display = 'none';
+    }
+  } catch (err) {
+    setStatus(err.message, 'red');
+  }
+}
+
+async function isRentWindowOpen(id) {
+  const info = await rent.rentals(id);
+  const window = await rent.RENT_WINDOW();
+  const now = Math.floor(Date.now() / 1000);
+  return now >= info.nextRentDue - window && now <= info.nextRentDue + window;
+}
+
 toggleButtons(true);
 
 function updateAmounts() {
@@ -154,6 +179,7 @@ async function connect() {
     document.getElementById('disconnect').style.display = '';
     toggleButtons(!propertyId);
     setStatus('Connected. Contract ready!', 'green');
+    updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');
   }
@@ -179,6 +205,7 @@ async function payDeposit() {
     setStatus('Submitting deposit...');
     await tx.wait();
     setStatus('Deposit paid', 'green');
+    updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');
   }
@@ -204,6 +231,7 @@ async function payRent() {
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Rent paid', 'green');
+    updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');
   }
@@ -230,6 +258,16 @@ async function startRental() {
     let tx = await rent.payDeposit(propertyId, depToken, depAmount);
     setStatus('Submitting deposit...');
     await tx.wait();
+    updateRentalButtons();
+    if (!(await isRentWindowOpen(propertyId))) {
+      setStatus(
+        "Deposit paid. Rent isn\u2019t due yet—come back closer to the due date.",
+        'green'
+      );
+      const start = document.getElementById('start-btn');
+      if (start) start.disabled = true;
+      return;
+    }
     setStatus('Deposit paid. Paying first rent...');
 
     const rentErc20 = new ethers.Contract(rentToken, erc20Abi, signer);
@@ -240,6 +278,7 @@ async function startRental() {
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Deposit and first rent paid', 'green');
+    updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');
   }
