@@ -37,6 +37,20 @@ function setTradeStatus(msg, color) {
   }
 }
 
+function adjustColumnWidth() {
+  const col = document.querySelector('.tab-buttons');
+  if (!col) return;
+  let max = 0;
+  col.querySelectorAll('.wp-block-button').forEach(btn => {
+    if (btn.offsetWidth > max) max = btn.offsetWidth;
+  });
+  if (max) {
+    col.style.width = max + 'px';
+  }
+}
+
+window.addEventListener('load', adjustColumnWidth);
+
 async function ensureAllowance(tokenAddr, requiredAmount) {
   const erc20 = new ethers.Contract(tokenAddr, erc20Abi, signer);
   const owner = await signer.getAddress();
