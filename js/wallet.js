@@ -56,7 +56,12 @@ export async function connectWallet(statusId) {
       '<span style="color:green;">Connected to Scroll</span>';
     return { provider, signer };
   } catch (err) {
-    statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+    if (err.code === -32002) {
+      statusDiv.innerHTML =
+        '<span style="color:red;">Request already pending. Check MetaMask.</span>';
+    } else {
+      statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+    }
     throw err;
   }
 }
