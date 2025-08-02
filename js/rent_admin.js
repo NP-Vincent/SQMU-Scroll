@@ -16,6 +16,7 @@ function toggleButtons(disabled) {
   [
     'token-btn',
     'treasury-btn',
+    'vault-btn',
     'fee-btn',
     'refund-btn',
     'withdraw-btn'
