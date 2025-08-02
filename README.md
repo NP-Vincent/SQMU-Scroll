@@ -303,6 +303,8 @@ balance of each SQMU property along with the USD value of that balance.
    If your wallet has not approved the trade contract, the widget will first
    call `setApprovalForAll` so it can escrow your tokens before creating the
    listing.
+6. Active listings display the payment token's symbol (e.g., USDC, USDT, USDQ)
+   instead of the contract address.
 
 ## Governance Crowdfund
 
