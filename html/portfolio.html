@@ -7,63 +7,98 @@
   <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
   <script type="module" src="https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js"></script>
   <style>
+    .sqmu-portfolio > * + * { margin-top: 1em; }
     table { border-collapse: collapse; margin-top: 1em; }
     th, td { padding: 0.5em 1em; border: 1px solid #ccc; text-align: left; }
     tfoot td { font-weight: bold; }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    #listing-table { display: block; overflow-x: auto; }
+    #listing-table th, #listing-table td { white-space: nowrap; }
   </style>
 </head>
 <body>
-  <h3>SQMU Portfolio</h3>
-  <button id="connect" class="wp-block-button__link">Connect Wallet</button>
-  <button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button>
-  <div id="portfolio-status"></div>
-  <table id="portfolio-table">
-    <thead>
-      <tr>
-        <th>Property Code</th>
-        <th>SQMU Balance</th>
-        <th>USD Value</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-    <tfoot>
-      <tr>
-        <td>Total</td>
-        <td id="total-sqmu"></td>
-        <td id="total-usd"></td>
-      </tr>
-    </tfoot>
-  </table>
-  <h4>List SQMU Tokens</h4>
-  <label>Property Code <input id="list-code" type="text"></label>
-  <label>Token ID <input id="list-token-id" type="number" value="1" min="1"></label>
-  <label>Amount <input id="list-amount" type="number" value="1" step="0.01"></label>
-  <label>Price Per Token <input id="list-price" type="number" value="1"></label>
-  <label>Payment Token <input id="list-payment-token" type="text"></label>
-  <button id="list-btn" disabled>List</button>
+  <div class="wp-block-group sqmu-portfolio">
+    <h3 class="has-text-align-center" style="font-weight:bold;">SQMU Portfolio</h3>
+    <div class="wp-block-buttons tab-buttons">
+      <div class="wp-block-button"><button class="wp-block-button__link tab-button is-active" data-tab="portfolio">Portfolio</button></div>
+      <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="list">List Tokens</button></div>
+      <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="listings">Active Listings</button></div>
+      <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="buy">Buy Listing</button></div>
+    </div>
 
-  <h4>Active Listings</h4>
-  <table id="listing-table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Property</th>
-        <th>Token ID</th>
-        <th>Available</th>
-        <th>Price</th>
-        <th>Payment Token</th>
-        <th>Seller</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <div id="tab-portfolio" class="tab-section active">
+      <div class="wp-block-buttons">
+        <div class="wp-block-button"><button id="connect" class="wp-block-button__link">Connect Wallet</button></div>
+        <div class="wp-block-button"><button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button></div>
+      </div>
+      <p id="portfolio-status" class="has-small-font-size"></p>
+      <table id="portfolio-table">
+        <thead>
+          <tr>
+            <th>Property Code</th>
+            <th>SQMU Balance</th>
+            <th>USD Value</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td id="total-sqmu"></td>
+            <td id="total-usd"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-  <h4>Buy Listing</h4>
-  <label>Listing ID <input id="buy-listing-id" type="number"></label>
-  <label>Amount <input id="buy-amount" type="number" value="1" step="0.01"></label>
-  <button id="buy-btn" disabled>Buy</button>
-  <div id="trade-status"></div>
+    <div id="tab-list" class="tab-section">
+      <h4>List SQMU Tokens</h4>
+      <label class="has-text-align-center" style="font-weight:bold;">Property Code <input id="list-code" class="wp-block-input" type="text"></label>
+      <label class="has-text-align-center" style="font-weight:bold;">Token ID <input id="list-token-id" class="wp-block-input" type="number" value="1" min="1"></label>
+      <label class="has-text-align-center" style="font-weight:bold;">Amount <input id="list-amount" class="wp-block-input" type="number" value="1" step="0.01"></label>
+      <label class="has-text-align-center" style="font-weight:bold;">Price Per Token <input id="list-price" class="wp-block-input" type="number" value="1"></label>
+      <label class="has-text-align-center" style="font-weight:bold;">Payment Token <input id="list-payment-token" class="wp-block-input" type="text"></label>
+      <div class="wp-block-buttons"><div class="wp-block-button"><button id="list-btn" class="wp-block-button__link" disabled>List</button></div></div>
+    </div>
+
+    <div id="tab-listings" class="tab-section">
+      <h4>Active Listings</h4>
+      <table id="listing-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Property</th>
+            <th>Token ID</th>
+            <th>Available</th>
+            <th>Price</th>
+            <th>Payment Token</th>
+            <th>Seller</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="tab-buy" class="tab-section">
+      <h4>Buy Listing</h4>
+      <label class="has-text-align-center" style="font-weight:bold;">Listing ID <input id="buy-listing-id" class="wp-block-input" type="number"></label>
+      <label class="has-text-align-center" style="font-weight:bold;">Amount <input id="buy-amount" class="wp-block-input" type="number" value="1" step="0.01"></label>
+      <div class="wp-block-buttons"><div class="wp-block-button"><button id="buy-btn" class="wp-block-button__link" disabled>Buy</button></div></div>
+      <p id="trade-status" class="has-small-font-size"></p>
+    </div>
+  </div>
+
   <script>
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.dataset.tab;
+        document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('is-active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        btn.classList.add('is-active');
+      });
+    });
     // This widget loads https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js.
     // After connecting your wallet it lists each property code with your
     // balance and the USD value returned by AtomicSQMUDistributor for that
@@ -71,3 +106,4 @@
   </script>
 </body>
 </html>
+
