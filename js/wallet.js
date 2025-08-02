@@ -43,6 +43,16 @@ export async function connectWallet(statusId) {
             params: [{ chainId: SCROLL_CHAIN_ID }],
           });
         } else {
+          const isWalletConnect =
+            MMSDK.isWalletConnect || ethereum.isWalletConnect || ethereum.wc;
+          const unsupportedMethod =
+            switchErr.code === 4200 || switchErr.code === -32601;
+          if (isWalletConnect && unsupportedMethod) {
+            statusDiv.innerHTML =
+              '<span style="color:red;">Please switch to the Scroll network manually in MetaMask Mobile.</span>';
+            switchErr.handled = true;
+            throw switchErr;
+          }
           throw switchErr;
         }
       }
@@ -56,11 +66,13 @@ export async function connectWallet(statusId) {
       '<span style="color:green;">Connected to Scroll</span>';
     return { provider, signer };
   } catch (err) {
-    if (err.code === -32002) {
-      statusDiv.innerHTML =
-        '<span style="color:red;">Request already pending. Check MetaMask.</span>';
-    } else {
-      statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+    if (!err.handled) {
+      if (err.code === -32002) {
+        statusDiv.innerHTML =
+          '<span style="color:red;">Request already pending. Check MetaMask.</span>';
+      } else {
+        statusDiv.innerHTML = `<span style="color:red;">${err.message}</span>`;
+      }
     }
     throw err;
   }
