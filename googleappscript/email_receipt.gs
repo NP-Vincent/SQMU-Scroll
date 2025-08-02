@@ -48,9 +48,9 @@ function doPost(e) {
         body += '\nToken purchase tx: ' + sqmuLink;
       }
       body += '\n\nTo view your SQMU tokens:' +
-        '\n1. Switch your wallet network to Polygon (chain ID 137).' +
+        '\n1. Switch your wallet network to Scroll (chain ID 534352).' +
         '\n2. Add a custom token using the address above.' +
-        '\n3. Set the token symbol to ' + tokenId + ' and decimals to 2.';
+        '\n3. Set the token symbol to ' + tokenId + '';
       body += '\nTokens are delivered to the paying wallet within 24 hours.';
     }
     if (fail) {
