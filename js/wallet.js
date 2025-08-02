@@ -22,18 +22,9 @@ export async function connectWallet(statusId) {
   statusDiv.innerText = 'Connecting to MetaMask...';
 
   try {
-    const permissions = await ethereum.request({
-      method: 'wallet_requestPermissions',
-      params: [{ eth_accounts: {} }],
-    });
-    const accountsPermission = permissions.find(
-      (p) => p.parentCapability === 'eth_accounts'
-    );
-    if (!accountsPermission) {
-      throw new Error('eth_accounts permission not granted');
-    }
-    // wallet_requestPermissions already exposes the account; avoid an
-    // immediate eth_accounts call to prevent duplicate MetaMask popups
+    const accounts = await MMSDK.connect();
+    // MMSDK.connect already exposes the account; no additional eth_accounts
+    // request is made to prevent duplicate MetaMask popups
     let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
     if (chainId !== SCROLL_CHAIN_ID) {
       try {
