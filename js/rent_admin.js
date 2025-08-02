@@ -84,6 +84,22 @@ async function setTreasury() {
   }
 }
 
+async function setVaultAddress() {
+  if (!rent) {
+    setStatus('Connect wallet first.', 'red');
+    return;
+  }
+  const addr = document.getElementById('vault-address').value.trim();
+  try {
+    const tx = await rent.setVault(addr);
+    setStatus('Setting vault...');
+    await tx.wait();
+    setStatus('Vault updated', 'green');
+  } catch (err) {
+    setStatus(err.message, 'red');
+  }
+}
+
 async function setFee() {
   if (!rent) {
     setStatus('Connect wallet first.', 'red');
@@ -137,6 +153,7 @@ document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('token-btn').addEventListener('click', updateToken);
 document.getElementById('treasury-btn').addEventListener('click', setTreasury);
+document.getElementById('vault-btn').addEventListener('click', setVaultAddress);
 document.getElementById('fee-btn').addEventListener('click', setFee);
 document.getElementById('refund-btn').addEventListener('click', refundDeposit);
 document.getElementById('withdraw-btn').addEventListener('click', withdrawFees);

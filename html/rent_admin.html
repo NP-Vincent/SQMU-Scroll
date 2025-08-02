@@ -36,6 +36,12 @@
       <button id="treasury-btn" class="wp-block-button__link" disabled>Update Treasury</button>
     </div>
 
+    <div id="vault-section">
+      <h4>Set Vault</h4>
+      <label>Vault Address <input id="vault-address" type="text"></label>
+      <button id="vault-btn" class="wp-block-button__link" disabled>Update Vault</button>
+    </div>
+
     <div id="fee-section">
       <h4>Management Fee Bps</h4>
       <label>Fee Bps <input id="fee-bps" type="number"></label>
@@ -62,7 +68,7 @@
       <h3>Rent Admin Guide</h3>
       <ol>
         <li>Connect your wallet to manage deposits and fees.</li>
-        <li>Use the forms to whitelist tokens, set the treasury wallet and update the management fee.</li>
+        <li>Use the forms to whitelist tokens, set the treasury and vault addresses, and update the management fee.</li>
         <li>The Refund Deposit form returns a tenant's deposit.</li>
         <li>Withdraw Fees moves accumulated management fees to the treasury.</li>
         <li>Disconnect when finished.</li>

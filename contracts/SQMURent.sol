@@ -58,6 +58,7 @@ contract SQMURent is
     event TokenAccepted(address token, bool status);
     event TreasurySet(address treasury);
     event ManagementFeeSet(uint256 fee);
+    event VaultSet(address vault);
     event NFTDeposited(address indexed from, address token, uint256 id, uint256 amount);
     event NFTWithdrawn(address indexed to, address token, uint256 id, uint256 amount);
     event PropertyOccupied(uint256 indexed propertyId, address indexed tenant, uint256 nextRentDue);
@@ -99,6 +100,12 @@ contract SQMURent is
     function setManagementFee(uint256 fee) external onlyOwner {
         managementFee = fee;
         emit ManagementFeeSet(fee);
+    }
+
+    /// @notice Update the rent distribution vault address.
+    function setVault(address vaultAddress) external onlyOwner {
+        vault = ISQMURentDistribution(vaultAddress);
+        emit VaultSet(vaultAddress);
     }
 
     /// ------------------------------------------------------------

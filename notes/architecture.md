@@ -70,5 +70,6 @@ Example includes served from pinned CDNs:
 - All fund-moving functions, including manual distributions, are guarded by `nonReentrant` to prevent reentrancy attacks.
 - Property status updates emit a `PropertyStatusChanged` event for on-chain tracking.
 - `SQMURent` enforces rental periods by storing `nextRentDue` and the active tenant. Only that tenant may pay rent within a short window.
+- The vault address used for rent distribution can be updated by the owner via `setVault()`.
 - `ERC1155VotesAdapter` calculates voting power from each address's locked and unlocked allocations so Governor modules can use ERC-1155 balances.
 - Accounts marked as forfeited lose all voting power. `getVotes` in both the governor and adapter return 0 when `forfeited` is true.
