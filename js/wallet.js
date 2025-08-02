@@ -22,19 +22,7 @@ export async function connectWallet(statusId) {
   statusDiv.innerText = 'Connecting to MetaMask...';
 
   try {
-    const permissions = await ethereum.request({
-      method: 'wallet_requestPermissions',
-      params: [{ eth_accounts: {} }],
-    });
-    const accountsPermission = permissions.find(
-      (p) => p.parentCapability === 'eth_accounts'
-    );
-    if (!accountsPermission) {
-      throw new Error('eth_accounts permission not granted');
-    }
-    // wallet_requestPermissions already exposes the account; avoid an
-    // immediate eth_accounts call to prevent duplicate MetaMask popups
-    let chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
+    let chainId = await ethereum.request({ method: 'eth_chainId' });
     if (chainId !== SCROLL_CHAIN_ID) {
       try {
         await ethereum.request({
@@ -47,15 +35,25 @@ export async function connectWallet(statusId) {
             method: 'wallet_addEthereumChain',
             params: [SCROLL_PARAMS],
           });
-          await ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: SCROLL_CHAIN_ID }],
-          });
         } else {
           throw switchErr;
         }
       }
-      chainId = await ethereum.request({ method: 'eth_chainId', params: [] });
+      chainId = await ethereum.request({ method: 'eth_chainId' });
+      if (chainId !== SCROLL_CHAIN_ID) {
+        throw new Error('Failed to switch to the Scroll network');
+      }
+    }
+
+    const permissions = await ethereum.request({
+      method: 'wallet_requestPermissions',
+      params: [{ eth_accounts: {} }],
+    });
+    const accountsPermission = permissions.find(
+      (p) => p.parentCapability === 'eth_accounts'
+    );
+    if (!accountsPermission) {
+      throw new Error('eth_accounts permission not granted');
     }
 
     const provider = new ethers.providers.Web3Provider(ethereum);
