@@ -208,3 +208,13 @@ document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('list-btn').addEventListener('click', createListing);
 document.getElementById('buy-btn').addEventListener('click', buyListing);
+
+document.querySelectorAll('.tab-button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('is-active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    btn.classList.add('is-active');
+  });
+});
