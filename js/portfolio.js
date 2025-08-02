@@ -37,19 +37,15 @@ function setTradeStatus(msg, color) {
   }
 }
 
-function adjustColumnWidth() {
-  const col = document.querySelector('.tab-buttons');
-  if (!col) return;
-  let max = 0;
-  col.querySelectorAll('.wp-block-button').forEach(btn => {
-    if (btn.offsetWidth > max) max = btn.offsetWidth;
-  });
-  if (max) {
-    col.style.width = max + 'px';
-  }
+function enforceColumnRatio() {
+  const buttonsCol = document.querySelector('.tab-buttons');
+  const contentCol = document.querySelector('.tab-content');
+  if (!buttonsCol || !contentCol) return;
+  buttonsCol.style.flex = '1';
+  contentCol.style.flex = '4';
 }
 
-window.addEventListener('load', adjustColumnWidth);
+window.addEventListener('load', enforceColumnRatio);
 
 async function ensureAllowance(tokenAddr, requiredAmount) {
   const erc20 = new ethers.Contract(tokenAddr, erc20Abi, signer);
