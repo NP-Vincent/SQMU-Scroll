@@ -377,6 +377,8 @@ transaction. The function posts payment details to the Google App Script in
 - New event `PropertyStatusChanged` is emitted whenever a property is activated or deactivated.
 - `SQMURent` stores the active tenant and `nextRentDue` timestamp per property. Rent must be paid by that tenant within the configured window.
 - New view `getAvailable(propertyCode)` returns the remaining SQMU balance held in a property's treasury.
+- `getDepositDetails(propertyId)` returns a property's deposit amount, token, tenant and the contract's balance for that token.
+- `refundDeposit(propertyId, tenant, refundAmount)` refunds part or all of a deposit and sends any remainder to the treasury, emitting `DepositRefunded(propertyId, tenant, token, refundAmount, remainder)`.
 
 ## External References
 
