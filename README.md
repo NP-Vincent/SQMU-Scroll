@@ -161,7 +161,7 @@ These contracts manage deposits, rent collection and manual distribution.
    - Compile with Solidity `^0.8.26` and ensure OpenZeppelin upgradeable libraries are available.
 2. **Deploy UUPS Proxies**
    - Deploy `SQMURentDistribution` first and call `initialize()`.
-   - Deploy `SQMURent` with `initialize(vaultAddress)` using the distribution proxy address.
+   - Deploy `SQMURent` with `initialize(vaultAddress)` using the distribution proxy address. The vault address can be changed later with `setVault()` if needed.
 3. **Export ABI**
    - Save the ABI JSON as `abi/SQMURent.json` and `abi/SQMURentDistribution.json`.
    - Record the proxy addresses in `notes/deployment_log.md`.
@@ -355,8 +355,8 @@ The weekly price is derived from the monthly rate by dividing by four and adding
    required and the rent transaction may fail if attempted too early.
 3. Embed `html/rent_admin.html` with
    `https://np-vincent.github.io/SQMU-Scroll/js/rent_admin.js` for owners to
-   manage accepted tokens, treasury address, management fee, refund deposits and
-   withdraw accumulated fees.
+  manage accepted tokens, treasury address, vault address, management fee,
+  refund deposits and withdraw accumulated fees.
 
 ## Email Receipts
 
