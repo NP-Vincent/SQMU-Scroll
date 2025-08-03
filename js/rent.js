@@ -1,5 +1,6 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { RENT_ADDRESS } from './config.js';
+import { sendReceipt } from './email.js';
 
 let provider;
 let signer;
@@ -212,6 +213,8 @@ async function payRent() {
   }
   const token = document.getElementById('rent-token').value;
   const rawAmount = document.getElementById('rent-amount').value;
+  const email = document.getElementById('tenant-email').value.trim();
+  const tokenSelect = document.getElementById('rent-token');
   try {
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const dec = await erc20.decimals();
@@ -221,6 +224,19 @@ async function payRent() {
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Rent paid', 'green');
+    if (email) {
+      const usd = ethers.utils.formatUnits(amount, dec);
+      const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
+      sendReceipt('rent', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd,
+        token: tokenName,
+        chain: 'Scroll',
+        prop: propertyCode,
+        stage: 'rent'
+      });
+    }
     updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');
@@ -238,6 +254,8 @@ async function startRental() {
   }
   const token = document.getElementById('rent-token').value;
   const rentRaw = document.getElementById('rent-amount').value;
+  const email = document.getElementById('tenant-email').value.trim();
+  const tokenSelect = document.getElementById('rent-token');
   try {
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const dec = await erc20.decimals();
@@ -246,6 +264,19 @@ async function startRental() {
     let tx = await rent.payDeposit(propertyId, token, depAmount);
     setStatus('Submitting deposit...');
     await tx.wait();
+    if (email) {
+      const usdDep = ethers.utils.formatUnits(depAmount, dec);
+      const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
+      sendReceipt('rent', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd: usdDep,
+        token: tokenName,
+        chain: 'Scroll',
+        prop: propertyCode,
+        stage: 'deposit'
+      });
+    }
     updateRentalButtons();
     if (!(await isRentWindowOpen(propertyId))) {
       setStatus(
@@ -264,6 +295,19 @@ async function startRental() {
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Deposit and first rent paid', 'green');
+    if (email) {
+      const usdRent = ethers.utils.formatUnits(rentAmount, dec);
+      const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
+      sendReceipt('rent', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd: usdRent,
+        token: tokenName,
+        chain: 'Scroll',
+        prop: propertyCode,
+        stage: 'rent'
+      });
+    }
     updateRentalButtons();
   } catch (err) {
     setStatus(err.message, 'red');

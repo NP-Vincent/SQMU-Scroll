@@ -376,11 +376,13 @@ The weekly price is derived from the monthly rate by dividing by four and adding
 
 ## Email Receipts
 
-Payment widgets can send buyers a confirmation email. Include `js/email.js` in
-pages that process purchases and call `sendReceipt()` after a successful
-transaction. The function posts payment details to the Google App Script in
-`gas/email_receipt.gs`, which sends the formatted receipt via Gmail. Update the
-`MAIL_URL` constant in `email.js` if you deploy your own script.
+Payment widgets can optionally email buyers a receipt. Add an email input to
+any widget; if left blank, no message is sent. The helper `js/email.js`
+selects the proper Google Apps Script endpoint from `js/config.js` and posts
+transaction details for delivery via Gmail. Deploy the scripts in
+`googleappscript/*_email_receipt.gs` as web apps and update
+`LISTING_MAIL_URL`, `GOVERNANCE_MAIL_URL`, `RENT_MAIL_URL` and
+`ESCROW_MAIL_URL` in `js/config.js` with the deployment URLs.
 
 ## Developer Guidelines
 

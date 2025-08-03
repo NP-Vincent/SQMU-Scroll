@@ -1,5 +1,6 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { CROWDFUND_ADDRESS } from './config.js';
+import { sendReceipt } from './email.js';
 
 let provider;
 let signer;
@@ -39,7 +40,9 @@ async function buy() {
     return;
   }
   const amount = document.getElementById('gov-amount').value;
-  const token = document.getElementById('gov-token').value;
+  const tokenSelect = document.getElementById('gov-token');
+  const token = tokenSelect.value;
+  const email = document.getElementById('buyer-email').value.trim();
   try {
     const erc20Abi = [
       'function decimals() view returns (uint8)',
@@ -60,6 +63,19 @@ async function buy() {
     setStatus('Submitting purchase...', 'info');
     await tx.wait();
     setStatus(`Purchased ${amount} governance tokens`, 'success');
+
+    if (email) {
+      const usd = ethers.utils.formatUnits(total, decimals);
+      const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
+      sendReceipt('governance', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd,
+        token: tokenName,
+        chain: 'Scroll',
+        gov_amount: amount
+      });
+    }
   } catch (err) {
     setStatus(err.message, 'error');
   }
