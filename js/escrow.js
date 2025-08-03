@@ -4,6 +4,7 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { ESCROW_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
+import { toStablecoinUnits, fromStablecoinUnits } from './units.js';
 
 let provider;
 let signer;
@@ -43,7 +44,7 @@ async function loadInfo() {
   for (let i = 0; i < stages.length; i++) {
     const val = await escrow.depositForStage(i);
     document.getElementById(`deposit-${stages[i]}`).innerText =
-      ethers.utils.formatUnits(val, decimals);
+      fromStablecoinUnits(val, decimals);
   }
 
   const states = [
@@ -95,14 +96,14 @@ async function deposit() {
   const email = document.getElementById('buyer-email').value.trim();
   try {
     const decimals = await token.decimals();
-    const amount = ethers.utils.parseUnits(amountInput, decimals);
+    const amount = toStablecoinUnits(amountInput, decimals);
     await ensureAllowance(amount);
     const tx = await escrow.deposit(amount, stage);
     setStatus('Submitting deposit...');
     await tx.wait();
     setStatus('Deposit complete', 'green');
     if (email) {
-      const usd = ethers.utils.formatUnits(amount, decimals);
+      const usd = fromStablecoinUnits(amount, decimals);
       const stageName = stageSelect.options[stageSelect.selectedIndex].text;
       sendReceipt('escrow', {
         to_email: email,

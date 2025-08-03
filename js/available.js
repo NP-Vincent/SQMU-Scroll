@@ -1,4 +1,5 @@
 import { DISTRIBUTOR_ADDRESS } from './config.js';
+import { fromSQMUUnits } from './units.js';
 const RPC = 'https://rpc.scroll.io';
 const SALE_ADDR = DISTRIBUTOR_ADDRESS;
 const DECIMALS = 2;
@@ -27,7 +28,7 @@ async function fetchAvailable(code) {
     provider
   );
   const bal = await dist.getAvailable(code);
-  return Number(ethers.utils.formatUnits(bal, DECIMALS));
+  return Number(fromSQMUUnits(bal));
 }
 
 async function init() {

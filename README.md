@@ -10,6 +10,7 @@ Reference plugin and theme files live in `Wordpress.com References/` to assist w
 - `html/` – Embeddable HTML/JavaScript widgets for front-end use (WordPress.com compatible)
 - `js/` – Modular JavaScript for MetaMask SDK and contract interaction
 - `js/config.js` – Centralized addresses for the SQMU, distributor, crowdfund and governance contracts
+- `js/units.js` – Helpers for converting stablecoin and SQMU amounts (two decimals)
 - `src/` – Additional JavaScript utilities used by the widgets
 - `gas/` – Google App Script sources for email receipts
 - `abi/` – Contract ABI JSON files (always update after contract deployment)
@@ -391,6 +392,9 @@ transaction details for delivery via Gmail. Deploy the scripts in
 - Document new features and code structure in `notes/`
 - Record each deployment in `notes/deployment_log.md`
 - Keep `erc_1155_sqmu_ownership_smart_contract_requirements_cleaned.md` updated with contract changes
+- Use `js/units.js` helpers (`toStablecoinUnits`, `fromStablecoinUnits`,
+  `toSQMUUnits`, `fromSQMUUnits`) for all stablecoin and SQMU conversions to
+  maintain consistent two-decimal behavior across interfaces
 - `AtomicSQMUDistributor.sol` now scales payments based on the ERC-20 token's decimals and simplifies the price calculation.
 - New event `PropertyStatusChanged` is emitted whenever a property is activated or deactivated.
 - `SQMURent` stores the active tenant and `nextRentDue` timestamp per property. Rent must be paid by that tenant within the configured window.

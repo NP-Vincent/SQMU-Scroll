@@ -1,6 +1,7 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { DISTRIBUTOR_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
+import { toSQMUUnits, fromSQMUUnits, fromStablecoinUnits } from './units.js';
 
 const RPC = 'https://rpc.scroll.io';
 const distributorAddress = DISTRIBUTOR_ADDRESS;
@@ -40,7 +41,7 @@ async function fetchAvailable(code) {
     rpcProvider
   );
   const bal = await dist.getAvailable(code);
-  return Number(ethers.utils.formatUnits(bal, DECIMALS));
+  return Number(fromSQMUUnits(bal));
 }
 
 async function checkPropertyActive(propertyCode) {
@@ -129,7 +130,7 @@ async function buyTokens() {
   }
   const propertyCode = findPropertyCode();
   const rawInput = document.getElementById('sqmu-amount').value;
-  const amount = ethers.utils.parseUnits(rawInput, DECIMALS);
+  const amount = toSQMUUnits(rawInput);
   const tokenSelect = document.getElementById('token-select');
   const paymentToken = tokenSelect.value;
   const agentCode = document.getElementById('agent-code').value.trim();
@@ -147,7 +148,7 @@ async function buyTokens() {
     await showAvailability();
 
     if (email) {
-      const usd = ethers.utils.formatUnits(required, decimals);
+      const usd = fromStablecoinUnits(required, decimals);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('listing', {
         to_email: email,

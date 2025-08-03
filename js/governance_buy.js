@@ -1,6 +1,7 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { CROWDFUND_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
+import { toStablecoinUnits, fromStablecoinUnits } from './units.js';
 
 let provider;
 let signer;
@@ -51,7 +52,7 @@ async function buy() {
     ];
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const decimals = await erc20.decimals();
-    const total = ethers.BigNumber.from(10).pow(decimals).mul(amount);
+    const total = toStablecoinUnits(amount, decimals);
     const owner = await signer.getAddress();
     const allowance = await erc20.allowance(owner, contractAddress);
     if (allowance.lt(total)) {
@@ -65,7 +66,7 @@ async function buy() {
     setStatus(`Purchased ${amount} governance tokens`, 'success');
 
     if (email) {
-      const usd = ethers.utils.formatUnits(total, decimals);
+      const usd = fromStablecoinUnits(total, decimals);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('governance', {
         to_email: email,
