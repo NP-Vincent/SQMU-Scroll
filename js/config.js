@@ -12,4 +12,4 @@ export const RENT_VAULT_ADDRESS = '0x361516487722cAb8eBEc5Faf2f1Fa156098a4DE6';
 export const LISTING_MAIL_URL = 'https://script.google.com/macros/s/AKfycbyCj5NqiESfekawV1MOG3yzCIFR7YNr38XRabKEqCaWXCYlBXo2a7tfzFQUEDzG33YQ/exec';
 export const GOVERNANCE_MAIL_URL = 'https://script.google.com/macros/s/AKfycbxWVlc3PO3JF4gUNeW7oVIvmyVr6pVqiLmOKAQwtpCpulcE-akg_Pm8gSUpmTLrkt7l/exec';
 export const RENT_MAIL_URL = 'https://script.google.com/macros/s/AKfycbwH7uyxUKHd33cvNH46fxX1ZdFX9ER8eJmMCpvOrnmfHofvyuxpAXwNnJtIMUMMpp_DsA/exec';
-export const ESCROW_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_ESCROW/exec';
+export const ESCROW_MAIL_URL = 'https://script.google.com/macros/s/AKfycby3Gbl9V3HDw4TXTUnGIG62yg_lj7S-OAqaJPDNXO9L6tmeeAXcyNuQFartdPzqqOi1hg/exec';
