@@ -1,5 +1,6 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { DISTRIBUTOR_ADDRESS } from './config.js';
+import { sendReceipt } from './email.js';
 
 const RPC = 'https://rpc.scroll.io';
 const distributorAddress = DISTRIBUTOR_ADDRESS;
@@ -129,10 +130,14 @@ async function buyTokens() {
   const propertyCode = findPropertyCode();
   const rawInput = document.getElementById('sqmu-amount').value;
   const amount = ethers.utils.parseUnits(rawInput, DECIMALS);
-  const paymentToken = document.getElementById('token-select').value;
+  const tokenSelect = document.getElementById('token-select');
+  const paymentToken = tokenSelect.value;
   const agentCode = document.getElementById('agent-code').value.trim();
+  const email = document.getElementById('buyer-email').value.trim();
 
   try {
+    const erc20 = new ethers.Contract(paymentToken, erc20Abi, provider);
+    const decimals = await erc20.decimals();
     const required = await getRequiredAmount(propertyCode, amount, paymentToken);
     await ensureAllowance(paymentToken, required);
     const tx = await distributor.buySQMU(propertyCode, amount, paymentToken, agentCode);
@@ -140,6 +145,21 @@ async function buyTokens() {
     await tx.wait();
     setStatus(`Purchased ${Number(rawInput).toFixed(DECIMALS)} SQMU for ${propertyCode}`, 'green');
     await showAvailability();
+
+    if (email) {
+      const usd = ethers.utils.formatUnits(required, decimals);
+      const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
+      sendReceipt('listing', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd,
+        token: tokenName,
+        chain: 'Scroll',
+        prop: propertyCode,
+        sqmu_amt: Number(rawInput).toFixed(DECIMALS),
+        agent: agentCode
+      });
+    }
   } catch (err) {
     setStatus(err.message, 'red');
   }

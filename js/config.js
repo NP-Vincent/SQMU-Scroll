@@ -7,3 +7,9 @@ export const ESCROW_ADDRESS = '0x21816702fE7Ceb3C6F77cFA94c0a3F829c577D06';
 export const ESCROW_FACTORY_ADDRESS = '0xf326eb42ad12BB655ea8b78e77251b7b0b4191F2';
 export const RENT_ADDRESS = '0x85490cC86e4fDBC2AC1e853a96bf80Bea89c0ff8';
 export const RENT_VAULT_ADDRESS = '0x361516487722cAb8eBEc5Faf2f1Fa156098a4DE6';
+
+// Google Apps Script endpoints for email receipts
+export const LISTING_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_LISTING/exec';
+export const GOVERNANCE_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_GOVERNANCE/exec';
+export const RENT_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_RENT/exec';
+export const ESCROW_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_ESCROW/exec';

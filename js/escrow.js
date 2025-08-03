@@ -3,11 +3,13 @@
 
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { ESCROW_ADDRESS } from './config.js';
+import { sendReceipt } from './email.js';
 
 let provider;
 let signer;
 let escrow;
 let token;
+let tokenSymbol = '-';
 
 const erc20Abi = [
   'function decimals() view returns (uint8)',
@@ -24,10 +26,9 @@ function setStatus(msg, color) {
 async function loadInfo() {
   const tokenAddr = await escrow.paymentToken();
   token = new ethers.Contract(tokenAddr, erc20Abi, signer);
-  let symbol = '-';
   let decimals = 18;
   try {
-    symbol = await token.symbol();
+    tokenSymbol = await token.symbol();
   } catch (e) {
     console.warn('symbol() not available:', e.message);
   }
@@ -36,7 +37,7 @@ async function loadInfo() {
   } catch (e) {
     console.warn('decimals() not available:', e.message);
   }
-  document.getElementById('token-symbol').innerText = symbol;
+  document.getElementById('token-symbol').innerText = tokenSymbol;
 
   const stages = ['eoi', 'initial', 'balance'];
   for (let i = 0; i < stages.length; i++) {
@@ -89,7 +90,9 @@ async function deposit() {
     return;
   }
   const amountInput = document.getElementById('deposit-amount').value;
-  const stage = document.getElementById('deposit-stage').value;
+  const stageSelect = document.getElementById('deposit-stage');
+  const stage = stageSelect.value;
+  const email = document.getElementById('buyer-email').value.trim();
   try {
     const decimals = await token.decimals();
     const amount = ethers.utils.parseUnits(amountInput, decimals);
@@ -98,6 +101,18 @@ async function deposit() {
     setStatus('Submitting deposit...');
     await tx.wait();
     setStatus('Deposit complete', 'green');
+    if (email) {
+      const usd = ethers.utils.formatUnits(amount, decimals);
+      const stageName = stageSelect.options[stageSelect.selectedIndex].text;
+      sendReceipt('escrow', {
+        to_email: email,
+        tx_link: `https://scrollscan.com/tx/${tx.hash}`,
+        usd,
+        token: tokenSymbol,
+        chain: 'Scroll',
+        stage: stageName
+      });
+    }
     await loadInfo();
   } catch (err) {
     setStatus(err.message, 'red');
