@@ -1,5 +1,11 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { SQMU_ADDRESS, DISTRIBUTOR_ADDRESS, TRADE_ADDRESS } from './config.js';
+import {
+  toStablecoinUnits,
+  fromStablecoinUnits,
+  toSQMUUnits,
+  fromSQMUUnits,
+} from './units.js';
 
 let provider;
 let signer;
@@ -19,7 +25,7 @@ const erc20Abi = [
 
 function formatUSD(bn) {
   // getPrice returns an integer amount in USD with no decimals
-  const num = Number(ethers.utils.formatUnits(bn, 0));
+  const num = Number(fromStablecoinUnits(bn, 0));
   return 'USD ' + num.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -100,7 +106,7 @@ async function displayBalances() {
   let totalSqmu = 0;
   let totalUsd = ethers.BigNumber.from(0);
   for (let i = 0; i < ids.length; i++) {
-    const amt = Number(ethers.utils.formatUnits(balances[i], DECIMALS));
+    const amt = Number(fromSQMUUnits(balances[i]));
     if (amt === 0) continue;
     let priceBn;
     try {
@@ -136,8 +142,8 @@ async function displayListings() {
         decimals = await erc20.decimals();
         symbol = await erc20.symbol();
       } catch (e) {}
-      const price = ethers.utils.formatUnits(l.pricePerToken, decimals);
-      const amount = Number(ethers.utils.formatUnits(l.amountListed, DECIMALS));
+      const price = fromStablecoinUnits(l.pricePerToken, decimals);
+      const amount = Number(fromSQMUUnits(l.amountListed));
       const row = document.createElement('tr');
       row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${symbol}</td>`;
       tbody.appendChild(row);
@@ -170,8 +176,8 @@ async function createListing() {
     }
     const erc20 = new ethers.Contract(paymentToken, erc20Abi, signer);
     const decimals = await erc20.decimals();
-    const amount = ethers.utils.parseUnits(amountInput, DECIMALS);
-    const price = ethers.utils.parseUnits(priceInput, decimals);
+    const amount = toSQMUUnits(amountInput);
+    const price = toStablecoinUnits(priceInput, decimals);
     const tx = await trade.listToken(code, SQMU_ADDRESS, tokenId, amount, price, paymentToken);
     setTradeStatus('Listing tokens...');
     await tx.wait();
@@ -192,7 +198,7 @@ async function buyListing() {
   const amtInput = document.getElementById('buy-amount').value;
   try {
     const listing = await trade.getListing(listingId);
-    const amount = ethers.utils.parseUnits(amtInput, DECIMALS);
+    const amount = toSQMUUnits(amtInput);
     const totalPrice = ethers.BigNumber.from(listing.pricePerToken).mul(amount);
     await ensureAllowance(listing.paymentToken, totalPrice);
     const tx = await trade.buy(listingId, amount);

@@ -1,6 +1,7 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { RENT_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
+import { toStablecoinUnits, fromStablecoinUnits } from './units.js';
 
 let provider;
 let signer;
@@ -218,14 +219,14 @@ async function payRent() {
   try {
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const dec = await erc20.decimals();
-    const amount = ethers.utils.parseUnits(rawAmount, dec);
+    const amount = toStablecoinUnits(rawAmount, dec);
     await ensureAllowance(token, amount);
     const tx = await rent.collectRent(propertyId, token, amount);
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Rent paid', 'green');
     if (email) {
-      const usd = ethers.utils.formatUnits(amount, dec);
+      const usd = fromStablecoinUnits(amount, dec);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('rent', {
         to_email: email,
@@ -259,13 +260,13 @@ async function startRental() {
   try {
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const dec = await erc20.decimals();
-    const depAmount = ethers.utils.parseUnits(depositPrice, dec);
+    const depAmount = toStablecoinUnits(depositPrice, dec);
     await ensureAllowance(token, depAmount);
     let tx = await rent.payDeposit(propertyId, token, depAmount);
     setStatus('Submitting deposit...');
     await tx.wait();
     if (email) {
-      const usdDep = ethers.utils.formatUnits(depAmount, dec);
+      const usdDep = fromStablecoinUnits(depAmount, dec);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('rent', {
         to_email: email,
@@ -289,14 +290,14 @@ async function startRental() {
     }
     setStatus('Deposit paid. Paying first rent...');
 
-    const rentAmount = ethers.utils.parseUnits(rentRaw, dec);
+    const rentAmount = toStablecoinUnits(rentRaw, dec);
     await ensureAllowance(token, rentAmount);
     tx = await rent.collectRent(propertyId, token, rentAmount);
     setStatus('Submitting rent...');
     await tx.wait();
     setStatus('Deposit and first rent paid', 'green');
     if (email) {
-      const usdRent = ethers.utils.formatUnits(rentAmount, dec);
+      const usdRent = fromStablecoinUnits(rentAmount, dec);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('rent', {
         to_email: email,

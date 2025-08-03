@@ -1,5 +1,6 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { CROWDFUND_ADDRESS } from './config.js';
+import { toStablecoinUnits } from './units.js';
 
 let provider;
 let signer;
@@ -35,7 +36,7 @@ async function updatePrice() {
   }
   const price = document.getElementById('price').value;
   try {
-    const scaled = ethers.utils.parseUnits(price, 18);
+    const scaled = toStablecoinUnits(price, 18);
     const tx = await contract.setPriceUSD(scaled);
     setStatus('Updating price...');
     await tx.wait();
@@ -57,7 +58,7 @@ async function withdraw() {
     if (amountInput && amountInput !== '0') {
       const erc20 = new ethers.Contract(token, ['function decimals() view returns (uint8)'], signer);
       const dec = await erc20.decimals();
-      amount = ethers.BigNumber.from(10).pow(dec).mul(amountInput);
+      amount = toStablecoinUnits(amountInput, dec);
     }
     const tx = await contract.withdrawPayments(token, amount);
     setStatus('Withdrawing payments...');

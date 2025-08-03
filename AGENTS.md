@@ -19,6 +19,9 @@ All front-end code is designed for direct HTML/JS embedding within WordPress.com
  - All wallet connections must use MetaMask SDK.
  - Always reference the current ABI and contract address.
  - Load MetaMask SDK and ethers.js from a CDN.
+  - Use `js/units.js` (`toStablecoinUnits`, `fromStablecoinUnits`, `toSQMUUnits`,
+    `fromSQMUUnits`) for stablecoin and SQMU amount conversions to maintain
+    two-decimal precision across interfaces.
   - Style widgets for WordPress.com by using block classes: wrap content in `wp-block-group` with a unique `sqmu-*` class and apply `> * + * { margin-top: 1em; }`; use `.wp-block-input` and `.wp-block-select` for full-width form fields (`font-size:1rem`, `padding:0.5em`); place buttons inside `.wp-block-buttons` containers with `.wp-block-button` and `.wp-block-button__link`; labels should be bold and center aligned (`class="has-text-align-center"` and `style="font-weight:bold;"`); show status messages in `<p>` elements with the `has-small-font-size` class.
 
 4. **MetaMask SDK Usage**
