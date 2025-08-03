@@ -9,7 +9,7 @@ export const RENT_ADDRESS = '0x85490cC86e4fDBC2AC1e853a96bf80Bea89c0ff8';
 export const RENT_VAULT_ADDRESS = '0x361516487722cAb8eBEc5Faf2f1Fa156098a4DE6';
 
 // Google Apps Script endpoints for email receipts
-export const LISTING_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_LISTING/exec';
+export const LISTING_MAIL_URL = 'https://script.google.com/macros/s/AKfycbyCj5NqiESfekawV1MOG3yzCIFR7YNr38XRabKEqCaWXCYlBXo2a7tfzFQUEDzG33YQ/exec';
 export const GOVERNANCE_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_GOVERNANCE/exec';
 export const RENT_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_RENT/exec';
 export const ESCROW_MAIL_URL = 'https://script.google.com/macros/s/REPLACE_ESCROW/exec';
