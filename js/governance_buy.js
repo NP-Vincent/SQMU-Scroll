@@ -1,7 +1,7 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
 import { CROWDFUND_ADDRESS, SQMU_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
-import { toStablecoinUnits, fromStablecoinUnits } from './units.js';
+import { fromStablecoinUnits } from './units.js';
 
 const RPC = 'https://rpc.scroll.io';
 
@@ -96,11 +96,16 @@ async function buy() {
     ];
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const decimals = await erc20.decimals();
-    const totalUnits = toStablecoinUnits(amount, decimals);
+    const priceUSD = await contract.priceUSD();
+    const amountBN = ethers.BigNumber.from(amount);
+    const total = priceUSD
+      .mul(amountBN)
+      .mul(ethers.BigNumber.from(10).pow(decimals))
+      .div(ethers.constants.WeiPerEther);
     const owner = await signer.getAddress();
     const allowance = await erc20.allowance(owner, contractAddress);
-    if (allowance.lt(totalUnits)) {
-      const txA = await erc20.approve(contractAddress, totalUnits);
+    if (allowance.lt(total)) {
+      const txA = await erc20.approve(contractAddress, total);
       setStatus('Approving token...', 'info');
       await txA.wait();
     }
@@ -110,7 +115,7 @@ async function buy() {
     setStatus(`Purchased ${amount} governance tokens`, 'success');
 
     if (email) {
-      const usd = fromStablecoinUnits(totalUnits, decimals);
+      const usd = fromStablecoinUnits(total, decimals);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('governance', {
         to_email: email,
