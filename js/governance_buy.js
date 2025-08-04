@@ -130,7 +130,11 @@ async function buy() {
     }
     await showSupply();
   } catch (err) {
-    setStatus(err.message, 'error');
+    if (err.code === 4001) {
+      setStatus('Transaction canceled by user.', 'error');
+    } else {
+      setStatus(err.message, 'error');
+    }
   }
 }
 
