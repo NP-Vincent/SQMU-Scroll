@@ -12,14 +12,15 @@ let contract;
 const contractAddress = CROWDFUND_ADDRESS;
 const TOTAL_SUPPLY = 50000;
 
-function findTotalTokens() {
+async function findTotalTokens() {
   const params = new URLSearchParams(location.search);
-  return params.get('total') || TOTAL_SUPPLY;
+  const total = Number(params.get('total')) || TOTAL_SUPPLY;
+  return total > 0 ? total : TOTAL_SUPPLY;
 }
 
 function renderTokenMatrix(sold, total) {
   const matrix = document.getElementById('gov-token-matrix');
-  if (!matrix || !total) return;
+  if (!matrix || total <= 0) return;
   matrix.innerHTML = '';
   const totalSquares = 64;
   const filled = Math.round((sold / total) * totalSquares);
@@ -43,7 +44,8 @@ async function fetchAvailable() {
 }
 
 async function showSupply() {
-  const total = findTotalTokens();
+  const total = await findTotalTokens();
+  if (total <= 0) return;
   const available = await fetchAvailable();
   const sold = total - available;
   document.getElementById('sold-bal').textContent = sold;
