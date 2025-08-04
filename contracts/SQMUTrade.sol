@@ -4,10 +4,15 @@ pragma solidity ^0.8.26;
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
-import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
-import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+
+interface IAtomicSQMUDistributor {
+    function getPrice(string calldata propertyCode, uint256 sqmuAmount) external view returns (uint256);
+}
 
 /// @title SQMU ERC-1155 On-Chain Trade Contract
 /// @notice Marketplace for escrowed SQMU listings and purchases
@@ -20,8 +25,6 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         address tokenAddress;
         uint256 tokenId;
         uint256 amountListed;
-        uint256 pricePerToken;
-        address paymentToken;
         bool active;
     }
 
@@ -33,6 +36,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
 
     uint256 public commissionBps;
     address public treasury;
+    address public distributor;
 
     event ListingCreated(
         uint256 listingId,
@@ -40,9 +44,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         string propertyCode,
         address tokenAddress,
         uint256 tokenId,
-        uint256 amount,
-        uint256 pricePerToken,
-        address paymentToken
+        uint256 amount
     );
     event Purchase(
         uint256 listingId,
@@ -61,12 +63,13 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         _disableInitializers();
     }
 
-    function initialize(address treasury_, uint256 commissionBps_) public initializer {
+    function initialize(address treasury_, uint256 commissionBps_, address distributor_) public initializer {
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         treasury = treasury_;
         commissionBps = commissionBps_;
+        distributor = distributor_;
     }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
@@ -77,15 +80,11 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         string memory propertyCode,
         address tokenAddress,
         uint256 tokenId,
-        uint256 amount,
-        uint256 pricePerToken,
-        address paymentToken
+        uint256 amount
     ) external nonReentrant {
-        require(allowedPaymentToken[paymentToken], "Token not allowed");
         require(amount > 0, "Amount required");
-        require(pricePerToken > 0, "Price required");
 
-        IERC1155Upgradeable(tokenAddress).safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
+        IERC1155(tokenAddress).safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
 
         uint256 id = ++nextListingId;
         listings[id] = Listing({
@@ -95,22 +94,27 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
             tokenAddress: tokenAddress,
             tokenId: tokenId,
             amountListed: amount,
-            pricePerToken: pricePerToken,
-            paymentToken: paymentToken,
             active: true
         });
 
-        emit ListingCreated(id, msg.sender, propertyCode, tokenAddress, tokenId, amount, pricePerToken, paymentToken);
+        emit ListingCreated(id, msg.sender, propertyCode, tokenAddress, tokenId, amount);
     }
 
-    function buy(uint256 listingId, uint256 amount) external nonReentrant {
+    function buy(
+        uint256 listingId,
+        uint256 amount,
+        address paymentToken
+    ) external nonReentrant {
         Listing storage listing = listings[listingId];
         require(listing.active, "Listing inactive");
         require(amount > 0 && amount <= listing.amountListed, "Invalid amount");
+        require(allowedPaymentToken[paymentToken], "Token not allowed");
 
-        uint256 totalPrice = listing.pricePerToken * amount;
+        uint256 priceUSD = IAtomicSQMUDistributor(distributor).getPrice(listing.propertyCode, amount);
+        uint8 decimals = IERC20Metadata(paymentToken).decimals();
+        uint256 totalPrice = (priceUSD * (10 ** decimals)) / 1e18;
         uint256 commission = (totalPrice * commissionBps) / 10000;
-        IERC20Upgradeable erc20 = IERC20Upgradeable(listing.paymentToken);
+        IERC20 erc20 = IERC20(paymentToken);
 
         require(erc20.transferFrom(msg.sender, address(this), totalPrice), "Payment failed");
         if (commission > 0) {
@@ -118,14 +122,14 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         }
         require(erc20.transfer(listing.seller, totalPrice - commission), "Seller payout failed");
 
-        IERC1155Upgradeable(listing.tokenAddress).safeTransferFrom(address(this), msg.sender, listing.tokenId, amount, "");
+        IERC1155(listing.tokenAddress).safeTransferFrom(address(this), msg.sender, listing.tokenId, amount, "");
 
         listing.amountListed -= amount;
         if (listing.amountListed == 0) {
             listing.active = false;
         }
 
-        emit Purchase(listingId, msg.sender, amount, totalPrice, commission, listing.paymentToken);
+        emit Purchase(listingId, msg.sender, amount, totalPrice, commission, paymentToken);
     }
 
     function cancelListing(uint256 listingId) external nonReentrant {
@@ -136,7 +140,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         listing.active = false;
         uint256 remaining = listing.amountListed;
         listing.amountListed = 0;
-        IERC1155Upgradeable(listing.tokenAddress).safeTransferFrom(address(this), listing.seller, listing.tokenId, remaining, "");
+        IERC1155(listing.tokenAddress).safeTransferFrom(address(this), listing.seller, listing.tokenId, remaining, "");
 
         emit ListingCancelled(listingId, listing.seller);
     }
@@ -165,6 +169,10 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
             paymentTokens.push(token);
         }
         emit PaymentTokenAllowed(token, allowed);
+    }
+
+    function setDistributor(address distributor_) external onlyOwner {
+        distributor = distributor_;
     }
 
     // ----------- Views -----------

@@ -175,8 +175,7 @@ async function displayBalances() {
           const tx0 = await sqmu.setApprovalForAll(TRADE_ADDRESS, true);
           await tx0.wait();
         }
-        const pricePerToken = await distributor.getPrice(code, toSQMUUnits(1));
-        const tx = await trade.listToken(code, SQMU_ADDRESS, ids[i], amount, pricePerToken);
+        const tx = await trade.listToken(code, SQMU_ADDRESS, ids[i], amount);
         setTradeStatus('Listing tokens...');
         await tx.wait();
         setTradeStatus('Listing created', 'green');

@@ -129,12 +129,13 @@ This contract provides the on-chain marketplace for listing and purchasing SQMU 
    - Compile the contract with Solidity `^0.8.26`.
 2. **Deploy a UUPS Proxy**
    - Use the OpenZeppelin Upgrades plugin (or Remix run panel) and choose **Deploy (uups) Proxy**.
-   - Call `initialize(treasury, commissionBps)` to set the treasury address and starting commission.
+   - Call `initialize(treasury, commissionBps, distributor)` to set the treasury address, starting commission, and `AtomicSQMUDistributor` address.
 3. **Export ABI**
    - Copy the ABI JSON and save it as `abi/SQMUTrade.json`.
    - Record the proxy and implementation in `notes/deployment_log.md`.
 4. **Update Front-End**
    - Add the proxy address to `js/config.js` and load the new ABI in any marketplace widgets.
+   - Buyers now call `buy(listingId, amount, paymentToken)` providing the stablecoin address.
 
 ## Deploying Escrow
 

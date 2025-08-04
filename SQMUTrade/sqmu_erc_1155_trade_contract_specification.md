@@ -13,12 +13,12 @@ A fully on-chain marketplace for ERC-1155 tokens (SQMU), supporting secure listi
 ### **1. Seller:**
 
 - Calls `setApprovalForAll(tradeContract, true)` on SQMU token contract (one-time).
-- Calls `listToken(propertyCode, tokenAddress, tokenId, amount, pricePerToken, paymentToken)` to escrow specific tokens for sale.
+- Calls `listToken(propertyCode, tokenAddress, tokenId, amount)` to escrow specific tokens for sale.
 - May cancel listing anytime before sale via `cancelListing(listingId)` to withdraw unsold tokens.
 
 ### **2. Buyer:**
 
-- Calls `buy(listingId, amount)` specifying amount to purchase.
+- Calls `buy(listingId, amount, paymentToken)` specifying amount to purchase and ERC-20 stablecoin.
 - Pays in the accepted ERC-20 token; receives purchased SQMU tokens.
 - Platform fee (commission) is atomically deducted and sent to treasury; seller receives proceeds.
 
@@ -40,8 +40,6 @@ A fully on-chain marketplace for ERC-1155 tokens (SQMU), supporting secure listi
   - `tokenAddress`: address of ERC-1155 (SQMU) contract.
   - `tokenId`: uint256.
   - `amountListed`: uint256 (remaining).
-  - `pricePerToken`: uint256 (in smallest units of payment token).
-  - `paymentToken`: address.
   - `active`: bool.
 
 - **Commission:**
@@ -64,6 +62,7 @@ A fully on-chain marketplace for ERC-1155 tokens (SQMU), supporting secure listi
 - \`\`
 
   - Checks listing is active, amount available.
+  - Fetches USD price from `AtomicSQMUDistributor` and converts to the buyer's payment token.
   - Calculates total price and commission.
   - Transfers (via `transferFrom`) total price from buyer to contract.
   - Splits payment: commission to treasury, remainder to seller.
@@ -106,7 +105,7 @@ A fully on-chain marketplace for ERC-1155 tokens (SQMU), supporting secure listi
 
 ## **Key Events**
 
-- `event ListingCreated(uint256 listingId, address indexed seller, string propertyCode, address tokenAddress, uint256 tokenId, uint256 amount, uint256 pricePerToken, address paymentToken);`
+- `event ListingCreated(uint256 listingId, address indexed seller, string propertyCode, address tokenAddress, uint256 tokenId, uint256 amount);`
 - `event Purchase(uint256 listingId, address indexed buyer, uint256 amount, uint256 totalPaid, uint256 commission, address paymentToken);`
 - `event ListingCancelled(uint256 listingId, address indexed seller);`
 - `event CommissionUpdated(uint256 bps);`
@@ -154,12 +153,10 @@ function listToken(
     string memory propertyCode,
     address tokenAddress,
     uint256 tokenId,
-    uint256 amount,
-    uint256 pricePerToken,
-    address paymentToken
+    uint256 amount
 ) external nonReentrant { ... }
 
-function buy(uint256 listingId, uint256 amount) external nonReentrant { ... }
+function buy(uint256 listingId, uint256 amount, address paymentToken) external nonReentrant { ... }
 
 function cancelListing(uint256 listingId) external nonReentrant { ... }
 
