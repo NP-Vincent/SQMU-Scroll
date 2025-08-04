@@ -1,13 +1,54 @@
 import { connectWallet, disconnectWallet } from './wallet.js';
-import { CROWDFUND_ADDRESS } from './config.js';
+import { CROWDFUND_ADDRESS, SQMU_ADDRESS } from './config.js';
 import { sendReceipt } from './email.js';
 import { toStablecoinUnits, fromStablecoinUnits } from './units.js';
+
+const RPC = 'https://rpc.scroll.io';
 
 let provider;
 let signer;
 let contract;
 
 const contractAddress = CROWDFUND_ADDRESS;
+
+function findTotalTokens() {
+  const params = new URLSearchParams(location.search);
+  const t = parseFloat(params.get('total'));
+  return Number.isNaN(t) ? 0 : t;
+}
+
+function renderTokenMatrix(available, total) {
+  const matrix = document.getElementById('gov-token-matrix');
+  if (!matrix || !total) return;
+  matrix.innerHTML = '';
+  const totalSquares = 64;
+  const filled = Math.round((available / total) * totalSquares);
+  for (let i = 0; i < totalSquares; i++) {
+    const square = document.createElement('div');
+    square.className = 'sqmu-square';
+    if (i < filled) square.classList.add('filled');
+    matrix.appendChild(square);
+  }
+}
+
+async function fetchAvailable() {
+  const provider = new ethers.providers.JsonRpcProvider(RPC);
+  const erc1155 = new ethers.Contract(
+    SQMU_ADDRESS,
+    ['function balanceOf(address, uint256) view returns (uint256)'],
+    provider
+  );
+  const bal = await erc1155.balanceOf(CROWDFUND_ADDRESS, 0);
+  return Number(bal);
+}
+
+async function showSupply() {
+  const total = findTotalTokens();
+  const available = await fetchAvailable();
+  document.getElementById('available-bal').textContent = available;
+  document.getElementById('total-bal').textContent = total;
+  renderTokenMatrix(available, total);
+}
 
 async function connect() {
   try {
@@ -77,6 +118,7 @@ async function buy() {
         gov_amount: amount
       });
     }
+    await showSupply();
   } catch (err) {
     setStatus(err.message, 'error');
   }
@@ -95,3 +137,4 @@ async function disconnect() {
 document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
 document.getElementById('buy-btn').addEventListener('click', buy);
+document.addEventListener('DOMContentLoaded', showSupply);

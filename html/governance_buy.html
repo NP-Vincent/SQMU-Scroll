@@ -16,11 +16,27 @@
     .sqmu-governance-buy > * + * {
       margin-top: 1em;
     }
+    .sqmu-token-matrix {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      width: 8em;
+      gap: 2px;
+    }
+    .sqmu-square {
+      width: 1em;
+      height: 1em;
+      background: #e0e0e0;
+    }
+    .sqmu-square.filled {
+      background: #333;
+    }
   </style>
 </head>
 <body>
   <div class="wp-block-group sqmu-governance-buy">
     <h2 class="wp-block-heading">Buy Governance Tokens</h2>
+    <div id="gov-token-matrix" class="sqmu-token-matrix"></div>
+    <p>Available: <span id="available-bal">...</span> / <span id="total-bal">...</span> tokens</p>
 
     <div class="wp-block-buttons">
       <div class="wp-block-button">
