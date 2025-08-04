@@ -5,7 +5,7 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {ERC1155Holder} from "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
+import {ERC1155HolderUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
@@ -17,7 +17,7 @@ interface IAtomicSQMUDistributor {
 /// @title SQMU ERC-1155 On-Chain Trade Contract
 /// @notice Marketplace for escrowed SQMU listings and purchases
 /// @dev Implements listing, buying and cancelling with commission payouts. Upgradeable via UUPS.
-contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, ERC1155Holder {
+contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, ReentrancyGuardUpgradeable, ERC1155HolderUpgradeable {
     struct Listing {
         uint256 listingId;
         address seller;
@@ -67,6 +67,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
+        __ERC1155Holder_init();
         treasury = treasury_;
         commissionBps = commissionBps_;
         distributor = distributor_;
