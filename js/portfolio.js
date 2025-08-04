@@ -12,6 +12,7 @@ let signer;
 let sqmu;
 let distributor;
 let trade;
+let paymentTokens = [];
 
 // SQMU tokens use two decimal places
 const DECIMALS = 2;
@@ -80,10 +81,21 @@ async function connect() {
     const tradeRes = await fetch(tradeUrl);
     const tradeAbi = (await tradeRes.json()).abi;
     trade = new ethers.Contract(TRADE_ADDRESS, tradeAbi, signer);
+    const payAddrs = await distributor.getPaymentTokens();
+    paymentTokens = await Promise.all(
+      payAddrs.map(async (addr) => {
+        const erc20 = new ethers.Contract(addr, erc20Abi, provider);
+        let symbol = addr;
+        let decimals = 18;
+        try {
+          decimals = await erc20.decimals();
+          symbol = await erc20.symbol();
+        } catch (e) {}
+        return { address: addr, symbol, decimals };
+      })
+    );
     document.getElementById('disconnect').style.display = '';
     document.getElementById('connect').disabled = true;
-    document.getElementById('list-btn').disabled = false;
-    document.getElementById('buy-btn').disabled = false;
     setStatus('Connected. Loading balances...', 'green');
     await displayBalances();
     await displayListings();
@@ -119,8 +131,61 @@ async function displayBalances() {
     totalUsd = totalUsd.add(priceBn);
     const priceStr = formatUSD(priceBn);
     const row = document.createElement('tr');
-    row.innerHTML = `<td>SQMU${ids[i]}</td><td>${amt.toFixed(DECIMALS)}</td><td>${priceStr}</td>`;
+    const code = `SQMU${ids[i]}`;
+    const propTd = document.createElement('td');
+    propTd.textContent = code;
+    const balTd = document.createElement('td');
+    balTd.textContent = amt.toFixed(DECIMALS);
+    const valTd = document.createElement('td');
+    valTd.textContent = priceStr;
+    const amtTd = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.className = 'wp-block-input';
+    input.min = '0';
+    input.step = '0.01';
+    amtTd.appendChild(input);
+    const sellTd = document.createElement('td');
+    const btnWrap = document.createElement('div');
+    btnWrap.className = 'wp-block-buttons';
+    const btnInner = document.createElement('div');
+    btnInner.className = 'wp-block-button';
+    const btn = document.createElement('button');
+    btn.className = 'wp-block-button__link';
+    btn.textContent = 'Sell';
+    btnInner.appendChild(btn);
+    btnWrap.appendChild(btnInner);
+    sellTd.appendChild(btnWrap);
+    row.appendChild(propTd);
+    row.appendChild(balTd);
+    row.appendChild(valTd);
+    row.appendChild(amtTd);
+    row.appendChild(sellTd);
     tbody.appendChild(row);
+
+    btn.addEventListener('click', async () => {
+      const raw = input.value;
+      const amountVal = parseFloat(raw);
+      if (!amountVal || amountVal <= 0) return;
+      try {
+        const amount = toSQMUUnits(amountVal);
+        const approved = await sqmu.isApprovedForAll(await signer.getAddress(), TRADE_ADDRESS);
+        if (!approved) {
+          setTradeStatus('Approving SQMU transfer...');
+          const tx0 = await sqmu.setApprovalForAll(TRADE_ADDRESS, true);
+          await tx0.wait();
+        }
+        const pricePerToken = await distributor.getPrice(code, toSQMUUnits(1));
+        const tx = await trade.listToken(code, SQMU_ADDRESS, ids[i], amount, pricePerToken);
+        setTradeStatus('Listing tokens...');
+        await tx.wait();
+        setTradeStatus('Listing created', 'green');
+        await displayBalances();
+        await displayListings();
+      } catch (err) {
+        setTradeStatus(err.message, 'red');
+      }
+    });
   }
   document.getElementById('total-sqmu').textContent = totalSqmu.toFixed(DECIMALS);
   document.getElementById('total-usd').textContent = formatUSD(totalUsd);
@@ -134,79 +199,75 @@ async function displayListings() {
   try {
     const listings = await trade.getActiveListings();
     for (const l of listings) {
-      if (Number(l.tokenId) === 0) continue; // governance token handled elsewhere
-      const erc20 = new ethers.Contract(l.paymentToken, erc20Abi, provider);
-      let decimals = 18;
-      let symbol = l.paymentToken;
-      try {
-        decimals = await erc20.decimals();
-        symbol = await erc20.symbol();
-      } catch (e) {}
-      const price = fromStablecoinUnits(l.pricePerToken, decimals);
-      const amount = Number(fromSQMUUnits(l.amountListed));
+      if (Number(l.tokenId) === 0) continue;
+      const available = Number(fromSQMUUnits(l.amountListed));
+      const priceBn = await distributor.getPrice(l.propertyCode, toSQMUUnits(1));
+      const priceStr = formatUSD(priceBn);
+
       const row = document.createElement('tr');
-      row.innerHTML = `<td>${l.listingId}</td><td>${l.propertyCode}</td><td>${l.tokenId}</td><td>${amount.toFixed(DECIMALS)}</td><td>${price}</td><td>${symbol}</td>`;
+      const propTd = document.createElement('td');
+      propTd.textContent = l.propertyCode;
+      const availTd = document.createElement('td');
+      availTd.textContent = available.toFixed(DECIMALS);
+      const priceTd = document.createElement('td');
+      priceTd.textContent = priceStr;
+      const tokenTd = document.createElement('td');
+      const select = document.createElement('select');
+      select.className = 'wp-block-select';
+      paymentTokens.forEach((t) => {
+        const opt = document.createElement('option');
+        opt.value = t.address;
+        opt.textContent = t.symbol;
+        select.appendChild(opt);
+      });
+      tokenTd.appendChild(select);
+      const amtTd = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.className = 'wp-block-input';
+      input.min = '0';
+      input.step = '0.01';
+      amtTd.appendChild(input);
+      const buyTd = document.createElement('td');
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'wp-block-buttons';
+      const btnInner = document.createElement('div');
+      btnInner.className = 'wp-block-button';
+      const btn = document.createElement('button');
+      btn.className = 'wp-block-button__link';
+      btn.textContent = 'Buy';
+      btnInner.appendChild(btn);
+      btnWrap.appendChild(btnInner);
+      buyTd.appendChild(btnWrap);
+      row.appendChild(propTd);
+      row.appendChild(availTd);
+      row.appendChild(priceTd);
+      row.appendChild(tokenTd);
+      row.appendChild(amtTd);
+      row.appendChild(buyTd);
       tbody.appendChild(row);
-    }
-  } catch (err) {
-    setTradeStatus(err.message, 'red');
-  }
-}
 
-async function createListing() {
-  if (!trade) {
-    setTradeStatus('Connect wallet first.', 'red');
-    return;
-  }
-  const code = document.getElementById('list-code').value.trim();
-  const tokenId = document.getElementById('list-token-id').value;
-  if (Number(tokenId) === 0) {
-    setTradeStatus('Token ID 0 is reserved for governance tokens. Use governance_buy.html.', 'red');
-    return;
-  }
-  const amountInput = document.getElementById('list-amount').value;
-  const priceInput = document.getElementById('list-price').value;
-  const paymentToken = document.getElementById('list-payment-token').value.trim();
-  try {
-    const approved = await sqmu.isApprovedForAll(await signer.getAddress(), TRADE_ADDRESS);
-    if (!approved) {
-      setTradeStatus('Approving SQMU transfer...');
-      const tx0 = await sqmu.setApprovalForAll(TRADE_ADDRESS, true);
-      await tx0.wait();
+      btn.addEventListener('click', async () => {
+        const amtVal = parseFloat(input.value);
+        if (!amtVal || amtVal <= 0) return;
+        try {
+          const amount = toSQMUUnits(amtVal);
+          const tokenAddr = select.value;
+          const tokenMeta = paymentTokens.find((p) => p.address === tokenAddr);
+          const usdTotal = await distributor.getPrice(l.propertyCode, amount);
+          const required = toStablecoinUnits(usdTotal, tokenMeta.decimals);
+          await ensureAllowance(tokenAddr, required);
+          const tx = await trade.buy(l.listingId, amount, tokenAddr);
+          setTradeStatus('Buying tokens...');
+          await tx.wait();
+          setTradeStatus('Purchase complete', 'green');
+          await displayListings();
+          await displayBalances();
+        } catch (err) {
+          setTradeStatus(err.message, 'red');
+        }
+      });
     }
-    const erc20 = new ethers.Contract(paymentToken, erc20Abi, signer);
-    const decimals = await erc20.decimals();
-    const amount = toSQMUUnits(amountInput);
-    const price = toStablecoinUnits(priceInput, decimals);
-    const tx = await trade.listToken(code, SQMU_ADDRESS, tokenId, amount, price, paymentToken);
-    setTradeStatus('Listing tokens...');
-    await tx.wait();
-    setTradeStatus('Listing created', 'green');
-    await displayListings();
-    await displayBalances();
-  } catch (err) {
-    setTradeStatus(err.message, 'red');
-  }
-}
-
-async function buyListing() {
-  if (!trade) {
-    setTradeStatus('Connect wallet first.', 'red');
-    return;
-  }
-  const listingId = document.getElementById('buy-listing-id').value;
-  const amtInput = document.getElementById('buy-amount').value;
-  try {
-    const listing = await trade.getListing(listingId);
-    const amount = toSQMUUnits(amtInput);
-    const totalPrice = ethers.BigNumber.from(listing.pricePerToken).mul(amount);
-    await ensureAllowance(listing.paymentToken, totalPrice);
-    const tx = await trade.buy(listingId, amount);
-    setTradeStatus('Buying tokens...');
-    await tx.wait();
-    setTradeStatus('Purchase complete', 'green');
-    await displayListings();
-    await displayBalances();
   } catch (err) {
     setTradeStatus(err.message, 'red');
   }
@@ -221,21 +282,7 @@ async function disconnect() {
   trade = undefined;
   document.getElementById('disconnect').style.display = 'none';
   document.getElementById('connect').disabled = false;
-  document.getElementById('list-btn').disabled = true;
-  document.getElementById('buy-btn').disabled = true;
 }
 
 document.getElementById('connect').addEventListener('click', connect);
 document.getElementById('disconnect').addEventListener('click', disconnect);
-document.getElementById('list-btn').addEventListener('click', createListing);
-document.getElementById('buy-btn').addEventListener('click', buyListing);
-
-document.querySelectorAll('.tab-button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tabId = btn.dataset.tab;
-    document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('is-active'));
-    document.getElementById('tab-' + tabId).classList.add('active');
-    btn.classList.add('is-active');
-  });
-});
