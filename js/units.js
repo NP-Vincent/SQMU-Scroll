@@ -1,9 +1,12 @@
 export function toStablecoinUnits(amount, decimals) {
-  return Math.round(parseFloat(amount) * Math.pow(10, decimals));
+  return ethers.utils.parseUnits(amount.toString(), decimals);
 }
 
 export function fromStablecoinUnits(units, decimals) {
-  return (parseInt(units) / Math.pow(10, decimals)).toFixed(2);
+  const bn = ethers.BigNumber.isBigNumber(units)
+    ? units
+    : ethers.BigNumber.from(units);
+  return parseFloat(ethers.utils.formatUnits(bn, decimals)).toFixed(2);
 }
 
 export function toSQMUUnits(amount) {
