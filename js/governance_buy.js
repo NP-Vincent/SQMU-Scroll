@@ -96,11 +96,11 @@ async function buy() {
     ];
     const erc20 = new ethers.Contract(token, erc20Abi, signer);
     const decimals = await erc20.decimals();
-    const total = toStablecoinUnits(amount, decimals);
+    const totalUnits = toStablecoinUnits(amount, decimals);
     const owner = await signer.getAddress();
     const allowance = await erc20.allowance(owner, contractAddress);
-    if (allowance.lt(total)) {
-      const txA = await erc20.approve(contractAddress, total);
+    if (allowance.lt(totalUnits)) {
+      const txA = await erc20.approve(contractAddress, totalUnits);
       setStatus('Approving token...', 'info');
       await txA.wait();
     }
@@ -110,7 +110,7 @@ async function buy() {
     setStatus(`Purchased ${amount} governance tokens`, 'success');
 
     if (email) {
-      const usd = fromStablecoinUnits(total, decimals);
+      const usd = fromStablecoinUnits(totalUnits, decimals);
       const tokenName = tokenSelect.options[tokenSelect.selectedIndex].text;
       sendReceipt('governance', {
         to_email: email,
