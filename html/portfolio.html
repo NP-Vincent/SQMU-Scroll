@@ -14,24 +14,11 @@
       padding: 0.5em;
     }
     .sqmu-portfolio > * + * { margin-top: 1em; }
-    .sqmu-portfolio-columns {
-      display: flex;
-      gap: 1em;
-    }
-    .sqmu-portfolio-columns .tab-buttons {
-      flex: 1;
-    }
-    .sqmu-portfolio-columns .tab-content {
-      flex: 4;
-    }
-    .sqmu-portfolio-columns .wp-block-column { padding: 0.5em; }
-    .tab-buttons { display: flex; flex-direction: column; gap: 0.5em; }
+    .sqmu-private-portfolio > * + * { margin-top: 1em; }
+    .sqmu-public-listings > * + * { margin-top: 1em; }
     table { border-collapse: collapse; margin-top: 1em; }
     th, td { padding: 0.5em 1em; border: 1px solid #ccc; text-align: left; }
     tfoot td { font-weight: bold; }
-    .tab-section { display: none; padding: 0.5em; }
-    .tab-section.active { display: block; }
-    .tab-section > * + * { margin-top: 1em; }
     #listing-table { display: block; overflow-x: auto; }
     #listing-table th, #listing-table td { white-space: nowrap; }
   </style>
@@ -39,96 +26,55 @@
 <body>
   <div class="wp-block-group sqmu-portfolio">
     <h3 class="has-text-align-center" style="font-weight:bold;">SQMU Portfolio</h3>
-    <div class="wp-block-columns sqmu-portfolio-columns">
-      <div class="wp-block-column tab-buttons">
-        <div class="wp-block-button"><button class="wp-block-button__link tab-button is-active" data-tab="portfolio">Portfolio</button></div>
-        <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="list">List Tokens</button></div>
-        <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="listings">Active Listings</button></div>
-        <div class="wp-block-button"><button class="wp-block-button__link tab-button" data-tab="buy">Buy Listing</button></div>
-      </div>
-      <div class="wp-block-column tab-content">
-        <div id="tab-portfolio" class="tab-section active">
-          <div class="wp-block-buttons">
-            <div class="wp-block-button"><button id="connect" class="wp-block-button__link">Connect Wallet</button></div>
-            <div class="wp-block-button"><button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button></div>
-          </div>
-          <p id="portfolio-status" class="has-small-font-size"></p>
-          <table id="portfolio-table">
-            <thead>
-              <tr>
-                <th>Property Code</th>
-                <th>SQMU Balance</th>
-                <th>USD Value</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-            <tfoot>
-              <tr>
-                <td>Total</td>
-                <td id="total-sqmu"></td>
-                <td id="total-usd"></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-
-        <div id="tab-list" class="tab-section">
-          <h4>List SQMU Tokens</h4>
-          <div class="wp-block-group">
-            <label for="list-code" class="has-text-align-center" style="font-weight:bold;">Property Code</label>
-            <input id="list-code" class="wp-block-input" type="text">
-          </div>
-          <div class="wp-block-group">
-            <label for="list-token-id" class="has-text-align-center" style="font-weight:bold;">Token ID</label>
-            <input id="list-token-id" class="wp-block-input" type="number" value="1" min="1">
-          </div>
-          <div class="wp-block-group">
-            <label for="list-amount" class="has-text-align-center" style="font-weight:bold;">Amount</label>
-            <input id="list-amount" class="wp-block-input" type="number" value="1" step="0.01">
-          </div>
-          <div class="wp-block-group">
-            <label for="list-price" class="has-text-align-center" style="font-weight:bold;">Price Per Token</label>
-            <input id="list-price" class="wp-block-input" type="number" value="1">
-          </div>
-          <div class="wp-block-group">
-            <label for="list-payment-token" class="has-text-align-center" style="font-weight:bold;">Payment Token</label>
-            <input id="list-payment-token" class="wp-block-input" type="text">
-          </div>
-          <div class="wp-block-buttons"><div class="wp-block-button"><button id="list-btn" class="wp-block-button__link" disabled>List</button></div></div>
-        </div>
-
-        <div id="tab-listings" class="tab-section">
-          <h4>Active Listings</h4>
-          <table id="listing-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Property</th>
-                <th>Token ID</th>
-                <th>Available</th>
-                <th>Price</th>
-                <th>Payment Token</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-
-        <div id="tab-buy" class="tab-section">
-          <h4>Buy Listing</h4>
-          <div class="wp-block-group">
-            <label for="buy-listing-id" class="has-text-align-center" style="font-weight:bold;">Listing ID</label>
-            <input id="buy-listing-id" class="wp-block-input" type="number">
-          </div>
-          <div class="wp-block-group">
-            <label for="buy-amount" class="has-text-align-center" style="font-weight:bold;">Amount</label>
-            <input id="buy-amount" class="wp-block-input" type="number" value="1" step="0.01">
-          </div>
-          <div class="wp-block-buttons"><div class="wp-block-button"><button id="buy-btn" class="wp-block-button__link" disabled>Buy</button></div></div>
-          <p id="trade-status" class="has-small-font-size"></p>
-        </div>
-      </div>
+    <div class="wp-block-buttons">
+      <div class="wp-block-button"><button id="connect" class="wp-block-button__link">Connect Wallet</button></div>
+      <div class="wp-block-button"><button id="disconnect" class="wp-block-button__link" style="display:none;">Disconnect</button></div>
     </div>
+    <p id="portfolio-status" class="has-small-font-size"></p>
+
+    <div class="wp-block-group sqmu-private-portfolio">
+      <h4 class="has-text-align-center" style="font-weight:bold;">Private Portfolio</h4>
+      <table id="portfolio-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>SQMU Balance</th>
+            <th>Value (USD)</th>
+            <th>Amount</th>
+            <th>Sell</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td id="total-sqmu"></td>
+            <td id="total-usd"></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="wp-block-group sqmu-public-listings">
+      <h4 class="has-text-align-center" style="font-weight:bold;">Public Listings</h4>
+      <table id="listing-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Available SQMU</th>
+            <th>Price (USD)</th>
+            <th>Stablecoin</th>
+            <th>Amount</th>
+            <th>Buy</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <p id="trade-status" class="has-small-font-size"></p>
   </div>
 
   <!-- This widget loads https://np-vincent.github.io/SQMU-Scroll/js/portfolio.js.
