@@ -76,6 +76,8 @@ function setStatus(msg, tone) {
     el.classList.add('has-primary-color');
   } else if (tone === 'error') {
     el.classList.add('has-foreground-color');
+  } else if (tone === 'info') {
+    el.classList.add('has-secondary-color');
   }
 }
 
@@ -139,7 +141,7 @@ async function disconnect() {
   contract = undefined;
   document.getElementById('disconnect').style.display = 'none';
   document.getElementById('buy-btn').disabled = true;
-  setStatus('Wallet disconnected');
+  setStatus('Wallet disconnected', 'info');
 }
 
 document.getElementById('connect').addEventListener('click', connect);
