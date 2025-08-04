@@ -6,9 +6,9 @@ import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Own
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {ERC1155HolderUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
+import {IERC1155Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import {IERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import {IERC20MetadataUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 
 interface IAtomicSQMUDistributor {
     function getPrice(string calldata propertyCode, uint256 sqmuAmount) external view returns (uint256);
@@ -85,7 +85,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
     ) external nonReentrant {
         require(amount > 0, "Amount required");
 
-        IERC1155(tokenAddress).safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
+        IERC1155Upgradeable(tokenAddress).safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
 
         uint256 id = ++nextListingId;
         listings[id] = Listing({
@@ -112,10 +112,10 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         require(allowedPaymentToken[paymentToken], "Token not allowed");
 
         uint256 priceUSD = IAtomicSQMUDistributor(distributor).getPrice(listing.propertyCode, amount);
-        uint8 decimals = IERC20Metadata(paymentToken).decimals();
+        uint8 decimals = IERC20MetadataUpgradeable(paymentToken).decimals();
         uint256 totalPrice = (priceUSD * (10 ** decimals)) / 1e18;
         uint256 commission = (totalPrice * commissionBps) / 10000;
-        IERC20 erc20 = IERC20(paymentToken);
+        IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
 
         require(erc20.transferFrom(msg.sender, address(this), totalPrice), "Payment failed");
         if (commission > 0) {
@@ -123,7 +123,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         }
         require(erc20.transfer(listing.seller, totalPrice - commission), "Seller payout failed");
 
-        IERC1155(listing.tokenAddress).safeTransferFrom(address(this), msg.sender, listing.tokenId, amount, "");
+        IERC1155Upgradeable(listing.tokenAddress).safeTransferFrom(address(this), msg.sender, listing.tokenId, amount, "");
 
         listing.amountListed -= amount;
         if (listing.amountListed == 0) {
@@ -141,7 +141,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
         listing.active = false;
         uint256 remaining = listing.amountListed;
         listing.amountListed = 0;
-        IERC1155(listing.tokenAddress).safeTransferFrom(address(this), listing.seller, listing.tokenId, remaining, "");
+        IERC1155Upgradeable(listing.tokenAddress).safeTransferFrom(address(this), listing.seller, listing.tokenId, remaining, "");
 
         emit ListingCancelled(listingId, listing.seller);
     }
