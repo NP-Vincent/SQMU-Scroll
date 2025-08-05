@@ -427,8 +427,10 @@ transaction details for delivery via Gmail. Deploy the scripts in
 - [Across ERC-7683 in Production](https://docs.across.to/developer-quickstart/erc-7683-in-production)
 - [ERC-7683 Specifications](https://www.erc7683.org/spec)
 - [Safe Core Starter Kit](https://docs.safe.global/sdk/starter-kit)
+ 
+## Recent Updates
 
-
+- Corrected USD conversion in `SQMUTrade` contract's `buy` function to prevent underpayment when purchasing from listings.
 
 ## License
 
