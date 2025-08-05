@@ -113,7 +113,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
 
         uint256 priceUSD = IAtomicSQMUDistributor(distributor).getPrice(listing.propertyCode, amount);
         uint8 decimals = IERC20MetadataUpgradeable(paymentToken).decimals();
-        uint256 totalPrice = (priceUSD * (10 ** decimals)) / 1e18;
+        uint256 totalPrice = (priceUSD * (10 ** decimals)) / 100;
         uint256 commission = (totalPrice * commissionBps) / 10000;
         IERC20Upgradeable erc20 = IERC20Upgradeable(paymentToken);
 
