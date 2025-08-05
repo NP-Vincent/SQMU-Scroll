@@ -64,7 +64,7 @@ contract SQMUTrade is Initializable, OwnableUpgradeable, UUPSUpgradeable, Reentr
     }
 
     function initialize(address treasury_, uint256 commissionBps_, address distributor_) public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
         __UUPSUpgradeable_init();
         __ReentrancyGuard_init();
         __ERC1155Holder_init();
