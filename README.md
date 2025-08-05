@@ -301,11 +301,15 @@ balance of each SQMU property along with the USD value of that balance.
    exact SQMU amount held, so the widget displays the value of your holdings in
    real time.
 
-5. The page also lets you list SQMU for sale through the `SQMUTrade` contract.
+5. Prices returned by the distributor are scaled by 100. The widget converts
+   these two-decimal USD amounts when displaying values and preparing
+   stablecoin payments.
+
+6. The page also lets you list SQMU for sale through the `SQMUTrade` contract.
    If your wallet has not approved the trade contract, the widget will first
    call `setApprovalForAll` so it can escrow your tokens before creating the
    listing.
-6. Active listings display the payment token's symbol (e.g., USDC, USDT, USDQ)
+7. Active listings display the payment token's symbol (e.g., USDC, USDT, USDQ)
    instead of the contract address and omit seller addresses.
 
 ## Governance Crowdfund
