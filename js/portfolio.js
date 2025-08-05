@@ -25,8 +25,8 @@ const erc20Abi = [
 ];
 
 function formatUSD(bn) {
-  // getPrice returns an integer amount in USD with no decimals
-  const num = Number(fromStablecoinUnits(bn, 0));
+  // getPrice returns an integer amount in USD scaled by 100 (two decimals)
+  const num = Number(fromStablecoinUnits(bn, 2));
   return 'USD ' + num.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -253,7 +253,8 @@ async function displayListings() {
           const amount = toSQMUUnits(amtVal);
           const tokenAddr = select.value;
           const tokenMeta = paymentTokens.find((p) => p.address === tokenAddr);
-          const usdTotal = await distributor.getPrice(l.propertyCode, amount);
+          const usdTotalBn = await distributor.getPrice(l.propertyCode, amount);
+          const usdTotal = Number(fromStablecoinUnits(usdTotalBn, 2));
           const required = toStablecoinUnits(usdTotal, tokenMeta.decimals);
           await ensureAllowance(tokenAddr, required);
           const tx = await trade.buy(l.listingId, amount, tokenAddr);
