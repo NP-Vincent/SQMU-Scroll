@@ -31,3 +31,15 @@ This document provides guidance for handling currency and SQMU token values usin
   - Conversion logic (JS: handle different decimals per stablecoin)
   - Display formatting (always show 2 decimals for currency/SQMU except SQMU id `0`)
 - Add utility functions for stablecoin conversion and SQMU value formatting to avoid duplication.
+
+## 4. Contract Decimal Handling
+
+The Solidity contracts interact with ERC-20 stablecoins and ERC-1155 tokens in different ways. All ERC-1155 transfers use whole token amounts. Stablecoin transfers expect amounts in the token’s smallest unit unless otherwise noted.
+
+- **SQMU.sol** – Implements the core ERC-1155 token; minting and transfers work with integer amounts only【F:contracts/SQMU.sol†L44-L53】
+- **SQMURentDistribution.sol** – Stores rent balances and distributes ERC-20 tokens using raw amounts without adjusting for decimals; ERC-1155 deposits and withdrawals also use whole numbers【F:contracts/SQMURentDistribution.sol†L50-L55】【F:contracts/SQMURentDistribution.sol†L82-L90】
+- **SQMURent.sol** – Accepts stablecoin deposits and rent payments in smallest units and forwards them unchanged; ERC-1155 transfers use integer amounts【F:contracts/SQMURent.sol†L121-L135】【F:contracts/SQMURent.sol†L217-L225】
+- **SQMUTrade.sol** – Retrieves the payment token’s `decimals()` and converts a USD price (two decimals) to token units before transfer; ERC-1155 amounts remain integers【F:contracts/SQMUTrade.sol†L114-L126】
+- **SQMUCrowdfund.sol** – Stores token price in USD with 18 decimals and converts to payment token units using its `decimals()` value; governance tokens (ERC-1155) are transferred as whole units【F:contracts/SQMUCrowdfund.sol†L71-L83】
+- **AtomicSQMUDistributor.sol** – Keeps per-SQMU price in USD with 18 decimals and computes required payment using the stablecoin’s decimals; SQMU tokens are moved in whole amounts【F:contracts/AtomicSQMUDistributor.sol†L150-L189】
+- **Escrow.sol** – Handles deposits and releases of ERC-20 stablecoins using the amounts provided; no ERC-1155 tokens are involved【F:contracts/Escrow.sol†L131-L146】
