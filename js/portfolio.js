@@ -2,6 +2,7 @@ import { connectWallet, disconnectWallet } from './wallet.js';
 import { SQMU_ADDRESS, DISTRIBUTOR_ADDRESS, TRADE_ADDRESS } from './config.js';
 import {
   fromStablecoinUnits,
+  toStablecoinUnits,
   toSQMUUnits,
   fromSQMUUnits,
 } from './units.js';
@@ -253,9 +254,8 @@ async function displayListings() {
           const tokenAddr = select.value;
           const tokenMeta = paymentTokens.find((p) => p.address === tokenAddr);
           const usdTotalBn = await distributor.getPrice(l.propertyCode, amount);
-          const required = usdTotalBn
-            .mul(ethers.BigNumber.from(10).pow(tokenMeta.decimals))
-            .div(100);
+          const usdAmount = fromStablecoinUnits(usdTotalBn, 2);
+          const required = toStablecoinUnits(usdAmount, tokenMeta.decimals);
           await ensureAllowance(tokenAddr, required);
           const tx = await trade.buy(l.listingId, amount, tokenAddr);
           setTradeStatus('Buying tokens...');
