@@ -9,82 +9,6 @@
   <script src="https://unpkg.com/@metamask/sdk/dist/metamask-sdk.umd.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@8/dist/modal.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@8/dist/metamaskAdapter.umd.min.js"></script>
-
-  <!-- IMPORTANT: wallet-beta.js exports functions, so load it as a module -->
-  <script type="module">
-    const debugDiv = document.getElementById('debugLog');
-    const appendDebug = (...args) => {
-      const msg = args
-        .map((a) => (typeof a === 'object' ? JSON.stringify(a) : String(a)))
-        .join(' ');
-      debugDiv.textContent += msg + '\n';
-    };
-    ['log', 'error', 'warn', 'info'].forEach((level) => {
-      const orig = console[level].bind(console);
-      console[level] = (...args) => {
-        appendDebug(...args);
-        orig(...args);
-      };
-    });
-
-    const { connectWallet, disconnectWallet } = await import(
-      'https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js'
-    );
-
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    const statusDivId = 'statusDiv';
-    let session = null; // { provider, signer, source }
-
-    document.getElementById('mmConnect').addEventListener('click', async () => {
-      try {
-        session = await connectWallet(statusDivId); // MetaMask path
-        disconnectBtn.dataset.source = session.source; // 'metamask'
-        disconnectBtn.disabled = false;
-      } catch (e) {
-        console.error(e);
-      }
-    });
-
-    document
-      .getElementById('web3AuthConnect')
-      .addEventListener('click', async () => {
-        try {
-          session = await connectWallet(statusDivId, 'web3auth'); // Web3Auth path
-          disconnectBtn.dataset.source = session.source; // 'web3auth' | 'web3auth-adapter'
-          disconnectBtn.disabled = false;
-        } catch (e) {
-          console.error(e);
-        }
-      });
-
-    disconnectBtn.addEventListener('click', async () => {
-      try {
-        await disconnectWallet(statusDivId, disconnectBtn.dataset.source);
-      } finally {
-        session = null;
-        disconnectBtn.disabled = true;
-      }
-    });
-
-    // Minimal balance checker (ETH on Scroll for any address/contract)
-    document.getElementById('checkBalance').addEventListener('click', async () => {
-      const out = document.getElementById('contractStatus');
-      const addr = document.getElementById('contractAddr').value.trim();
-      if (!addr) return (out.textContent = 'Enter an address.');
-      if (!session?.provider) return (out.textContent = 'Connect first.');
-
-      try {
-        const code = await session.provider.getCode(addr);
-        const kind = code && code !== '0x' ? 'Contract' : 'EOA';
-        const wei = await session.provider.getBalance(addr);
-        const eth = ethers.utils.formatEther(wei);
-        out.textContent = `${kind} balance: ${eth} ETH`;
-      } catch (e) {
-        out.textContent = `Error: ${e.message}`;
-        console.error(e);
-      }
-    });
-  </script>
 </head>
 
 <body>
@@ -107,5 +31,85 @@
 
   <h3>Debug Log</h3>
   <pre id="debugLog" class="has-small-font-size"></pre>
+
+  <!-- Load your module AFTER the DOM -->
+  <script type="module">
+    // Debug logger (guard for safety)
+    const debugDiv = document.getElementById('debugLog');
+    const appendDebug = (...args) => {
+      const msg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
+      if (debugDiv) debugDiv.textContent += msg + '\n';
+    };
+    ['log','error','warn','info'].forEach(level => {
+      const orig = console[level].bind(console);
+      console[level] = (...args) => { appendDebug(...args); orig(...args); };
+    });
+
+    console.info('Globals present', {
+      MetaMaskSDK: !!window.MetaMaskSDK,
+      Web3Auth: !!window.Web3Auth,
+      Web3AuthMetamaskAdapter: !!window.Web3AuthMetamaskAdapter,
+    });
+
+    // Import wallet logic
+    const { connectWallet, disconnectWallet } = await import(
+      'https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js'
+    );
+    console.info('wallet-beta.js loaded:', !!connectWallet, !!disconnectWallet);
+
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusDivId = 'statusDiv';
+    let session = null; // { provider, signer, source }
+
+    document.getElementById('mmConnect').addEventListener('click', async () => {
+      try {
+        session = await connectWallet(statusDivId); // MetaMask path
+        disconnectBtn.dataset.source = session.source; // 'metamask'
+        disconnectBtn.disabled = false;
+        console.log('Connected via MetaMask:', session.source);
+      } catch (e) {
+        console.error('MetaMask connect error:', e);
+      }
+    });
+
+    document.getElementById('web3AuthConnect').addEventListener('click', async () => {
+      try {
+        session = await connectWallet(statusDivId, 'web3auth'); // Web3Auth path
+        disconnectBtn.dataset.source = session.source; // 'web3auth' | 'web3auth-adapter'
+        disconnectBtn.disabled = false;
+        console.log('Connected via Web3Auth:', session.source);
+      } catch (e) {
+        console.error('Web3Auth connect error:', e);
+      }
+    });
+
+    disconnectBtn.addEventListener('click', async () => {
+      try {
+        await disconnectWallet(statusDivId, disconnectBtn.dataset.source);
+      } finally {
+        session = null;
+        disconnectBtn.disabled = true;
+        console.log('Disconnected.');
+      }
+    });
+
+    document.getElementById('checkBalance').addEventListener('click', async () => {
+      const out = document.getElementById('contractStatus');
+      const addr = document.getElementById('contractAddr').value.trim();
+      if (!addr) return (out.textContent = 'Enter an address.');
+      if (!session?.provider) return (out.textContent = 'Connect first.');
+
+      try {
+        const code = await session.provider.getCode(addr);
+        const kind = code && code !== '0x' ? 'Contract' : 'EOA';
+        const wei  = await session.provider.getBalance(addr);
+        const eth  = ethers.utils.formatEther(wei);
+        out.textContent = `${kind} balance: ${eth} ETH`;
+      } catch (e) {
+        out.textContent = `Error: ${e.message}`;
+        console.error(e);
+      }
+    });
+  </script>
 </body>
 </html>
