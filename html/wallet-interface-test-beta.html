@@ -10,8 +10,61 @@
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@8/dist/modal.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@8/dist/metamaskAdapter.umd.min.js"></script>
 
-  <!-- Your wallet logic -->
-  <script src="https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js"></script>
+  <!-- IMPORTANT: wallet-beta.js exports functions, so load it as a module -->
+  <script type="module">
+    import { connectWallet, disconnectWallet } from 'https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js';
+
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusDivId   = 'statusDiv';
+    let session = null; // { provider, signer, source }
+
+    document.getElementById('mmConnect').addEventListener('click', async () => {
+      try {
+        session = await connectWallet(statusDivId);                 // MetaMask path
+        disconnectBtn.dataset.source = session.source;              // 'metamask'
+        disconnectBtn.disabled = false;
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    document.getElementById('web3AuthConnect').addEventListener('click', async () => {
+      try {
+        session = await connectWallet(statusDivId, 'web3auth');     // Web3Auth path
+        disconnectBtn.dataset.source = session.source;              // 'web3auth' | 'web3auth-adapter'
+        disconnectBtn.disabled = false;
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    disconnectBtn.addEventListener('click', async () => {
+      try {
+        await disconnectWallet(statusDivId, disconnectBtn.dataset.source);
+      } finally {
+        session = null;
+        disconnectBtn.disabled = true;
+      }
+    });
+
+    // Minimal balance checker (ETH on Scroll for any address/contract)
+    document.getElementById('checkBalance').addEventListener('click', async () => {
+      const out = document.getElementById('contractStatus');
+      const addr = document.getElementById('contractAddr').value.trim();
+      if (!addr) return (out.textContent = 'Enter an address.');
+      if (!session?.provider) return (out.textContent = 'Connect first.');
+
+      try {
+        const code = await session.provider.getCode(addr);
+        const kind = code && code !== '0x' ? 'Contract' : 'EOA';
+        const wei  = await session.provider.getBalance(addr);
+        const eth  = ethers.utils.formatEther(wei);
+        out.textContent = `${kind} balance: ${eth} ETH`;
+      } catch (e) {
+        out.textContent = `Error: ${e.message}`;
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -29,32 +82,5 @@
   <input id="contractAddr" placeholder="0x..." size="45" />
   <button id="checkBalance">Check Balance</button>
   <pre id="contractStatus"></pre>
-
-  <script>
-    const disconnectBtn = document.getElementById("disconnectBtn");
-    const statusDiv     = "statusDiv";
-
-    document.getElementById("mmConnect").addEventListener("click", async () => {
-      const src = await connectWallet(statusDiv);
-      disconnectBtn.dataset.source = src;
-      disconnectBtn.disabled = false;
-    });
-
-    document.getElementById("web3AuthConnect").addEventListener("click", async () => {
-      const src = await connectWallet(statusDiv, "web3auth");
-      disconnectBtn.dataset.source = src;
-      disconnectBtn.disabled = false;
-    });
-
-    disconnectBtn.addEventListener("click", async () => {
-      await disconnectWallet(statusDiv, disconnectBtn.dataset.source);
-      disconnectBtn.disabled = true;
-    });
-
-    document.getElementById("checkBalance").addEventListener("click", () => {
-      const addr = document.getElementById("contractAddr").value.trim();
-      if (addr) showContractBalance(addr, "contractStatus");
-    });
-  </script>
 </body>
 </html>
