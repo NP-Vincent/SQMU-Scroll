@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Wallet Test UI</title>
+
+  <!-- CDN Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@metamask/sdk/dist/metamask-sdk.umd.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@8/dist/modal.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@8/dist/metamaskAdapter.umd.min.js"></script>
+
+  <!-- Your wallet logic -->
+  <script src="./wallet-beta.js"></script>
+</head>
+
+<body>
+  <h2>Wallet Test Interface</h2>
+
+  <button id="mmConnect">Connect MetaMask</button>
+  <button id="web3AuthConnect">Sign in with Social</button>
+  <button id="disconnectBtn" disabled>Disconnect</button>
+
+  <pre id="statusDiv">Disconnected</pre>
+
+  <hr />
+
+  <h3>Check Contract / Account Balance</h3>
+  <input id="contractAddr" placeholder="0x..." size="45" />
+  <button id="checkBalance">Check Balance</button>
+  <pre id="contractStatus"></pre>
+
+  <script>
+    const disconnectBtn = document.getElementById("disconnectBtn");
+    const statusDiv     = "statusDiv";
+
+    document.getElementById("mmConnect").addEventListener("click", async () => {
+      const src = await connectWallet(statusDiv);
+      disconnectBtn.dataset.source = src;
+      disconnectBtn.disabled = false;
+    });
+
+    document.getElementById("web3AuthConnect").addEventListener("click", async () => {
+      const src = await connectWallet(statusDiv, "web3auth");
+      disconnectBtn.dataset.source = src;
+      disconnectBtn.disabled = false;
+    });
+
+    disconnectBtn.addEventListener("click", async () => {
+      await disconnectWallet(statusDiv, disconnectBtn.dataset.source);
+      disconnectBtn.disabled = true;
+    });
+
+    document.getElementById("checkBalance").addEventListener("click", () => {
+      const addr = document.getElementById("contractAddr").value.trim();
+      if (addr) showContractBalance(addr, "contractStatus");
+    });
+  </script>
+</body>
+</html>
