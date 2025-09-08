@@ -4,13 +4,9 @@
   <meta charset="UTF-8" />
   <title>Wallet Test UI</title>
 
-  <!-- CDN Libraries -->
+  <!-- ethers (standalone UMD is stable) -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@metamask/sdk/dist/metamask-sdk.umd.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@8/dist/modal.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@8/dist/metamaskAdapter.umd.min.js"></script>
 </head>
-
 <body>
   <h2>Wallet Test Interface</h2>
 
@@ -21,95 +17,110 @@
   <pre id="statusDiv">Disconnected</pre>
 
   <hr />
-
   <h3>Check Contract / Account Balance</h3>
   <input id="contractAddr" placeholder="0x..." size="45" />
   <button id="checkBalance">Check Balance</button>
   <pre id="contractStatus"></pre>
 
   <hr />
-
   <h3>Debug Log</h3>
   <pre id="debugLog" class="has-small-font-size"></pre>
 
-  <!-- Load your module AFTER the DOM -->
-  <script type="module">
-    // Debug logger (guard for safety)
+  <!-- Load libs with verification, then import wallet-beta.js -->
+  <script>
     const debugDiv = document.getElementById('debugLog');
-    const appendDebug = (...args) => {
-      const msg = args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
-      if (debugDiv) debugDiv.textContent += msg + '\n';
-    };
-    ['log','error','warn','info'].forEach(level => {
-      const orig = console[level].bind(console);
-      console[level] = (...args) => { appendDebug(...args); orig(...args); };
-    });
+    function log(...a){ (debugDiv.textContent += a.join(' ') + '\n'); console.log(...a); }
+    function err(...a){ (debugDiv.textContent += '[ERR] ' + a.join(' ') + '\n'); console.error(...a); }
 
-    console.info('Globals present', {
-      MetaMaskSDK: !!window.MetaMaskSDK,
-      Web3Auth: !!window.Web3Auth,
-      Web3AuthMetamaskAdapter: !!window.Web3AuthMetamaskAdapter,
-    });
+    function loadScript(url, name){
+      return new Promise((resolve)=>{
+        const s = document.createElement('script');
+        s.src = url;
+        s.defer = true;
+        s.onload = ()=>{ log('Loaded', name, 'from', url); resolve(true); };
+        s.onerror = ()=>{ err('FAILED', name, 'from', url); resolve(false); };
+        document.head.appendChild(s);
+      });
+    }
 
-    // Import wallet logic
-    const { connectWallet, disconnectWallet } = await import(
-      'https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js'
-    );
-    console.info('wallet-beta.js loaded:', !!connectWallet, !!disconnectWallet);
+    async function loadWithFallback(name, urls){
+      for (const u of urls){ if (await loadScript(u, name)) return true; }
+      return false;
+    }
 
-    const disconnectBtn = document.getElementById('disconnectBtn');
-    const statusDivId = 'statusDiv';
-    let session = null; // { provider, signer, source }
+    (async () => {
+      // Pin to broadly available versions; try jsDelivr then unpkg
+      const okMM  = await loadWithFallback('MetaMask SDK', [
+        'https://cdn.jsdelivr.net/npm/@metamask/sdk@1/dist/metamask-sdk.umd.js',
+        'https://unpkg.com/@metamask/sdk@1/dist/metamask-sdk.umd.js',
+      ]);
+      const okW3A = await loadWithFallback('Web3Auth Modal', [
+        'https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js',
+        'https://unpkg.com/@web3auth/modal@9/dist/modal.umd.min.js',
+      ]);
+      const okW3Amm = await loadWithFallback('Web3Auth MetaMask Adapter', [
+        'https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@9/dist/metamaskAdapter.umd.min.js',
+        'https://unpkg.com/@web3auth/metamask-adapter@9/dist/metamaskAdapter.umd.min.js',
+      ]);
 
-    document.getElementById('mmConnect').addEventListener('click', async () => {
+      log('Globals present', JSON.stringify({
+        MetaMaskSDK: !!window.MetaMaskSDK,
+        Web3Auth: !!window.Web3Auth,
+        Web3AuthMetamaskAdapter: !!(window.Web3AuthMetamaskAdapter || window.metamaskAdapter),
+      }));
+
+      if (!okMM)  err('MetaMask SDK failed to load — check CSP or network.');
+      if (!okW3A) err('Web3Auth Modal failed to load.');
+      if (!okW3Amm) log('Adapter not loaded; will fallback to direct Web3Auth modal.');
+
+      // Import your wallet once libs are in place
       try {
-        session = await connectWallet(statusDivId); // MetaMask path
-        disconnectBtn.dataset.source = session.source; // 'metamask'
-        disconnectBtn.disabled = false;
-        console.log('Connected via MetaMask:', session.source);
+        const { connectWallet, disconnectWallet } = await import('https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js');
+
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const statusDivId   = 'statusDiv';
+        let session = null;
+
+        document.getElementById('mmConnect').addEventListener('click', async () => {
+          try {
+            session = await connectWallet(statusDivId);
+            disconnectBtn.dataset.source = session.source;
+            disconnectBtn.disabled = false;
+            log('Connected via', session.source);
+          } catch (e) { err('MetaMask connect error:', e.message); }
+        });
+
+        document.getElementById('web3AuthConnect').addEventListener('click', async () => {
+          try {
+            session = await connectWallet(statusDivId, 'web3auth');
+            disconnectBtn.dataset.source = session.source;
+            disconnectBtn.disabled = false;
+            log('Connected via', session.source);
+          } catch (e) { err('Web3Auth connect error:', e.message); }
+        });
+
+        disconnectBtn.addEventListener('click', async () => {
+          try { await disconnectWallet(statusDivId, disconnectBtn.dataset.source); }
+          finally { session = null; disconnectBtn.disabled = true; log('Disconnected'); }
+        });
+
+        document.getElementById('checkBalance').addEventListener('click', async () => {
+          const out = document.getElementById('contractStatus');
+          const addr = document.getElementById('contractAddr').value.trim();
+          if (!addr) return (out.textContent = 'Enter an address.');
+          if (!session?.provider) return (out.textContent = 'Connect first.');
+          try {
+            const code = await session.provider.getCode(addr);
+            const kind = code && code !== '0x' ? 'Contract' : 'EOA';
+            const wei  = await session.provider.getBalance(addr);
+            const eth  = ethers.utils.formatEther(wei);
+            out.textContent = `${kind} balance: ${eth} ETH`;
+          } catch (e) { out.textContent = `Error: ${e.message}`; err('Balance error:', e.message); }
+        });
       } catch (e) {
-        console.error('MetaMask connect error:', e);
+        err('Failed to import wallet-beta.js:', e.message);
       }
-    });
-
-    document.getElementById('web3AuthConnect').addEventListener('click', async () => {
-      try {
-        session = await connectWallet(statusDivId, 'web3auth'); // Web3Auth path
-        disconnectBtn.dataset.source = session.source; // 'web3auth' | 'web3auth-adapter'
-        disconnectBtn.disabled = false;
-        console.log('Connected via Web3Auth:', session.source);
-      } catch (e) {
-        console.error('Web3Auth connect error:', e);
-      }
-    });
-
-    disconnectBtn.addEventListener('click', async () => {
-      try {
-        await disconnectWallet(statusDivId, disconnectBtn.dataset.source);
-      } finally {
-        session = null;
-        disconnectBtn.disabled = true;
-        console.log('Disconnected.');
-      }
-    });
-
-    document.getElementById('checkBalance').addEventListener('click', async () => {
-      const out = document.getElementById('contractStatus');
-      const addr = document.getElementById('contractAddr').value.trim();
-      if (!addr) return (out.textContent = 'Enter an address.');
-      if (!session?.provider) return (out.textContent = 'Connect first.');
-
-      try {
-        const code = await session.provider.getCode(addr);
-        const kind = code && code !== '0x' ? 'Contract' : 'EOA';
-        const wei  = await session.provider.getBalance(addr);
-        const eth  = ethers.utils.formatEther(wei);
-        out.textContent = `${kind} balance: ${eth} ETH`;
-      } catch (e) {
-        out.textContent = `Error: ${e.message}`;
-        console.error(e);
-      }
-    });
+    })();
   </script>
 </body>
 </html>
