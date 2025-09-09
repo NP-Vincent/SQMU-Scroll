@@ -2,125 +2,122 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Wallet Test UI</title>
+  <title>SQMU Wallet — Test UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- ethers (standalone UMD is stable) -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5/dist/ethers.umd.min.js"></script>
+  <!-- Known-good CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@10.3.0/dist/modal.umd.min.js"></script>
+  <!-- Optional adapter; if it fails to load, fallback modal still works -->
+  <script src="https://unpkg.com/@web3auth/metamask-adapter@8.12.4/dist/metamaskAdapter.umd.min.js"></script>
+
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    button { margin-right: 8px; padding: 8px 12px; }
+    pre { background:#f5f5f5; padding:12px; overflow:auto; }
+    input { padding:8px; width:320px; max-width:100%; }
+    .row { margin: 12px 0; }
+  </style>
 </head>
 <body>
-  <h2>Wallet Test Interface</h2>
+  <h2>SQMU Wallet — Test Interface</h2>
 
-  <button id="mmConnect">Connect MetaMask</button>
-  <button id="web3AuthConnect">Sign in with Social</button>
-  <button id="disconnectBtn" disabled>Disconnect</button>
+  <div class="row">
+    <button id="mmConnect">Connect MetaMask</button>
+    <button id="web3AuthConnect">Sign in with Social</button>
+    <button id="disconnectBtn" disabled>Disconnect</button>
+  </div>
 
   <pre id="statusDiv">Disconnected</pre>
 
   <hr />
-  <h3>Check Contract / Account Balance</h3>
-  <input id="contractAddr" placeholder="0x..." size="45" />
-  <button id="checkBalance">Check Balance</button>
+
+  <h3>Check Contract / Account Balance (Scroll)</h3>
+  <div class="row">
+    <input id="contractAddr" placeholder="0x..." />
+    <button id="checkBalance">Check Balance</button>
+  </div>
   <pre id="contractStatus"></pre>
 
   <hr />
+
   <h3>Debug Log</h3>
   <pre id="debugLog" class="has-small-font-size"></pre>
 
-  <!-- Load libs with verification, then import wallet-beta.js -->
-  <script>
+  <!-- Import the wallet after DOM + UMDs -->
+  <script type="module">
+    // Debug logger
     const debugDiv = document.getElementById('debugLog');
-    function log(...a){ (debugDiv.textContent += a.join(' ') + '\n'); console.log(...a); }
-    function err(...a){ (debugDiv.textContent += '[ERR] ' + a.join(' ') + '\n'); console.error(...a); }
+    const log = (...a) => { debugDiv.textContent += a.map(x => typeof x === 'object' ? JSON.stringify(x) : String(x)).join(' ') + '\n'; };
+    ['log','error','warn','info'].forEach(level => {
+      const orig = console[level].bind(console);
+      console[level] = (...args) => { log(...args); orig(...args); };
+    });
 
-    function loadScript(url, name){
-      return new Promise((resolve)=>{
-        const s = document.createElement('script');
-        s.src = url;
-        s.defer = true;
-        s.onload = ()=>{ log('Loaded', name, 'from', url); resolve(true); };
-        s.onerror = ()=>{ err('FAILED', name, 'from', url); resolve(false); };
-        document.head.appendChild(s);
-      });
-    }
+    // Verify UMD globals
+    console.info('Globals present', JSON.stringify({
+      ethers: !!window.ethers,
+      MetaMaskSDK: !!(window.MetaMaskSDK && (window.MetaMaskSDK.MetaMaskSDK || window.MetaMaskSDK.default)),
+      Web3Auth: !!(window.Web3Auth && (window.Web3Auth.Web3Auth || typeof window.Web3Auth === 'function')),
+      Web3AuthMetamaskAdapter: !!(window.Web3AuthMetamaskAdapter || window.metamaskAdapter)
+    }));
 
-    async function loadWithFallback(name, urls){
-      for (const u of urls){ if (await loadScript(u, name)) return true; }
-      return false;
-    }
+    // Import your wallet module (adjust path if hosted elsewhere)
+    const { connectWallet, disconnectWallet } = await import('https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js');
 
-    (async () => {
-      // Pin to broadly available versions; try jsDelivr then unpkg
-      const okMM  = await loadWithFallback('MetaMask SDK', [
-        'https://cdn.jsdelivr.net/npm/@metamask/sdk@1/dist/metamask-sdk.umd.js',
-        'https://unpkg.com/@metamask/sdk@1/dist/metamask-sdk.umd.js',
-      ]);
-      const okW3A = await loadWithFallback('Web3Auth Modal', [
-        'https://cdn.jsdelivr.net/npm/@web3auth/modal@9/dist/modal.umd.min.js',
-        'https://unpkg.com/@web3auth/modal@9/dist/modal.umd.min.js',
-      ]);
-      const okW3Amm = await loadWithFallback('Web3Auth MetaMask Adapter', [
-        'https://cdn.jsdelivr.net/npm/@web3auth/metamask-adapter@9/dist/metamaskAdapter.umd.min.js',
-        'https://unpkg.com/@web3auth/metamask-adapter@9/dist/metamaskAdapter.umd.min.js',
-      ]);
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const statusDivId   = 'statusDiv';
+    let session = null; // { provider, signer, source }
 
-      log('Globals present', JSON.stringify({
-        MetaMaskSDK: !!window.MetaMaskSDK,
-        Web3Auth: !!window.Web3Auth,
-        Web3AuthMetamaskAdapter: !!(window.Web3AuthMetamaskAdapter || window.metamaskAdapter),
-      }));
-
-      if (!okMM)  err('MetaMask SDK failed to load — check CSP or network.');
-      if (!okW3A) err('Web3Auth Modal failed to load.');
-      if (!okW3Amm) log('Adapter not loaded; will fallback to direct Web3Auth modal.');
-
-      // Import your wallet once libs are in place
+    document.getElementById('mmConnect').addEventListener('click', async () => {
       try {
-        const { connectWallet, disconnectWallet } = await import('https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js');
+        session = await connectWallet(statusDivId);              // MetaMask path
+        disconnectBtn.dataset.source = session.source;           // 'metamask'
+        disconnectBtn.disabled = false;
+        console.log('Connected via', session.source);
+        await showWho(session);
+      } catch (e) { console.error('MetaMask connect error:', e.message || e); }
+    });
 
-        const disconnectBtn = document.getElementById('disconnectBtn');
-        const statusDivId   = 'statusDiv';
-        let session = null;
+    document.getElementById('web3AuthConnect').addEventListener('click', async () => {
+      try {
+        session = await connectWallet(statusDivId, 'web3auth');  // Web3Auth (adapter if present)
+        disconnectBtn.dataset.source = session.source;           // 'web3auth' | 'web3auth-adapter'
+        disconnectBtn.disabled = false;
+        console.log('Connected via', session.source);
+        await showWho(session);
+      } catch (e) { console.error('Web3Auth connect error:', e.message || e); }
+    });
 
-        document.getElementById('mmConnect').addEventListener('click', async () => {
-          try {
-            session = await connectWallet(statusDivId);
-            disconnectBtn.dataset.source = session.source;
-            disconnectBtn.disabled = false;
-            log('Connected via', session.source);
-          } catch (e) { err('MetaMask connect error:', e.message); }
-        });
+    disconnectBtn.addEventListener('click', async () => {
+      try { await disconnectWallet(statusDivId, disconnectBtn.dataset.source); }
+      finally { session = null; disconnectBtn.disabled = true; console.log('Disconnected'); }
+    });
 
-        document.getElementById('web3AuthConnect').addEventListener('click', async () => {
-          try {
-            session = await connectWallet(statusDivId, 'web3auth');
-            disconnectBtn.dataset.source = session.source;
-            disconnectBtn.disabled = false;
-            log('Connected via', session.source);
-          } catch (e) { err('Web3Auth connect error:', e.message); }
-        });
+    document.getElementById('checkBalance').addEventListener('click', async () => {
+      const out  = document.getElementById('contractStatus');
+      const addr = document.getElementById('contractAddr').value.trim();
+      if (!addr) return (out.textContent = 'Enter an address.');
+      if (!session?.provider) return (out.textContent = 'Connect first.');
+      try {
+        const code = await session.provider.getCode(addr);
+        const kind = code && code !== '0x' ? 'Contract' : 'EOA';
+        const wei  = await session.provider.getBalance(addr);
+        const eth  = window.ethers.utils.formatEther(wei);
+        out.textContent = `${kind} balance: ${eth} ETH`;
+      } catch (e) { out.textContent = `Error: ${e.message || e}`; console.error('Balance error:', e); }
+    });
 
-        disconnectBtn.addEventListener('click', async () => {
-          try { await disconnectWallet(statusDivId, disconnectBtn.dataset.source); }
-          finally { session = null; disconnectBtn.disabled = true; log('Disconnected'); }
-        });
-
-        document.getElementById('checkBalance').addEventListener('click', async () => {
-          const out = document.getElementById('contractStatus');
-          const addr = document.getElementById('contractAddr').value.trim();
-          if (!addr) return (out.textContent = 'Enter an address.');
-          if (!session?.provider) return (out.textContent = 'Connect first.');
-          try {
-            const code = await session.provider.getCode(addr);
-            const kind = code && code !== '0x' ? 'Contract' : 'EOA';
-            const wei  = await session.provider.getBalance(addr);
-            const eth  = ethers.utils.formatEther(wei);
-            out.textContent = `${kind} balance: ${eth} ETH`;
-          } catch (e) { out.textContent = `Error: ${e.message}`; err('Balance error:', e.message); }
-        });
+    async function showWho(s) {
+      try {
+        const network = await s.provider.getNetwork();
+        const addr    = await s.signer.getAddress();
+        console.log('Account:', addr, 'ChainId:', network.chainId);
       } catch (e) {
-        err('Failed to import wallet-beta.js:', e.message);
+        console.warn('Could not fetch account/network:', e.message || e);
       }
-    })();
+    }
   </script>
 </body>
 </html>
