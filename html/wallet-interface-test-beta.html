@@ -67,7 +67,7 @@
 
     // 2) Import your wallet logic (expects window.Web3Auth shim + other UMDs)
     //    If hosted elsewhere, replace './wallet-beta.js' with your URL.
-    const { connectWallet, disconnectWallet } = await import('./wallet-beta.js');
+    const { connectWallet, disconnectWallet } = await import('https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js');
     console.info('wallet-beta.js loaded:', !!connectWallet, !!disconnectWallet);
 
     // 3) Wire up the UI
