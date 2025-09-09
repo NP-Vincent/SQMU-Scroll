@@ -57,7 +57,9 @@ async function ensureWeb3Auth() {
 
   // Import Web3Auth v10 as pure ESM from a CDN
   // (esm.sh serves browser-ready ES modules directly from npm.) 
-  const { Web3Auth } = await import('https://esm.sh/@web3auth/modal@10.3.0');
+const { Web3Auth } = await import(
+  'https://esm.sh/@web3auth/modal@10.3.0?standalone&target=es2022'
+);
 
   _w3a = new Web3Auth({
     clientId: WEB3AUTH_CLIENT_ID,
