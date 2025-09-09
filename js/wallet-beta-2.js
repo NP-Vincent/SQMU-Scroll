@@ -48,18 +48,41 @@ function getMMSDK() {
   return _mmSDK;
 }
 
-let _w3a = null;        // Web3Auth instance (ESM)
+let _w3a = null;
 let _w3aProvider = null;
 let _w3aConnected = false;
 
 async function ensureWeb3Auth() {
   if (_w3a) return _w3a;
 
-  // Import Web3Auth v10 as pure ESM from a CDN
-  // (esm.sh serves browser-ready ES modules directly from npm.) 
-const { Web3Auth } = await import(
-  'https://esm.sh/@web3auth/modal@10.3.0?standalone&target=es2022'
-);
+  // 1) Try esm.sh (standalone)
+  // 2) Try esm.run mirror (standalone)
+  // 3) Try jsDelivr ESM file (path may change across versions)
+  const candidates = [
+    'https://esm.sh/@web3auth/modal@10.3.0?standalone',
+    'https://esm.run/@web3auth/modal@10.3.0?standalone',
+    // If Web3Auth publishes an explicit ESM bundle:
+    'https://cdn.jsdelivr.net/npm/@web3auth/modal@10.3.0/dist/web3auth.esm.js',
+  ];
+
+  let Web3Auth = null;
+  for (const url of candidates) {
+    try {
+      const mod = await import(url);
+      if (mod?.Web3Auth) { Web3Auth = mod.Web3Auth; break; }
+    } catch (e) {
+      console.warn('Web3Auth ESM fetch failed:', url, e);
+    }
+  }
+
+  // 4) Last-resort: use UMD global if you’ve added it in <head>
+  // <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@10.3.0/dist/web3auth.umd.min.js" defer></script>
+  if (!Web3Auth && window.Web3auth?.Web3Auth) {
+    Web3Auth = window.Web3auth.Web3Auth;
+  }
+  if (!Web3Auth) {
+    throw new Error('Unable to load Web3Auth: all CDN attempts failed.');
+  }
 
   _w3a = new Web3Auth({
     clientId: WEB3AUTH_CLIENT_ID,
@@ -76,12 +99,11 @@ const { Web3Auth } = await import(
     uiConfig: {
       appName: 'SQMU Wallet',
       mode: 'light',
-      loginMethodsOrder: ['farcaster', 'google', 'twitter', 'discord', 'email_passwordless'],
+      loginMethodsOrder: ['farcaster','google','twitter','discord','email_passwordless'],
     },
   });
 
-  // v10 initialization (replaces initModal in v9)
-  await _w3a.init(); // then call connect() later
+  await _w3a.init();      // v10 init() then connect()
   return _w3a;
 }
 
