@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>SQMU Wallet — ESM Test</title>
+  <title>SQMU Wallet — Test UI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Known-good CDNs -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="https://c0f4f41c-2f55-4863-921b-sdk-docs.github.io/cdn/metamask-sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@web3auth/modal@10.3.0/dist/modal.umd.min.js"></script>
+  <!-- Optional adapter; if it fails to load, fallback modal still works -->
+  <script src="https://unpkg.com/@web3auth/metamask-adapter@8.12.4/dist/metamaskAdapter.umd.min.js"></script>
 
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
@@ -18,7 +21,7 @@
   </style>
 </head>
 <body>
-  <h2>SQMU Wallet — Test Interface (ESM Web3Auth)</h2>
+  <h2>SQMU Wallet — Test Interface</h2>
 
   <div class="row">
     <button id="mmConnect">Connect MetaMask</button>
@@ -42,35 +45,27 @@
   <h3>Debug Log</h3>
   <pre id="debugLog" class="has-small-font-size"></pre>
 
-  <!-- Load Web3Auth as ESM from CDN, then your wallet module -->
+  <!-- Import the wallet after DOM + UMDs -->
   <script type="module">
     // Debug logger
     const debugDiv = document.getElementById('debugLog');
-    const log = (...a) => { debugDiv.textContent += a.map(x => (typeof x === 'object' ? JSON.stringify(x) : String(x))).join(' ') + '\n'; };
+    const log = (...a) => { debugDiv.textContent += a.map(x => typeof x === 'object' ? JSON.stringify(x) : String(x)).join(' ') + '\n'; };
     ['log','error','warn','info'].forEach(level => {
       const orig = console[level].bind(console);
       console[level] = (...args) => { log(...args); orig(...args); };
     });
 
-    // 1) Import Web3Auth as pure ESM from a CDN (no UMD/global needed)
-    // Using esm.sh ensures an ESM-compatible build in the browser.
-    const { Web3Auth } = await import('https://esm.sh/@web3auth/modal@10.3.0');
-    // Shim the ESM class onto window so wallet-beta.js (which expects a global) can find it
-    window.Web3Auth = { Web3Auth };
-
-    console.info('Globals present after ESM import', JSON.stringify({
+    // Verify UMD globals
+    console.info('Globals present', JSON.stringify({
       ethers: !!window.ethers,
       MetaMaskSDK: !!(window.MetaMaskSDK && (window.MetaMaskSDK.MetaMaskSDK || window.MetaMaskSDK.default)),
-      Web3AuthESM: !!Web3Auth,
-      Web3AuthGlobalShim: !!(window.Web3Auth && window.Web3Auth.Web3Auth)
+      Web3Auth: !!(window.Web3Auth && (window.Web3Auth.Web3Auth || typeof window.Web3Auth === 'function')),
+      Web3AuthMetamaskAdapter: !!(window.Web3AuthMetamaskAdapter || window.metamaskAdapter)
     }));
 
-    // 2) Import your wallet logic (expects window.Web3Auth shim + other UMDs)
-    //    If hosted elsewhere, replace './wallet-beta.js' with your URL.
+    // Import your wallet module (adjust path if hosted elsewhere)
     const { connectWallet, disconnectWallet } = await import('https://np-vincent.github.io/SQMU-Scroll/js/wallet-beta.js');
-    console.info('wallet-beta.js loaded:', !!connectWallet, !!disconnectWallet);
 
-    // 3) Wire up the UI
     const disconnectBtn = document.getElementById('disconnectBtn');
     const statusDivId   = 'statusDiv';
     let session = null; // { provider, signer, source }
@@ -87,7 +82,7 @@
 
     document.getElementById('web3AuthConnect').addEventListener('click', async () => {
       try {
-        session = await connectWallet(statusDivId, 'web3auth');  // Web3Auth modal path
+        session = await connectWallet(statusDivId, 'web3auth');  // Web3Auth (adapter if present)
         disconnectBtn.dataset.source = session.source;           // 'web3auth' | 'web3auth-adapter'
         disconnectBtn.disabled = false;
         console.log('Connected via', session.source);
@@ -119,7 +114,9 @@
         const network = await s.provider.getNetwork();
         const addr    = await s.signer.getAddress();
         console.log('Account:', addr, 'ChainId:', network.chainId);
-      } catch (e) { console.warn('Could not fetch account/network:', e.message || e); }
+      } catch (e) {
+        console.warn('Could not fetch account/network:', e.message || e);
+      }
     }
   </script>
 </body>
